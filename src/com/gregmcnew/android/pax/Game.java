@@ -6,7 +6,7 @@ public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE };
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE };
-	public static int[] UnitCosts = { 100, 200, 300, 400, 0 };
+	public static int[] UnitCosts = { 50, 170, 360, 1080, 0 };
 	public static int NUM_PLAYERS = 2;
 	
 	public static int NO_ENTITY = -1;

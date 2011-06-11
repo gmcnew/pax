@@ -33,8 +33,8 @@ public class GameView extends View {
 		Paint[] paints = new Paint[2];
 		paints[0] = new Paint();
 		paints[1] = new Paint();
-		paints[0].setARGB(128, 192, 0, 0);
-		paints[1].setARGB(128, 0, 64, 255);
+		paints[0].setARGB(192, 192, 0, 0);
+		paints[1].setARGB(192, 0, 64, 255);
 		for (Paint paint : paints) {
 			paint.setStyle(Paint.Style.FILL_AND_STROKE);
 			paint.setStrokeWidth(2);

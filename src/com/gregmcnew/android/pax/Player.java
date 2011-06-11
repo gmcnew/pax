@@ -3,8 +3,6 @@ package com.gregmcnew.android.pax;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.PointF;
-
 import com.gregmcnew.android.pax.Game.BuildTarget;
 
 public class Player {
@@ -51,11 +49,6 @@ public class Player {
 	
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
-			case NONE:
-				break;
-			case UPGRADE:
-				production += 0.25f;
-				break;
 			case FIGHTER:
 				addShip(new Fighter(getID()));
 				break;
@@ -64,6 +57,9 @@ public class Player {
 				break;
 			case FRIGATE:
 				addShip(new Frigate(getID()));
+				break;
+			case UPGRADE:
+				production += 0.25f;
 				break;
 		}
 	}
