@@ -14,7 +14,8 @@ public class Player {
 		 buildTarget = Game.BuildTarget.NONE;
 		 quadtree = new Quadtree();
 		 money = 0;
-		 production = 0.75f * 3;
+		 production = 0.75f;
+		 production *= 30; // warp speed!
 		 mShips = new ArrayList<Ship>();
 		 addShip(new Factory(getID()));
 	}

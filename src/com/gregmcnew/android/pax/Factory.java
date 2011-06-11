@@ -12,7 +12,7 @@ public class Factory extends Ship {
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
 	protected Factory(int id) {
-		super(id, HEALTH, SIZE, TURN_SPEED, ACCELERATION);
+		super(id, ShipType.FACTORY, HEALTH, SIZE, TURN_SPEED, ACCELERATION);
 	}
 
 	@Override

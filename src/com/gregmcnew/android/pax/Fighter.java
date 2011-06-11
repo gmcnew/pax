@@ -9,7 +9,7 @@ public class Fighter extends Ship {
 	public static ShipType[] TARGET_PRIORITIES = { ShipType.BOMBER, ShipType.FIGHTER, ShipType.FRIGATE, ShipType.FACTORY };
 
 	protected Fighter(int id) {
-		super(id, HEALTH, SIZE, TURN_SPEED, ACCELERATION);
+		super(id, ShipType.FIGHTER, HEALTH, SIZE, TURN_SPEED, ACCELERATION);
 	}
 
 	@Override
