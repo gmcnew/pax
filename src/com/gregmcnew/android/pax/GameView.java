@@ -1,5 +1,10 @@
 package com.gregmcnew.android.pax;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.gregmcnew.android.pax.Ship.ShipType;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +18,20 @@ public class GameView extends View {
 	public GameView(Context context, Game game) {
 		super(context);
 		mGame = game;
+		
+		mPlayerShipBitmaps = new HashMap<Player, Map<ShipType, Bitmap>>();
+		
+		// Load all bitmaps
+		for (Player player : game.mPlayers) {
+			HashMap<ShipType, Bitmap> playerBitmaps = new HashMap<ShipType, Bitmap>();
+			
+			playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1));
+			playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1));
+			playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1));
+			playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1));
+			
+			mPlayerShipBitmaps.put(player, playerBitmaps);
+		}
 	}
 
 	@Override
@@ -48,19 +67,10 @@ public class GameView extends View {
 			for (Ship ship : player.mShips) {
 				
 				Bitmap bitmap = null;
-				switch (ship.type) {
-					case FIGHTER: 
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1);
-						break;
-					case BOMBER: 
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1);
-						break;
-					case FRIGATE: 
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1);
-						break;
-					case FACTORY: 
-						bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1);
-						break;
+				
+				Map<ShipType, Bitmap> shipBitmaps = mPlayerShipBitmaps.get(player);
+				if (shipBitmaps != null) {
+					bitmap = shipBitmaps.get(ship.type);
 				}
 				
 				if (bitmap != null) {
@@ -82,6 +92,8 @@ public class GameView extends View {
 			i++;
 		}
 	}
+	
+	private HashMap<Player, Map<ShipType, Bitmap>> mPlayerShipBitmaps;
 	
 	private Game mGame;
 }
