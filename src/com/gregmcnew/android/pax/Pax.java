@@ -69,6 +69,8 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     	mFrames = 0;
     	
         mHandler.postDelayed(mUpdateViewTask, 0);
+        
+    	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
     }
     
     private Random mRandom;
