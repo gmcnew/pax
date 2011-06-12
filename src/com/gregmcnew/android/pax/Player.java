@@ -57,7 +57,7 @@ public class Player {
 				continue;
 			}
 			
-			if (projectile.health <= 0) {
+			if (projectile.health <= 0 || projectile.lifeMs < 0) {
 				removeProjectile(projectile);
 			}
 			else {
@@ -65,6 +65,7 @@ public class Player {
 				float ay = (float) Math.random() - 0.5f;
 				projectile.velocity.offset(ax * projectile.acceleration, ay * projectile.acceleration);
 				projectile.body.center.offset(projectile.velocity.x, projectile.velocity.y);
+				projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 			}
 		}
 	}
@@ -76,7 +77,7 @@ public class Player {
 		Projectile projectile = null;
 		switch (parent.type) {
 			case FIGHTER:
-				projectile = new Laser(projectileIDs.get(), parent);
+				projectile = new Laser(id, parent);
 				break;
 		}
 		
@@ -207,33 +208,17 @@ public class Player {
 		return id;
 	}
 	
-	/*
-	 * Returns true if the ship was removed.
-	 */
-	public boolean removeShip(Ship ship) {
+	public void removeShip(Ship ship) {
 		int id = ship.id;
-		if (id < mShips.size())
-		{
-			shipBodies.remove(id);
-			mShips.set(id, null);
-			shipIDs.recycle(id);
-			return true;
-		}
-		return false;
+		shipBodies.remove(id);
+		mShips.set(id, null);
+		shipIDs.recycle(id);
 	}
 	
-	/*
-	 * Returns true if the projectile was removed.
-	 */
-	public boolean removeProjectile(Projectile projectile) {
+	public void removeProjectile(Projectile projectile) {
 		int id = projectile.id;
-		if (id < mProjectiles.size())
-		{
-			mProjectiles.set(id, null);
-			projectileIDs.recycle(id);
-			return true;
-		}
-		return false;
+		mProjectiles.set(id, null);
+		projectileIDs.recycle(id);
 	}
 
 	public List<Ship> mShips;
