@@ -40,7 +40,7 @@ public class GameView extends View {
 					break;
 			}
 			
-			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
+			mPlayerEntityBitmaps.put(game.mPlayers.get(i), playerBitmaps);
 		}
 	}
 
@@ -72,6 +72,10 @@ public class GameView extends View {
 		}
 		int i = 0;
 		
+		Paint laserPaint = new Paint();
+		laserPaint.setARGB(255, 255, 255, 255);
+		laserPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		
 		Paint fp = new Paint(Paint.FILTER_BITMAP_FLAG);
 		for (Player player : mGame.mPlayers) {
 			for (Entity ship : player.mEntities) {
@@ -101,7 +105,12 @@ public class GameView extends View {
 					canvas.drawBitmap(bitmap, matrix, fp);
 				}
 				
-				canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
+				if (ship.isShip) { 
+					canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
+				}
+				else {
+					canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, laserPaint);
+				}
 			}
 			i++;
 		}

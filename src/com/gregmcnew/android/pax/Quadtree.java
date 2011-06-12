@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import android.graphics.RectF;
 
+// TODO: Make this an actual quadtree. =)
+
 public class Quadtree {
 	
 	public Quadtree() {
@@ -30,16 +32,20 @@ public class Quadtree {
 		return mCircs.remove(id) != null;
 	}
 	
+	public int collide(CircleF circ) {
+		return collide(circ.center.x, circ.center.y, circ.radius);
+	}
+	
 	// See if a given circle intersects with anything in the quadtree.
 	// If so, return the ID of the circle with the greatest overlap.
-	public int collide(CircleF circ) {
+	public int collide(float centerX, float centerY, float radius) {
 		float maxOverlap = 0;
 		int id = Game.NO_ENTITY;
 		
 		for (HashMap.Entry<Integer, CircleF> entry : mCircs.entrySet()) {
 		    CircleF circ2 = entry.getValue();
-		    float radiuses = circ.radius + circ2.radius;
-		    float overlap = (radiuses * radiuses) - circ.distanceToSquared(circ2);
+		    float radiuses = radius + circ2.radius;
+		    float overlap = (radiuses * radiuses) - distanceSquared(circ2.center.x, circ2.center.y, centerX, centerY);
 		    if (overlap > maxOverlap) {
 		    	maxOverlap = overlap;
 		    	id = entry.getKey();
@@ -47,6 +53,12 @@ public class Quadtree {
 		}
 		
 		return id;
+	}
+	
+	private float distanceSquared(float x1, float y1, float x2, float y2) {
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		return dx * dx + dy * dy;
 	}
 
 	private HashMap<Integer, CircleF> mCircs;

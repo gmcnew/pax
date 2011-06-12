@@ -16,4 +16,9 @@ public class Bomber extends Entity {
 	public Type[] getTargetPriorities() {
 		return TARGET_PRIORITIES;
 	}
+
+	@Override
+	public boolean canShoot() {
+		return false;
+	}
 }

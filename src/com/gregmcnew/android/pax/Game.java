@@ -1,6 +1,8 @@
 package com.gregmcnew.android.pax;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Game {
 	
@@ -15,8 +17,9 @@ public class Game {
 	
 	public void reset() {
 		mState = State.IN_PROGRESS;
+		mPlayers = new ArrayList<Player>();
 		for (int player = 0; player < NUM_PLAYERS; player++) {
-			mPlayers[player] = new Player();
+			mPlayers.add(new Player());
 		}
 	}
 	
@@ -33,12 +36,12 @@ public class Game {
 		for (Player player : mPlayers) {
 			player.produce();
 			player.build();
-			player.moveShips();
-			
-			// XXX: Occasionally remove a random entity other than the factory (which has ID 0).
-			if (Math.random() > 0.9f) {
-				player.removeEntity((int) (Math.random() * player.mEntities.size()) + 1);
-			}
+			player.updateEntities();
+		}
+		
+		// Let projectiles kill stuff.
+		for (Player player : mPlayers) {
+			player.tryToKill(mPlayers);
 		}
 		
 		// TODO: Allow ships to shoot projectiles.
@@ -86,10 +89,10 @@ public class Game {
 	
 	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
 	{
-		mPlayers[player].buildTarget = buildTarget;
+		mPlayers.get(player).buildTarget = buildTarget;
 	}
 	
-	public Player[] mPlayers = new Player[NUM_PLAYERS];
+	public List<Player> mPlayers;
 	
 	private Game.State mState;
 	private long mLastUpdate;

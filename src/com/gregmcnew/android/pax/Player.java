@@ -2,7 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class Player {
 
@@ -18,27 +17,93 @@ public class Player {
 		 production = 0.75f;
 		 production *= 30; // warp speed!
 		 mEntities = new ArrayList<Entity>();
-		 recycledIDs = new Stack<Integer>();
+		 ids = new IDPool();
 		 
-		 addEntity(new Factory(getID()));
+		 addEntity(new Factory(ids.get()));
 	}
 	
 	public void produce() {
 		money += production;
 	}
 	
-	public void moveShips() {
+	public void updateEntities() {
+		
+		List<Entity> shootQueue = new ArrayList<Entity>();
 		for (Entity entity : mEntities) {
 			if (entity == null) {
 				continue;
 			}
 			
-			float ax = (float) Math.random() - 0.5f;
-			float ay = (float) Math.random() - 0.5f;
-			entity.velocity.offset(ax * entity.acceleration, ay * entity.acceleration);
-			entity.location.offset(entity.velocity.x, entity.velocity.y);
-			shipBodies.remove(entity.id);
-			shipBodies.add(entity.id, new CircleF(entity.location, entity.radius));
+			if (entity.health <= 0) {
+				removeEntity(entity.id);
+			}
+			else {
+				float ax = (float) Math.random() - 0.5f;
+				float ay = (float) Math.random() - 0.5f;
+				entity.velocity.offset(ax * entity.acceleration, ay * entity.acceleration);
+				entity.location.offset(entity.velocity.x, entity.velocity.y);
+				if (entity.isShip) { 
+					shipBodies.remove(entity.id);
+					shipBodies.add(entity.id, new CircleF(entity.location, entity.radius));
+					
+					if (entity.canShoot()) {
+						shootQueue.add(entity);
+					}
+				}
+			}
+		}
+		
+		for (Entity entity : shootQueue) {
+			addProjectile(entity);
+		}
+	}
+	
+	public void addProjectile(Entity parent) {
+		Entity projectile = null;
+		switch (parent.type) {
+			case FIGHTER:
+				projectile = new Laser(ids.get(), parent);
+		}
+		
+		if (projectile != null) {
+			addEntity(projectile);
+		}
+	}
+	
+	public void tryToKill(List<Player> allPlayers) {
+		for (Player player : allPlayers) {
+
+			// We're in the list, but we shouldn't try to kill ourselves.
+			if (player == this) {
+				continue;
+			}
+			
+			Player otherPlayer = player;
+			
+			for (Entity entity : mEntities) {
+				if (entity != null && !entity.isShip) {
+				
+					Entity projectile = entity;
+					
+					int id = otherPlayer.shipBodies.collide(projectile.location.x, projectile.location.y, projectile.radius);
+					if (id != Game.NO_ENTITY) {
+						Entity target = otherPlayer.mEntities.get(id);
+						
+						target.health -= projectile.health;
+						
+						// Kill the projectile.
+						removeEntity(projectile.id);
+						
+						if (target.health <= 0) {
+							// Go ahead and remove the target from shipBodies
+							// so it doesn't block other projectiles.
+							// Its ID won't be recycled until later, when
+							// Player.updateEntities() is called.
+							otherPlayer.shipBodies.remove(id);
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -58,13 +123,13 @@ public class Player {
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
 			case FIGHTER:
-				addEntity(new Fighter(getID()));
+				addEntity(new Fighter(ids.get()));
 				break;
 			case BOMBER:
-				addEntity(new Bomber(getID()));
+				addEntity(new Bomber(ids.get()));
 				break;
 			case FRIGATE:
-				addEntity(new Frigate(getID()));
+				addEntity(new Frigate(ids.get()));
 				break;
 			case UPGRADE:
 				production += 0.25f;
@@ -74,8 +139,6 @@ public class Player {
 	
 	private int addEntity(Entity entity) {
 		
-		// Fix the ship's location. TODO: Use the factory's location.
-		entity.location.set((float) Math.random() * 320, (float) Math.random() * 480);
 		if (entity.id < mEntities.size()) {
 			mEntities.set(entity.id, entity);
 		}
@@ -84,6 +147,9 @@ public class Player {
 		}
 		
 		if (entity.isShip) {
+			// Fix the ship's location. TODO: Use the factory's location.
+			entity.location.set((float) Math.random() * 320, (float) Math.random() * 480);
+			
 			shipBodies.add(entity.id, new CircleF(entity.location, entity.radius));
 		}
 		
@@ -91,33 +157,21 @@ public class Player {
 	}
 	
 	/*
-	 * Returns true if the ship was removed.
+	 * Returns true if the entity was removed.
 	 */
 	public boolean removeEntity(int id) {
 		if (id < mEntities.size())
 		{
 			shipBodies.remove(id);
 			mEntities.set(id, null);
-			recycledIDs.add(id);
+			ids.recycle(id);
 			return true;
 		}
 		return false;
 	}
-	
-	private int getID() {
-		int id;
-		if (!recycledIDs.isEmpty()) {
-			id = recycledIDs.pop();
-		}
-		else {
-			id = nextID++;
-		}
-		return id;
-	}
 
 	public List<Entity> mEntities;
-	private Stack<Integer> recycledIDs;
-	private int nextID = 0;
+	private IDPool ids;
 	
 	public float money;
 	public float production;

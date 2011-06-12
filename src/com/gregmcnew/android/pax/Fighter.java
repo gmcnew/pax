@@ -16,4 +16,9 @@ public class Fighter extends Entity {
 	public Type[] getTargetPriorities() {
 		return TARGET_PRIORITIES;
 	}
+
+	@Override
+	public boolean canShoot() {
+		return Math.random() > 0.99f;
+	}
 }
