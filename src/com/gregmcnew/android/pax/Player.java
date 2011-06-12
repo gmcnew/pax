@@ -200,7 +200,7 @@ public class Player {
 			}
 			mShips.set(id, ship);
 			
-			// Fix the ship's location. TODO: Use the factory's location.
+			// Fix the ship's location.
 			if (id != 0){
 				Ship factory = mShips.get(0);
 				float spawnX, spawnY;
@@ -211,6 +211,9 @@ public class Player {
 			}
 			else{
 				float factoryX = 0, factoryY = 0;
+				
+				//TODO: Find out how to get the center of the screen correctly.
+				
 		    	Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 				PointF screenSize = new PointF(display.getWidth(), display.getWidth());
 				float orbitRadius = screenSize.x*2/3; // The radius that the factory will orbit the center at.
@@ -236,7 +239,12 @@ public class Player {
 			case FIGHTER:
 				projectile = new Laser(projectileIDs.get(), parent);
 				break;
-			// TODO: Add bombs for bombers and missiles for frigates.
+			case BOMBER:
+				projectile = new Bomb(projectileIDs.get(), parent);
+				break;
+			case FRIGATE:
+				projectile = new Missile(projectileIDs.get(), parent);
+				break;
 		}
 		
 		if (projectile != null) {
