@@ -42,9 +42,9 @@ public class Player {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;
 				ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
-				ship.location.offset(ship.velocity.x, ship.velocity.y);
 				shipBodies.remove(ship.id);
-				shipBodies.add(ship.id, new CircleF(ship.location, ship.radius));
+				ship.body.center.offset(ship.velocity.x, ship.velocity.y);
+				shipBodies.add(ship.id, ship.body);
 				
 				if (ship.canShoot()) {
 					addProjectile(ship);
@@ -64,7 +64,7 @@ public class Player {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;
 				projectile.velocity.offset(ax * projectile.acceleration, ay * projectile.acceleration);
-				projectile.location.offset(projectile.velocity.x, projectile.velocity.y);
+				projectile.body.center.offset(projectile.velocity.x, projectile.velocity.y);
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class Player {
 			for (Projectile projectile : mProjectiles) {
 				if (projectile != null) {
 					
-					int id = otherPlayer.shipBodies.collide(projectile.location.x, projectile.location.y, projectile.radius);
+					int id = otherPlayer.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
 					if (id != Game.NO_ENTITY) {
 						Ship target = otherPlayer.mShips.get(id);
 						
@@ -199,9 +199,9 @@ public class Player {
 			}
 			
 			// Fix the ship's location. TODO: Use the factory's location.
-			ship.location.set((float) Math.random() * 320, (float) Math.random() * 480);
+			ship.body.center.set((float) Math.random() * 320, (float) Math.random() * 480);
 			
-			shipBodies.add(ship.id, new CircleF(ship.location, ship.radius));
+			shipBodies.add(ship.id, ship.body);
 		}
 		
 		return id;

@@ -9,6 +9,6 @@ public class CircleF {
 		radius = Radius;
 	}
 	
-	public final PointF center;
-	public final float radius;
+	public PointF center;
+	public float radius;
 }

@@ -11,10 +11,9 @@ public abstract class Entity {
 	public final float acceleration;
 	
 	public int health;
-	public float heading;
 	
-	public PointF location;
-	//public PointF targetLocation;
+	public CircleF body;
+	public float heading;
 	public PointF velocity;
 	
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
@@ -22,15 +21,15 @@ public abstract class Entity {
 	protected Entity(int Id, Type Type, int Health, float Diameter, float TurnSpeed, float Acceleration) {
 		id = Id;
 		type = Type;
+		radius = Diameter / 2;
 		diameter = Diameter;
-		radius = diameter / 2;
 		turnSpeed = TurnSpeed;
 		acceleration = Acceleration;
 		
 		health = Health;
-		heading = (float) Math.random() * 360;
 		
-		location = new PointF();
+		body = new CircleF(new PointF(), radius);
+		heading = (float) Math.random() * 360;
 		velocity = new PointF();
 	}
 }

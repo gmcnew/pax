@@ -10,7 +10,7 @@ public class Laser extends Projectile {
 
 	protected Laser(int id, Ship parent) {
 		super(id, Type.LASER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION);
-		location.set(parent.location);
+		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		velocity.offset(1, 1);
 		heading = parent.heading;

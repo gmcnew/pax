@@ -99,20 +99,20 @@ public class GameView extends View {
 					float scaleY = ship.diameter / bitmap.getHeight();
 					float scale = Math.max(scaleX, scaleY);
 					matrix.postScale(scale, scale);
-					matrix.postTranslate(ship.location.x - (scale / scaleX) * ship.radius, ship.location.y - (scale / scaleY) * ship.radius);
-					matrix.postRotate(ship.heading, ship.location.x, ship.location.y);
+					matrix.postTranslate(ship.body.center.x - (scale / scaleX) * ship.radius, ship.body.center.y - (scale / scaleY) * ship.radius);
+					matrix.postRotate(ship.heading, ship.body.center.x, ship.body.center.y);
 					
 					canvas.drawBitmap(bitmap, matrix, fp);
 				}
 				
-				canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
+				canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, paints[i % paints.length]);
 			}
 			for (Projectile projectile : player.mProjectiles) {
 				if (projectile == null) {
 					continue;
 				}
 				
-				canvas.drawCircle(projectile.location.x, projectile.location.y, projectile.radius, laserPaint);
+				canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, laserPaint);
 			}
 			
 			i++;
