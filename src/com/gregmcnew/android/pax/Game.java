@@ -34,6 +34,11 @@ public class Game {
 			player.produce();
 			player.build();
 			player.moveShips();
+			
+			// XXX: Occasionally remove a random ship other than the factory (which has ID 0).
+			if (Math.random() > 0.9f) {
+				player.removeShip((int) (Math.random() * player.mShips.size()) + 1);
+			}
 		}
 		
 		// TODO: Allow ships to shoot projectiles.
