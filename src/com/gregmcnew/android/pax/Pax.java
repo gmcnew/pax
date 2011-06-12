@@ -30,6 +30,19 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         if (SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 32 * 1024 * 1024);
         }
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	if (BENCHMARK) {
+    		try {
+				Thread.sleep(3000, 0);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
         
         mGame = new Game();
         
@@ -52,24 +65,9 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 		mRandom.setSeed(0);
 		
 		mLastState = Game.State.IN_PROGRESS;
-        
-    	Log.i("Petri:onCreate", "finished creating game");
     	
     	mFrames = 0;
-    	//mNextTeamIndex = Blob.FIRST_TEAM_INDEX;
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-    	if (BENCHMARK) {
-    		try {
-				Thread.sleep(3000, 0);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
+    	
         mHandler.postDelayed(mUpdateViewTask, 0);
     }
     
