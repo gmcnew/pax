@@ -64,9 +64,9 @@ public class Player {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;
 				ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
-				shipBodies.remove(ship.id);
+				
 				ship.body.center.offset(ship.velocity.x, ship.velocity.y);
-				shipBodies.add(ship.id, ship.body);
+				shipBodies.update(ship.id);
 				
 				if (ship.canShoot()) {
 					addProjectile(ship);
@@ -79,7 +79,7 @@ public class Player {
 				continue;
 			}
 			
-			if (projectile.health <= 0 || projectile.lifeMs < 0) {
+			if (projectile.health <= 0 || projectile.lifeMs <= 0) {
 				removeProjectile(projectile);
 			}
 			else {
@@ -92,49 +92,20 @@ public class Player {
 		}
 	}
 	
-	private int addProjectile(Ship parent) {
-		
-		int id = projectileIDs.get();
-		
-		Projectile projectile = null;
-		switch (parent.type) {
-			case FIGHTER:
-				projectile = new Laser(id, parent);
-				break;
-		}
-		
-		if (projectile == null) {
-			projectileIDs.recycle(id);
-			id = Game.NO_ENTITY;
-		}
-		else {
-			if (id < mProjectiles.size()) {
-				mProjectiles.set(id, projectile);
-			}
-			else {
-				mProjectiles.add(projectile);
-			}
-		}
-		
-		return id;
-	}
-	
 	public void tryToKill(List<Player> allPlayers) {
-		for (Player player : allPlayers) {
+		for (Player victim : allPlayers) {
 
 			// We're in the list, but we shouldn't try to kill ourselves.
-			if (player == this) {
+			if (victim == this) {
 				continue;
 			}
-			
-			Player otherPlayer = player;
 			
 			for (Projectile projectile : mProjectiles) {
 				if (projectile != null) {
 					
-					int id = otherPlayer.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
+					int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
 					if (id != Game.NO_ENTITY) {
-						Ship target = otherPlayer.mShips.get(id);
+						Ship target = victim.mShips.get(id);
 						
 						int damage = projectile.health;
 						
@@ -151,7 +122,7 @@ public class Player {
 							// so it doesn't block other projectiles.
 							// Its ID won't be recycled until later, when
 							// Player.updateEntities() is called.
-							otherPlayer.shipBodies.remove(id);
+							victim.shipBodies.remove(id);
 						}
 					}
 				}
@@ -191,35 +162,32 @@ public class Player {
 	
 	private int addShip(Ship.Type type) {
 		
-		int id = shipIDs.get();
+		int id = Game.NO_ENTITY;
 			
 		Ship ship = null;
 		switch (type) {
 			case FIGHTER:
-				ship = new Fighter(id);
+				ship = new Fighter(shipIDs.get());
 				break;
 			case BOMBER:
-				ship = new Bomber(id);
+				ship = new Bomber(shipIDs.get());
 				break;
 			case FRIGATE:
-				ship = new Frigate(id);
+				ship = new Frigate(shipIDs.get());
 				break;
 			case FACTORY:
-				ship = new Factory(id);
+				ship = new Factory(shipIDs.get());
 				break;
 		}
 		
-		if (ship == null) {
-			shipIDs.recycle(id);
-			id = Game.NO_ENTITY;
-		}
-		else {
-			if (id < mShips.size()) {
-				mShips.set(id, ship);
+		if (ship != null) {
+			id = ship.id;
+			
+			// The ships array will need to grow if this isn't a recycled ID.
+			if (id == mShips.size()) {
+				mShips.add(null);
 			}
-			else {
-				mShips.add(ship);
-			}
+			mShips.set(id, ship);
 			
 			// Fix the ship's location. TODO: Use the factory's location.
 			ship.body.center.set((float) Math.random() * 320, (float) Math.random() * 480);
@@ -230,14 +198,39 @@ public class Player {
 		return id;
 	}
 	
-	public void removeShip(Ship ship) {
+	private int addProjectile(Ship parent) {
+		
+		int id = Game.NO_ENTITY;
+		
+		Projectile projectile = null;
+		switch (parent.type) {
+			case FIGHTER:
+				projectile = new Laser(projectileIDs.get(), parent);
+				break;
+			// TODO: Add bombs for bombers and missiles for frigates.
+		}
+		
+		if (projectile != null) {
+			id = projectile.id;
+			
+			// The projectiles array will need to grow if this isn't a recycled ID.
+			if (id == mProjectiles.size()) {
+				mProjectiles.add(null);
+			}
+			mProjectiles.set(id, projectile);
+		}
+		
+		return id;
+	}
+	
+	private void removeShip(Ship ship) {
 		int id = ship.id;
 		shipBodies.remove(id);
 		mShips.set(id, null);
 		shipIDs.recycle(id);
 	}
 	
-	public void removeProjectile(Projectile projectile) {
+	private void removeProjectile(Projectile projectile) {
 		int id = projectile.id;
 		mProjectiles.set(id, null);
 		projectileIDs.recycle(id);
