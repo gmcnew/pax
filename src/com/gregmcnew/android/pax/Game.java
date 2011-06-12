@@ -13,7 +13,7 @@ public class Game {
 	{
 		mPlayers = new ArrayList<Player>();
 		for (int player = 0; player < NUM_PLAYERS; player++) {
-			mPlayers.add(new Player());
+			mPlayers.add(new Player(player, NUM_PLAYERS));
 		}
 		reset();
 	}

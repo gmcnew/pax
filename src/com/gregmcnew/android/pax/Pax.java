@@ -43,6 +43,8 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 				e.printStackTrace();
 			}
     	}
+    	
+    	thisContext = this;
         
         mGame = new Game();
         
@@ -222,4 +224,5 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     private GameView mView;
     private Handler mHandler;
     private Game.State mLastState;
+    public static Pax thisContext;
 }

@@ -3,6 +3,13 @@ package com.gregmcnew.android.pax;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.graphics.PointF;
+import android.view.Display;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Toast;
+
 public class Player {
 
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE };
@@ -10,7 +17,7 @@ public class Player {
 	
 	// Public methods
 	
-	public Player() {
+	public Player(int playerNumber, int players) {
 		 buildTarget = BuildTarget.NONE;
 		 shipBodies = new Quadtree();
 		 money = 0;
@@ -20,6 +27,8 @@ public class Player {
 		 mProjectiles = new ArrayList<Projectile>();
 		 shipIDs = new IDPool();
 		 projectileIDs = new IDPool();
+		 playerNo = playerNumber;
+		 totalPlayers = players;
 		 reset();
 	}
 	
@@ -64,8 +73,8 @@ public class Player {
 			else {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;
-				float dv_x = ax * ship.acceleration;
-				float dv_y = ay * ship.acceleration;
+				float dv_x = ax * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dv_y = ay * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
 				ship.velocity.offset(dv_x, dv_y);
 				if (ship.getSpeed() > ship.maxSpeed) {
 					ship.fullSpeedAhead();
@@ -90,8 +99,8 @@ public class Player {
 			else {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;				
-				float dv_x = ax * projectile.acceleration;
-				float dv_y = ay * projectile.acceleration;
+				float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
 				projectile.velocity.offset(dv_x, dv_y);
 				if (projectile.getSpeed() > projectile.maxSpeed) {
 					projectile.fullSpeedAhead();
@@ -192,8 +201,26 @@ public class Player {
 			mShips.set(id, ship);
 			
 			// Fix the ship's location. TODO: Use the factory's location.
-			ship.body.center.set((float) Math.random() * 320, (float) Math.random() * 480);
-			
+			if (id != 0){
+				Ship factory = mShips.get(0);
+				float spawnX, spawnY;
+				spawnX = factory.body.center.x + (float) (60 * Math.cos(factory.heading));
+				spawnY = factory.body.center.y + (float) (60 * Math.sin(factory.heading));
+				ship.body.center.set(spawnX, spawnY);
+				ship.heading = factory.heading;
+			}
+			else{
+				float factoryX = 0, factoryY = 0;
+		    	Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+				PointF screenSize = new PointF(display.getWidth(), display.getWidth());
+				float orbitRadius = screenSize.x*2/3; // The radius that the factory will orbit the center at.
+				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
+				float theta = spacing*(float)(-.5 + playerNo);// The angle in radians at which this particular factory will be spawned.
+				factoryX = screenSize.x/2 + (float) (orbitRadius * Math.cos(theta));
+				factoryY = screenSize.y/2 + (float) (orbitRadius * Math.sin(theta));
+				ship.body.center.set(factoryX, factoryY);
+				ship.heading = theta - (float) Math.PI/2;
+			}
 			shipBodies.add(ship.id, ship.body);
 		}
 		
@@ -247,4 +274,6 @@ public class Player {
 	public float production;
 	public Quadtree shipBodies;
 	public BuildTarget buildTarget;
+	public int playerNo;
+	public int totalPlayers;
 }
