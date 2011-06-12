@@ -1,19 +1,19 @@
 package com.gregmcnew.android.pax;
 
-public class Bomber extends Ship {
+public class Bomber extends Entity {
 	
 	public static int HEALTH = 250;
 	public static float DIAMETER = 18;
 	public static float TURN_SPEED = 0.03f;
 	public static float ACCELERATION = 0.05f;
-	public static ShipType[] TARGET_PRIORITIES = { ShipType.FRIGATE, ShipType.FACTORY, ShipType.BOMBER, ShipType.FIGHTER };
+	public static Type[] TARGET_PRIORITIES = { Type.FRIGATE, Type.FACTORY, Type.BOMBER, Type.FIGHTER };
 
 	protected Bomber(int id) {
-		super(id, ShipType.BOMBER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION);
+		super(id, Type.BOMBER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION);
 	}
 
 	@Override
-	public ShipType[] getTargetPriorities() {
+	public Type[] getTargetPriorities() {
 		return TARGET_PRIORITIES;
 	}
 }

@@ -35,9 +35,9 @@ public class Game {
 			player.build();
 			player.moveShips();
 			
-			// XXX: Occasionally remove a random ship other than the factory (which has ID 0).
+			// XXX: Occasionally remove a random entity other than the factory (which has ID 0).
 			if (Math.random() > 0.9f) {
-				player.removeShip((int) (Math.random() * player.mShips.size()) + 1);
+				player.removeEntity((int) (Math.random() * player.mEntities.size()) + 1);
 			}
 		}
 		

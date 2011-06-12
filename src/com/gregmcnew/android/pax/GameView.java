@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.gregmcnew.android.pax.Ship.ShipType;
+import com.gregmcnew.android.pax.Entity.Type;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,28 +19,28 @@ public class GameView extends View {
 		super(context);
 		mGame = game;
 		
-		mPlayerShipBitmaps = new HashMap<Player, Map<ShipType, Bitmap>>();
+		mPlayerEntityBitmaps = new HashMap<Player, Map<Type, Bitmap>>();
 		
 		// Load all bitmaps
 		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-			HashMap<ShipType, Bitmap> playerBitmaps = new HashMap<ShipType, Bitmap>();
+			HashMap<Type, Bitmap> playerBitmaps = new HashMap<Type, Bitmap>();
 			
 			switch (i) {
 				case 0:
-					playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1));
-					playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1));
-					playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1));
-					playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1));
+					playerBitmaps.put(Type.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1));
+					playerBitmaps.put(Type.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1));
+					playerBitmaps.put(Type.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1));
+					playerBitmaps.put(Type.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1));
 					break;
 				case 1:
-					playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p2));
-					playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p2));
-					playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p2));
-					playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p2));
+					playerBitmaps.put(Type.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p2));
+					playerBitmaps.put(Type.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p2));
+					playerBitmaps.put(Type.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p2));
+					playerBitmaps.put(Type.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p2));
 					break;
 			}
 			
-			mPlayerShipBitmaps.put(game.mPlayers[i], playerBitmaps);
+			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class GameView extends View {
 		
 		Paint fp = new Paint(Paint.FILTER_BITMAP_FLAG);
 		for (Player player : mGame.mPlayers) {
-			for (Ship ship : player.mShips) {
+			for (Entity ship : player.mEntities) {
 				
 				if (ship == null) {
 					continue;
@@ -82,7 +82,7 @@ public class GameView extends View {
 				
 				Bitmap bitmap = null;
 				
-				Map<ShipType, Bitmap> shipBitmaps = mPlayerShipBitmaps.get(player);
+				Map<Type, Bitmap> shipBitmaps = mPlayerEntityBitmaps.get(player);
 				if (shipBitmaps != null) {
 					bitmap = shipBitmaps.get(ship.type);
 				}
@@ -107,7 +107,7 @@ public class GameView extends View {
 		}
 	}
 	
-	private HashMap<Player, Map<ShipType, Bitmap>> mPlayerShipBitmaps;
+	private HashMap<Player, Map<Type, Bitmap>> mPlayerEntityBitmaps;
 	
 	private Game mGame;
 }

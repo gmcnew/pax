@@ -13,14 +13,14 @@ public class Player {
 	
 	public Player() {
 		 buildTarget = BuildTarget.NONE;
-		 quadtree = new Quadtree();
+		 shipBodies = new Quadtree();
 		 money = 0;
 		 production = 0.75f;
 		 production *= 30; // warp speed!
-		 mShips = new ArrayList<Ship>();
+		 mEntities = new ArrayList<Entity>();
 		 recycledIDs = new Stack<Integer>();
 		 
-		 addShip(new Factory(getID()));
+		 addEntity(new Factory(getID()));
 	}
 	
 	public void produce() {
@@ -28,17 +28,17 @@ public class Player {
 	}
 	
 	public void moveShips() {
-		for (Ship ship : mShips) {
-			if (ship == null) {
+		for (Entity entity : mEntities) {
+			if (entity == null) {
 				continue;
 			}
 			
 			float ax = (float) Math.random() - 0.5f;
 			float ay = (float) Math.random() - 0.5f;
-			ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
-			ship.location.offset(ship.velocity.x, ship.velocity.y);
-			quadtree.remove(ship.id);
-			quadtree.add(ship.id, new CircleF(ship.location, ship.radius));
+			entity.velocity.offset(ax * entity.acceleration, ay * entity.acceleration);
+			entity.location.offset(entity.velocity.x, entity.velocity.y);
+			shipBodies.remove(entity.id);
+			shipBodies.add(entity.id, new CircleF(entity.location, entity.radius));
 		}
 	}
 	
@@ -58,13 +58,13 @@ public class Player {
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
 			case FIGHTER:
-				addShip(new Fighter(getID()));
+				addEntity(new Fighter(getID()));
 				break;
 			case BOMBER:
-				addShip(new Bomber(getID()));
+				addEntity(new Bomber(getID()));
 				break;
 			case FRIGATE:
-				addShip(new Frigate(getID()));
+				addEntity(new Frigate(getID()));
 				break;
 			case UPGRADE:
 				production += 0.25f;
@@ -72,29 +72,32 @@ public class Player {
 		}
 	}
 	
-	private int addShip(Ship ship) {
+	private int addEntity(Entity entity) {
 		
 		// Fix the ship's location. TODO: Use the factory's location.
-		ship.location.set((float) Math.random() * 320, (float) Math.random() * 480);
-		if (ship.id < mShips.size()) {
-			mShips.set(ship.id, ship);
+		entity.location.set((float) Math.random() * 320, (float) Math.random() * 480);
+		if (entity.id < mEntities.size()) {
+			mEntities.set(entity.id, entity);
 		}
 		else {
-			mShips.add(ship);
+			mEntities.add(entity);
 		}
-		quadtree.add(ship.id, new CircleF(ship.location, ship.radius));
 		
-		return ship.id;
+		if (entity.isShip) {
+			shipBodies.add(entity.id, new CircleF(entity.location, entity.radius));
+		}
+		
+		return entity.id;
 	}
 	
 	/*
 	 * Returns true if the ship was removed.
 	 */
-	public boolean removeShip(int id) {
-		if (id < mShips.size())
+	public boolean removeEntity(int id) {
+		if (id < mEntities.size())
 		{
-			quadtree.remove(id);
-			mShips.set(id, null);
+			shipBodies.remove(id);
+			mEntities.set(id, null);
 			recycledIDs.add(id);
 			return true;
 		}
@@ -111,14 +114,13 @@ public class Player {
 		}
 		return id;
 	}
-	
+
+	public List<Entity> mEntities;
 	private Stack<Integer> recycledIDs;
 	private int nextID = 0;
 	
-	public List<Ship> mShips;
-	
 	public float money;
 	public float production;
-	public Quadtree quadtree;
+	public Quadtree shipBodies;
 	public BuildTarget buildTarget;
 }
