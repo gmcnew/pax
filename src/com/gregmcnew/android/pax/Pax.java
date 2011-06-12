@@ -168,7 +168,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     
     public boolean onTouch(View v, MotionEvent event) {
     	if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
-    		Log.i("Petri:onTouch", String.format("event has %d pointers", event.getPointerCount()));
+    		Log.i("Pax:onTouch", String.format("event has %d pointers", event.getPointerCount()));
     		
     		if (mGame.getState() == Game.State.IN_PROGRESS) { 
 		    	for (int i = 0; i < event.getPointerCount(); i++) {
@@ -214,19 +214,6 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 		finish();
 		return true;
 	}
-	
-	/*
-	private boolean addBlob(float x, float y) {
-		Blob.Team[] teams = Blob.Team.values();
-		Blob.Team team = teams[mNextTeamIndex];
-		mNextTeamIndex++;
-		if (mNextTeamIndex > Blob.LAST_TEAM_INDEX) {
-			mNextTeamIndex = Blob.FIRST_TEAM_INDEX;
-		}
-		
-		return mDish.addBlob(team, x, y);
-	}
-	*/
 
 	// Benchmarking variables
     private int mFrames;
