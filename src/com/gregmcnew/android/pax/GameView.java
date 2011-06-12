@@ -94,7 +94,7 @@ public class GameView extends View {
 					float scale = Math.max(scaleX, scaleY);
 					matrix.postScale(scale, scale);
 					matrix.postTranslate(ship.body.center.x - (scale / scaleX) * ship.radius, ship.body.center.y - (scale / scaleY) * ship.radius);
-					matrix.postRotate(ship.heading, ship.body.center.x, ship.body.center.y);
+					matrix.postRotate((float) Math.toDegrees(ship.heading), ship.body.center.x, ship.body.center.y);
 					
 					canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
 				}

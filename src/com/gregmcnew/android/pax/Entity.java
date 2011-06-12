@@ -13,7 +13,7 @@ public abstract class Entity {
 	public int health;
 	
 	public CircleF body;
-	public float heading;
+	public float heading; // in radians
 	public PointF velocity;
 	
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
@@ -29,7 +29,7 @@ public abstract class Entity {
 		health = Health;
 		
 		body = new CircleF(new PointF(), radius);
-		heading = (float) Math.random() * 360;
+		heading = (float) (Math.random() * Math.PI * 2);
 		velocity = new PointF();
 	}
 }
