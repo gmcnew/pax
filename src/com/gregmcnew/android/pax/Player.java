@@ -20,6 +20,7 @@ public class Player {
 		 mProjectiles = new ArrayList<Projectile>();
 		 shipIDs = new IDPool();
 		 projectileIDs = new IDPool();
+		 reset();
 	}
 	
 	public void reset() {
