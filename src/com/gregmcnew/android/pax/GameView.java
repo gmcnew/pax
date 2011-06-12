@@ -42,42 +42,36 @@ public class GameView extends View {
 			
 			mPlayerEntityBitmaps.put(game.mPlayers.get(i), playerBitmaps);
 		}
+		
+
+		mBoundsPaints = new Paint[2];
+		mBoundsPaints[0] = new Paint();
+		mBoundsPaints[1] = new Paint();
+		mBoundsPaints[0].setARGB(192, 0, 64, 255);
+		mBoundsPaints[1].setARGB(192, 192, 0, 0);
+		for (Paint paint : mBoundsPaints) {
+			paint.setStyle(Paint.Style.STROKE);
+			paint.setStrokeWidth(2);
+		}
+		
+		mLaserPaint = new Paint();
+		mLaserPaint.setARGB(255, 255, 255, 255);
+		mLaserPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		
+		mBitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	}
+	
+	private Paint[] mBoundsPaints;
+	private Paint mLaserPaint;
+	private Paint mBitmapPaint;
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		// Update the game.
 		mGame.update();
 		
-		/*
-		Paint paint = new Paint();
-		paint.setStyle(Paint.Style.FILL);
-		paint.setARGB(255, 192, 0, 0);
-		Rect targetRect = new Rect(0, 0, 0, canvas.getHeight());
-		
-		int width = canvas.getWidth() / 4;
-		targetRect.left = mGame.mPlayers[0].buildTarget.ordinal() * width;
-		targetRect.right = targetRect.left + width;
-		canvas.drawRect(targetRect, paint);
-		*/
-		
-		Paint[] paints = new Paint[2];
-		paints[0] = new Paint();
-		paints[1] = new Paint();
-		paints[0].setARGB(192, 0, 64, 255);
-		paints[1].setARGB(192, 192, 0, 0);
-		for (Paint paint : paints) {
-			paint.setStyle(Paint.Style.STROKE);
-			paint.setStrokeWidth(2);
-		}
-		int i = 0;
-		
-		Paint laserPaint = new Paint();
-		laserPaint.setARGB(255, 255, 255, 255);
-		laserPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		
-		Paint fp = new Paint(Paint.FILTER_BITMAP_FLAG);
-		for (Player player : mGame.mPlayers) {
+		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+			Player player = mGame.mPlayers.get(i);
 			for (Ship ship : player.mShips) {
 				
 				if (ship == null) {
@@ -102,20 +96,18 @@ public class GameView extends View {
 					matrix.postTranslate(ship.body.center.x - (scale / scaleX) * ship.radius, ship.body.center.y - (scale / scaleY) * ship.radius);
 					matrix.postRotate(ship.heading, ship.body.center.x, ship.body.center.y);
 					
-					canvas.drawBitmap(bitmap, matrix, fp);
+					canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
 				}
 				
-				canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, paints[i % paints.length]);
+				canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, mBoundsPaints[i]);
 			}
 			for (Projectile projectile : player.mProjectiles) {
 				if (projectile == null) {
 					continue;
 				}
 				
-				canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, laserPaint);
+				canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, mLaserPaint);
 			}
-			
-			i++;
 		}
 	}
 	
