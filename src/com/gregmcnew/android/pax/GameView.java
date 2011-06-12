@@ -77,17 +77,17 @@ public class GameView extends View {
 					// Scale the image so that its smallest dimension fills the circle.
 					// (Its largest dimension may spill outside the circle.)
 					Matrix matrix = new Matrix();
-					float scaleX = ship.size / bitmap.getWidth();
-					float scaleY = ship.size / bitmap.getHeight();
+					float scaleX = ship.diameter / bitmap.getWidth();
+					float scaleY = ship.diameter / bitmap.getHeight();
 					float scale = Math.max(scaleX, scaleY);
 					matrix.postScale(scale, scale);
-					matrix.postTranslate(ship.location.x - (scale / scaleX) * (ship.size / 2), ship.location.y - (scale / scaleY) * ship.size / 2);
+					matrix.postTranslate(ship.location.x - (scale / scaleX) * ship.radius, ship.location.y - (scale / scaleY) * ship.radius);
 					matrix.postRotate(ship.heading, ship.location.x, ship.location.y);
 					
 					canvas.drawBitmap(bitmap, matrix, fp);
 				}
 				
-				canvas.drawCircle(ship.location.x, ship.location.y, ship.size / 2, paints[i % paints.length]);
+				canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
 			}
 			i++;
 		}

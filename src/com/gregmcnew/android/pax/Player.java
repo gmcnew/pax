@@ -31,7 +31,7 @@ public class Player {
 			ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
 			ship.location.offset(ship.velocity.x, ship.velocity.y);
 			quadtree.remove(ship.id);
-			quadtree.add(ship.id, new CircleF(ship.location, ship.size));
+			quadtree.add(ship.id, new CircleF(ship.location, ship.radius));
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class Player {
 		// Fix the ship's location. TODO: Use the factory's location.
 		ship.location.set((float) Math.random() * 320, (float) Math.random() * 480);
 		mShips.add(ship);
-		quadtree.add(ship.id, new CircleF(ship.location, ship.size));
+		quadtree.add(ship.id, new CircleF(ship.location, ship.radius));
 	}
 	
 	private int getID() {

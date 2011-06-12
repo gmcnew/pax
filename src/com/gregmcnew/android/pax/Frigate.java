@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 public class Frigate extends Ship {
 	
 	public static int HEALTH = 1400;
-	public static float SIZE = 45;
+	public static float DIAMETER = 45;
 	public static float TURN_SPEED = 0.01f;
 	public static float ACCELERATION = 0.01f;
 	public static ShipType[] TARGET_PRIORITIES = { ShipType.FIGHTER, ShipType.FRIGATE, ShipType.FACTORY };
@@ -12,7 +12,7 @@ public class Frigate extends Ship {
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
 	protected Frigate(int id) {
-		super(id, ShipType.FRIGATE, HEALTH, SIZE, TURN_SPEED, ACCELERATION);
+		super(id, ShipType.FRIGATE, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION);
 	}
 
 	@Override

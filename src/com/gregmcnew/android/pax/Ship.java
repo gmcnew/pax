@@ -5,7 +5,8 @@ import android.graphics.PointF;
 public abstract class Ship {
 	public final int id;
 	public final ShipType type;
-	public final float size;
+	public final float radius;
+	public final float diameter;
 	public final float turnSpeed;
 	public final float acceleration;
 	
@@ -18,10 +19,11 @@ public abstract class Ship {
 	
 	public static enum ShipType { FIGHTER, BOMBER, FRIGATE, FACTORY };
 	
-	protected Ship(int Id, ShipType Type, int Health, float Size, float TurnSpeed, float Acceleration) {
+	protected Ship(int Id, ShipType Type, int Health, float Diameter, float TurnSpeed, float Acceleration) {
 		id = Id;
 		type = Type;
-		size = Size;
+		diameter = Diameter;
+		radius = diameter / 2;
 		turnSpeed = TurnSpeed;
 		acceleration = Acceleration;
 		
