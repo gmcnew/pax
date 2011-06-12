@@ -67,7 +67,9 @@ public class Player {
 				float dv_x = ax * ship.acceleration;
 				float dv_y = ay * ship.acceleration;
 				ship.velocity.offset(dv_x, dv_y);
-				
+				if (ship.getSpeed() > ship.maxSpeed) {
+					ship.fullSpeedAhead();
+				}
 				ship.body.center.offset(ship.velocity.x, ship.velocity.y);
 				shipBodies.update(ship.id);
 				
@@ -87,8 +89,13 @@ public class Player {
 			}
 			else {
 				float ax = (float) Math.random() - 0.5f;
-				float ay = (float) Math.random() - 0.5f;
-				projectile.velocity.offset(ax * projectile.acceleration, ay * projectile.acceleration);
+				float ay = (float) Math.random() - 0.5f;				
+				float dv_x = ax * projectile.acceleration;
+				float dv_y = ay * projectile.acceleration;
+				projectile.velocity.offset(dv_x, dv_y);
+				if (projectile.getSpeed() > projectile.maxSpeed) {
+					projectile.fullSpeedAhead();
+				}
 				projectile.body.center.offset(projectile.velocity.x, projectile.velocity.y);
 				projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 			}
