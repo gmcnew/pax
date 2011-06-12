@@ -2,8 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.util.Random;
 
-import com.gregmcnew.android.pax.Game.BuildTarget;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Debug;
@@ -162,14 +160,14 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 		    	//float y = event.getY(i);
 		    	
 		    	// Ignore the "NONE" build target.
-		    	int numBuildTargets = BuildTarget.values().length - 1;
+		    	int numBuildTargets = Player.BuildTarget.values().length - 1;
 		    	
 		    	// TODO: Allow landscape mode to work reasonably.
 		    	int selection = (int) (x * numBuildTargets / mView.getWidth());
 		    	
-		    	BuildTarget buildTarget = BuildTarget.NONE;
+		    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
 		    	if (selection < numBuildTargets) {
-		    		buildTarget = BuildTarget.values()[selection];
+		    		buildTarget = Player.BuildTarget.values()[selection];
 		    	}
 		    	mGame.setBuildTarget(0, buildTarget);
 		    	

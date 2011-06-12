@@ -3,15 +3,15 @@ package com.gregmcnew.android.pax;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gregmcnew.android.pax.Game.BuildTarget;
-
 public class Player {
-	
+
+	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE };
+	public static int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 	
 	// Public methods
 	
 	public Player() {
-		 buildTarget = Game.BuildTarget.NONE;
+		 buildTarget = BuildTarget.NONE;
 		 quadtree = new Quadtree();
 		 money = 0;
 		 production = 0.75f;
@@ -37,7 +37,7 @@ public class Player {
 	
 	public void build() {
 		if (buildTarget != BuildTarget.NONE) {
-			int cost = Game.UnitCosts[buildTarget.ordinal()]; 
+			int cost = BuildCosts[buildTarget.ordinal()]; 
 			if (money >= cost) {
 				build(buildTarget);
 				money -= cost;
@@ -85,5 +85,5 @@ public class Player {
 	public float money;
 	public float production;
 	public Quadtree quadtree;
-	public Game.BuildTarget buildTarget;
+	public BuildTarget buildTarget;
 }
