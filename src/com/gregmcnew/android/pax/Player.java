@@ -69,7 +69,7 @@ public class Player {
 		}
 	}
 	
-	private int addProjectile(Entity parent) {
+	private int addProjectile(Ship parent) {
 		
 		int id = projectileIDs.get();
 		
@@ -85,8 +85,6 @@ public class Player {
 			id = Game.NO_ENTITY;
 		}
 		else {
-			assert(!projectile.isShip);
-			
 			if (id < mProjectiles.size()) {
 				mProjectiles.set(id, projectile);
 			}
@@ -115,7 +113,12 @@ public class Player {
 					if (id != Game.NO_ENTITY) {
 						Ship target = otherPlayer.mShips.get(id);
 						
-						target.health -= projectile.health;
+						int damage = projectile.health;
+						
+						// XXX: Make projectiles superpowered!
+						damage *= 100;
+						
+						target.health -= damage;
 						
 						// Kill the projectile.
 						removeProjectile(projectile);
@@ -188,8 +191,6 @@ public class Player {
 			id = Game.NO_ENTITY;
 		}
 		else {
-			assert(ship.isShip);
-			
 			if (id < mShips.size()) {
 				mShips.set(id, ship);
 			}
@@ -210,7 +211,6 @@ public class Player {
 	 * Returns true if the ship was removed.
 	 */
 	public boolean removeShip(Ship ship) {
-		assert(ship.isShip);
 		int id = ship.id;
 		if (id < mShips.size())
 		{
@@ -226,7 +226,6 @@ public class Player {
 	 * Returns true if the projectile was removed.
 	 */
 	public boolean removeProjectile(Entity projectile) {
-		assert(!projectile.isShip);
 		int id = projectile.id;
 		if (id < mProjectiles.size())
 		{

@@ -9,7 +9,6 @@ public abstract class Entity {
 	public final float diameter;
 	public final float turnSpeed;
 	public final float acceleration;
-	public final boolean isShip;
 	
 	public int health;
 	public float heading;
@@ -27,8 +26,6 @@ public abstract class Entity {
 		radius = diameter / 2;
 		turnSpeed = TurnSpeed;
 		acceleration = Acceleration;
-		
-		isShip = (Entity.Type.FIGHTER.ordinal() <= type.ordinal() && type.ordinal() <= Entity.Type.FACTORY.ordinal());
 		
 		health = Health;
 		heading = (float) Math.random() * 360;
