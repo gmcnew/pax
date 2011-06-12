@@ -1,6 +1,6 @@
 package com.gregmcnew.android.pax;
 
-public class Factory extends Entity {
+public class Factory extends Ship {
 	
 	public static int HEALTH = 20000;
 	public static float DIAMETER = 135;

@@ -1,6 +1,6 @@
 package com.gregmcnew.android.pax;
 
-public class Fighter extends Entity {
+public class Fighter extends Ship {
 	
 	public static int HEALTH = 40;
 	public static float DIAMETER = 7.5f;

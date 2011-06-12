@@ -36,8 +36,4 @@ public abstract class Entity {
 		location = new PointF();
 		velocity = new PointF();
 	}
-	
-	public abstract boolean canShoot();
-	
-	public abstract Type[] getTargetPriorities();
 }

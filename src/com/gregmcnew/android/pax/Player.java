@@ -16,7 +16,7 @@ public class Player {
 		 money = 0;
 		 production = 0.75f;
 		 production *= 30; // warp speed!
-		 mShips = new ArrayList<Entity>();
+		 mShips = new ArrayList<Ship>();
 		 mProjectiles = new ArrayList<Entity>();
 		 shipIDs = new IDPool();
 		 projectileIDs = new IDPool();
@@ -30,7 +30,7 @@ public class Player {
 	
 	public void updateEntities() {
 		
-		for (Entity ship : mShips) {
+		for (Ship ship : mShips) {
 			if (ship == null) {
 				continue;
 			}
@@ -113,7 +113,7 @@ public class Player {
 					
 					int id = otherPlayer.shipBodies.collide(projectile.location.x, projectile.location.y, projectile.radius);
 					if (id != Game.NO_ENTITY) {
-						Entity target = otherPlayer.mShips.get(id);
+						Ship target = otherPlayer.mShips.get(id);
 						
 						target.health -= projectile.health;
 						
@@ -167,7 +167,7 @@ public class Player {
 		
 		int id = shipIDs.get();
 			
-		Entity ship = null;
+		Ship ship = null;
 		switch (type) {
 			case FIGHTER:
 				ship = new Fighter(id);
@@ -209,7 +209,7 @@ public class Player {
 	/*
 	 * Returns true if the ship was removed.
 	 */
-	public boolean removeShip(Entity ship) {
+	public boolean removeShip(Ship ship) {
 		assert(ship.isShip);
 		int id = ship.id;
 		if (id < mShips.size())
@@ -237,7 +237,7 @@ public class Player {
 		return false;
 	}
 
-	public List<Entity> mShips;
+	public List<Ship> mShips;
 	public List<Entity> mProjectiles;
 	private IDPool shipIDs;
 	private IDPool projectileIDs;

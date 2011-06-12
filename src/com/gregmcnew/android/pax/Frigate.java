@@ -1,6 +1,6 @@
 package com.gregmcnew.android.pax;
 
-public class Frigate extends Entity {
+public class Frigate extends Ship {
 	
 	public static int HEALTH = 1400;
 	public static float DIAMETER = 45;
