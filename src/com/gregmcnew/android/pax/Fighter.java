@@ -6,10 +6,11 @@ public class Fighter extends Ship {
 	public static float DIAMETER = 7.5f;
 	public static float TURN_SPEED = 0.025f;
 	public static float ACCELERATION = 0.1f;
+	public static float MAXVELOCITY = 1.5f;
 	public static Type[] TARGET_PRIORITIES = { Type.BOMBER, Type.FIGHTER, Type.FRIGATE, Type.FACTORY };
 
 	protected Fighter(int id) {
-		super(id, Type.FIGHTER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION);
+		super(id, Type.FIGHTER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXVELOCITY);
 	}
 
 	@Override

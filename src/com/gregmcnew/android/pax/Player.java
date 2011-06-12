@@ -23,6 +23,7 @@ public class Player {
 		 reset();
 	}
 	
+	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
 		for (Ship ship : mShips) {
 			if (ship != null) {
@@ -63,7 +64,9 @@ public class Player {
 			else {
 				float ax = (float) Math.random() - 0.5f;
 				float ay = (float) Math.random() - 0.5f;
-				ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
+				float dv_x = ax * ship.acceleration;
+				float dv_y = ay * ship.acceleration;
+				ship.velocity.offset(dv_x, dv_y);
 				
 				ship.body.center.offset(ship.velocity.x, ship.velocity.y);
 				shipBodies.update(ship.id);
