@@ -22,15 +22,25 @@ public class GameView extends View {
 		mPlayerShipBitmaps = new HashMap<Player, Map<ShipType, Bitmap>>();
 		
 		// Load all bitmaps
-		for (Player player : game.mPlayers) {
+		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 			HashMap<ShipType, Bitmap> playerBitmaps = new HashMap<ShipType, Bitmap>();
 			
-			playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1));
-			playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1));
-			playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1));
-			playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1));
+			switch (i) {
+				case 0:
+					playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p1));
+					playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p1));
+					playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p1));
+					playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p1));
+					break;
+				case 1:
+					playerBitmaps.put(ShipType.FIGHTER, BitmapFactory.decodeResource(getResources(), R.drawable.fighter_p2));
+					playerBitmaps.put(ShipType.BOMBER, BitmapFactory.decodeResource(getResources(), R.drawable.bomber_p2));
+					playerBitmaps.put(ShipType.FRIGATE, BitmapFactory.decodeResource(getResources(), R.drawable.frigate_p2));
+					playerBitmaps.put(ShipType.FACTORY, BitmapFactory.decodeResource(getResources(), R.drawable.factory_p2));
+					break;
+			}
 			
-			mPlayerShipBitmaps.put(player, playerBitmaps);
+			mPlayerShipBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
 	}
 
