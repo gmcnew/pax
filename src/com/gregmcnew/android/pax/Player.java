@@ -20,8 +20,22 @@ public class Player {
 		 mProjectiles = new ArrayList<Projectile>();
 		 shipIDs = new IDPool();
 		 projectileIDs = new IDPool();
-		 
-		 addShip(Ship.Type.FACTORY);
+	}
+	
+	public void reset() {
+		for (Ship ship : mShips) {
+			if (ship != null) {
+				removeShip(ship);
+			}
+		}
+		
+		for (Projectile projectile : mProjectiles) {
+			if (projectile != null) {
+				removeProjectile(projectile);
+			}
+		}
+		
+		addShip(Ship.Type.FACTORY);
 	}
 	
 	public void produce() {

@@ -1,7 +1,6 @@
 package com.gregmcnew.android.pax;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Game {
@@ -12,15 +11,18 @@ public class Game {
 	
 	public Game()
 	{
-		reset();
-	}
-	
-	public void reset() {
-		mState = State.IN_PROGRESS;
 		mPlayers = new ArrayList<Player>();
 		for (int player = 0; player < NUM_PLAYERS; player++) {
 			mPlayers.add(new Player());
 		}
+		reset();
+	}
+	
+	public void reset() {
+		for (Player player : mPlayers) {
+			player.reset();
+		}
+		mState = State.IN_PROGRESS;
 	}
 	
 	public Game.State getState() {
@@ -44,47 +46,20 @@ public class Game {
 			player.tryToKill(mPlayers);
 		}
 		
-		// TODO: Allow ships to shoot projectiles.
+		Ship blueFactory = mPlayers.get(0).mShips.get(0);
+		Ship redFactory = mPlayers.get(1).mShips.get(0);
+		boolean blueIsAlive = (blueFactory != null && blueFactory.type == Entity.Type.FACTORY);
+		boolean redIsAlive = (redFactory != null && redFactory.type == Entity.Type.FACTORY);
 		
-		// TODO: Allow ships and projectiles to move.
-		
-		// Figure out how much time has passed, since that affects
-		// blob growth.
-		long dt;
-		if (Pax.SELF_BENCHMARK || Pax.BENCHMARK) {
-			dt = Pax.UPDATE_INTERVAL_MS;
+		if (!blueIsAlive && !redIsAlive) {
+			mState = State.TIE;
 		}
-		else {
-			long now = new Date().getTime();
-			dt = now - mLastUpdate;
-			mLastUpdate = now;
+		else if (!blueIsAlive) {
+			mState = State.RED_WINS;
 		}
-		/*
-		// Grow.
-		for (Blob blob : mBlobs) {
-			blob.updateSize(dt);
-			blob.getBoundingPolygon().reset();
+		else if (!redIsAlive) {
+			mState = State.BLUE_WINS;
 		}
-		
-		// Collide.
-		for (Blob i : mBlobs) {
-			for (Blob j : mBlobs) {
-				if (i != j) {
-					i.collide(j);
-				}
-			}
-		}
-		
-		// Remove dead blobs.
-		List<Blob> deadBlobs = new ArrayList<Blob>();
-		for (Blob blob : mBlobs) {
-			blob.checkVitalSigns();
-			if (blob.isDead()) {
-				deadBlobs.add(blob);
-			}
-		}
-		mBlobs.removeAll(deadBlobs);
-		*/
 	}
 	
 	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
@@ -95,6 +70,5 @@ public class Game {
 	public List<Player> mPlayers;
 	
 	private Game.State mState;
-	private long mLastUpdate;
 
 }

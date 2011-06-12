@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnTouchListener;
@@ -146,8 +147,22 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 		if (mLastState == Game.State.IN_PROGRESS) {
     		if (state != mLastState) {
     			mLastState = state;
-    			Toast.makeText(this, "The game is over!", Toast.LENGTH_LONG).show();
-    			finish();
+    			String resultString = null;
+    			switch (state) {
+    				case TIE:
+    					resultString = "Tie game!";
+    					break;
+    				case RED_WINS:
+    					resultString = "Red wins!";
+    					break;
+    				case BLUE_WINS:
+    					resultString = "Blue wins!";
+    					break;
+    				default:
+    					resultString = "The game is over!";
+    			}
+    			Toast.makeText(this, resultString, Toast.LENGTH_LONG).show();
+    			//finish();
     		}
 		}
     }
@@ -155,29 +170,36 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     public boolean onTouch(View v, MotionEvent event) {
     	if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
     		Log.i("Petri:onTouch", String.format("event has %d pointers", event.getPointerCount()));
-	    	for (int i = 0; i < event.getPointerCount(); i++) {
-		    	float x = event.getX(i);
-		    	//float y = event.getY(i);
-		    	
-		    	// Ignore the "NONE" build target.
-		    	int numBuildTargets = Player.BuildTarget.values().length - 1;
-		    	
-		    	// TODO: Allow landscape mode to work reasonably.
-		    	int selection = (int) (x * numBuildTargets / mView.getWidth());
-		    	
-		    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
-		    	if (selection < numBuildTargets) {
-		    		buildTarget = Player.BuildTarget.values()[selection];
+    		
+    		if (mGame.getState() == Game.State.IN_PROGRESS) { 
+		    	for (int i = 0; i < event.getPointerCount(); i++) {
+			    	float x = event.getX(i);
+			    	//float y = event.getY(i);
+			    	
+			    	// Ignore the "NONE" build target.
+			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
+			    	
+			    	// TODO: Allow landscape mode to work reasonably.
+			    	int selection = (int) (x * numBuildTargets / mView.getWidth());
+			    	
+			    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
+			    	if (selection < numBuildTargets) {
+			    		buildTarget = Player.BuildTarget.values()[selection];
+			    	}
+			    	mGame.setBuildTarget(0, buildTarget);
+			    	
+			    	/*
+			    	if (addBlob(x, y)) {
+			    		mView.addGlow(x, y);
+			    		mView.invalidate();
+			    	}
+			    	*/
 		    	}
-		    	mGame.setBuildTarget(0, buildTarget);
-		    	
-		    	/*
-		    	if (addBlob(x, y)) {
-		    		mView.addGlow(x, y);
-		    		mView.invalidate();
-		    	}
-		    	*/
-	    	}
+    		}
+    		else {
+				mLastState = Game.State.IN_PROGRESS;
+				mGame.reset();
+    		}
     	}
     	
     	// We consumed the event.
