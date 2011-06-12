@@ -78,7 +78,7 @@ public class GameView extends View {
 		
 		Paint fp = new Paint(Paint.FILTER_BITMAP_FLAG);
 		for (Player player : mGame.mPlayers) {
-			for (Entity ship : player.mEntities) {
+			for (Entity ship : player.mShips) {
 				
 				if (ship == null) {
 					continue;
@@ -105,13 +105,16 @@ public class GameView extends View {
 					canvas.drawBitmap(bitmap, matrix, fp);
 				}
 				
-				if (ship.isShip) { 
-					canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
-				}
-				else {
-					canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, laserPaint);
-				}
+				canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
 			}
+			for (Entity projectile : player.mProjectiles) {
+				if (projectile == null) {
+					continue;
+				}
+				
+				canvas.drawCircle(projectile.location.x, projectile.location.y, projectile.radius, laserPaint);
+			}
+			
 			i++;
 		}
 	}
