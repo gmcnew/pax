@@ -92,38 +92,30 @@ public class Player {
 		}
 	}
 	
-	public void tryToKill(List<Player> allPlayers) {
-		for (Player victim : allPlayers) {
-
-			// We're in the list, but we shouldn't try to kill ourselves.
-			if (victim == this) {
-				continue;
-			}
-			
-			for (Projectile projectile : mProjectiles) {
-				if (projectile != null) {
+	public void attack(Player victim) {
+		for (Projectile projectile : mProjectiles) {
+			if (projectile != null) {
+				
+				int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
+				if (id != Game.NO_ENTITY) {
+					Ship target = victim.mShips.get(id);
 					
-					int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
-					if (id != Game.NO_ENTITY) {
-						Ship target = victim.mShips.get(id);
-						
-						int damage = projectile.health;
-						
-						// XXX: Make projectiles superpowered!
-						damage *= 100;
-						
-						target.health -= damage;
-						
-						// Kill the projectile.
-						removeProjectile(projectile);
-						
-						if (target.health <= 0) {
-							// Go ahead and remove the target from shipBodies
-							// so it doesn't block other projectiles.
-							// Its ID won't be recycled until later, when
-							// Player.updateEntities() is called.
-							victim.shipBodies.remove(id);
-						}
+					int damage = projectile.health;
+					
+					// XXX: Make projectiles superpowered!
+					damage *= 100;
+					
+					target.health -= damage;
+					
+					// Kill the projectile.
+					removeProjectile(projectile);
+					
+					if (target.health <= 0) {
+						// Go ahead and remove the target from shipBodies
+						// so it doesn't block other projectiles.
+						// Its ID won't be recycled until later, when
+						// Player.updateEntities() is called.
+						victim.shipBodies.remove(id);
 					}
 				}
 			}

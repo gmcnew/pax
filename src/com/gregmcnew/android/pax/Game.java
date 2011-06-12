@@ -43,7 +43,11 @@ public class Game {
 		
 		// Let projectiles kill stuff.
 		for (Player player : mPlayers) {
-			player.tryToKill(mPlayers);
+			for (Player victim : mPlayers) {
+				if (player != victim) {
+					player.attack(victim);
+				}
+			}
 		}
 		
 		// See if the game is over.
