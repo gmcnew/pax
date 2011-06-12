@@ -46,18 +46,17 @@ public class Game {
 			player.tryToKill(mPlayers);
 		}
 		
-		Ship blueFactory = mPlayers.get(0).mShips.get(0);
-		Ship redFactory = mPlayers.get(1).mShips.get(0);
-		boolean blueIsAlive = (blueFactory != null && blueFactory.type == Entity.Type.FACTORY);
-		boolean redIsAlive = (redFactory != null && redFactory.type == Entity.Type.FACTORY);
+		// See if the game is over.
+		boolean blueHasLost = mPlayers.get(0).hasLost();
+		boolean redHasLost = mPlayers.get(1).hasLost();
 		
-		if (!blueIsAlive && !redIsAlive) {
+		if (blueHasLost && redHasLost) {
 			mState = State.TIE;
 		}
-		else if (!blueIsAlive) {
+		else if (blueHasLost) {
 			mState = State.RED_WINS;
 		}
-		else if (!redIsAlive) {
+		else if (redHasLost) {
 			mState = State.BLUE_WINS;
 		}
 	}

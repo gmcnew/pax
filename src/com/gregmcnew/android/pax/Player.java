@@ -38,6 +38,13 @@ public class Player {
 		addShip(Ship.Type.FACTORY);
 	}
 	
+	public boolean hasLost() {
+		// The factory will always have ID 0, since it's the first ship to be
+		// created.
+		Ship shipZero = mShips.get(0);
+		return (shipZero == null || shipZero.type != Entity.Type.FACTORY);
+	}
+	
 	public void produce() {
 		money += production;
 	}
