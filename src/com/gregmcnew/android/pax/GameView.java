@@ -76,6 +76,10 @@ public class GameView extends View {
 		for (Player player : mGame.mPlayers) {
 			for (Ship ship : player.mShips) {
 				
+				if (ship == null) {
+					continue;
+				}
+				
 				Bitmap bitmap = null;
 				
 				Map<ShipType, Bitmap> shipBitmaps = mPlayerShipBitmaps.get(player);

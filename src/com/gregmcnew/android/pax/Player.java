@@ -2,6 +2,7 @@ package com.gregmcnew.android.pax;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Player {
 
@@ -17,6 +18,8 @@ public class Player {
 		 production = 0.75f;
 		 production *= 30; // warp speed!
 		 mShips = new ArrayList<Ship>();
+		 recycledIDs = new Stack<Integer>();
+		 
 		 addShip(new Factory(getID()));
 	}
 	
@@ -26,6 +29,10 @@ public class Player {
 	
 	public void moveShips() {
 		for (Ship ship : mShips) {
+			if (ship == null) {
+				continue;
+			}
+			
 			float ax = (float) Math.random() - 0.5f;
 			float ay = (float) Math.random() - 0.5f;
 			ship.velocity.offset(ax * ship.acceleration, ay * ship.acceleration);
@@ -65,19 +72,47 @@ public class Player {
 		}
 	}
 	
-	private void addShip(Ship ship) {
+	private int addShip(Ship ship) {
 		
 		// Fix the ship's location. TODO: Use the factory's location.
 		ship.location.set((float) Math.random() * 320, (float) Math.random() * 480);
-		mShips.add(ship);
+		if (ship.id < mShips.size()) {
+			mShips.set(ship.id, ship);
+		}
+		else {
+			mShips.add(ship);
+		}
 		quadtree.add(ship.id, new CircleF(ship.location, ship.radius));
+		
+		return ship.id;
+	}
+	
+	/*
+	 * Returns true if the ship was removed.
+	 */
+	public boolean removeShip(int id) {
+		if (id < mShips.size())
+		{
+			quadtree.remove(id);
+			mShips.set(id, null);
+			recycledIDs.add(id);
+			return true;
+		}
+		return false;
 	}
 	
 	private int getID() {
-		return nextID++;
+		int id;
+		if (!recycledIDs.isEmpty()) {
+			id = recycledIDs.pop();
+		}
+		else {
+			id = nextID++;
+		}
+		return id;
 	}
 	
-	
+	private Stack<Integer> recycledIDs;
 	private int nextID = 0;
 	
 	public List<Ship> mShips;
