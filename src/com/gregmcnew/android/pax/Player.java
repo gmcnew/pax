@@ -17,11 +17,11 @@ public class Player {
 		 production = 0.75f;
 		 production *= 30; // warp speed!
 		 mShips = new ArrayList<Ship>();
-		 mProjectiles = new ArrayList<Entity>();
+		 mProjectiles = new ArrayList<Projectile>();
 		 shipIDs = new IDPool();
 		 projectileIDs = new IDPool();
 		 
-		 addShip(Entity.Type.FACTORY);
+		 addShip(Ship.Type.FACTORY);
 	}
 	
 	public void produce() {
@@ -52,7 +52,7 @@ public class Player {
 			}
 		}
 		
-		for (Entity projectile : mProjectiles) {
+		for (Projectile projectile : mProjectiles) {
 			if (projectile == null) {
 				continue;
 			}
@@ -73,7 +73,7 @@ public class Player {
 		
 		int id = projectileIDs.get();
 		
-		Entity projectile = null;
+		Projectile projectile = null;
 		switch (parent.type) {
 			case FIGHTER:
 				projectile = new Laser(projectileIDs.get(), parent);
@@ -106,7 +106,7 @@ public class Player {
 			
 			Player otherPlayer = player;
 			
-			for (Entity projectile : mProjectiles) {
+			for (Projectile projectile : mProjectiles) {
 				if (projectile != null) {
 					
 					int id = otherPlayer.shipBodies.collide(projectile.location.x, projectile.location.y, projectile.radius);
@@ -152,13 +152,13 @@ public class Player {
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
 			case FIGHTER:
-				addShip(Entity.Type.FIGHTER);
+				addShip(Ship.Type.FIGHTER);
 				break;
 			case BOMBER:
-				addShip(Entity.Type.BOMBER);
+				addShip(Ship.Type.BOMBER);
 				break;
 			case FRIGATE:
-				addShip(Entity.Type.FRIGATE);
+				addShip(Ship.Type.FRIGATE);
 				break;
 			case UPGRADE:
 				production += 0.25f;
@@ -166,7 +166,7 @@ public class Player {
 		}
 	}
 	
-	private int addShip(Entity.Type type) {
+	private int addShip(Ship.Type type) {
 		
 		int id = shipIDs.get();
 			
@@ -225,7 +225,7 @@ public class Player {
 	/*
 	 * Returns true if the projectile was removed.
 	 */
-	public boolean removeProjectile(Entity projectile) {
+	public boolean removeProjectile(Projectile projectile) {
 		int id = projectile.id;
 		if (id < mProjectiles.size())
 		{
@@ -237,7 +237,7 @@ public class Player {
 	}
 
 	public List<Ship> mShips;
-	public List<Entity> mProjectiles;
+	public List<Projectile> mProjectiles;
 	private IDPool shipIDs;
 	private IDPool projectileIDs;
 	

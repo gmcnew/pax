@@ -78,7 +78,7 @@ public class GameView extends View {
 		
 		Paint fp = new Paint(Paint.FILTER_BITMAP_FLAG);
 		for (Player player : mGame.mPlayers) {
-			for (Entity ship : player.mShips) {
+			for (Ship ship : player.mShips) {
 				
 				if (ship == null) {
 					continue;
@@ -107,7 +107,7 @@ public class GameView extends View {
 				
 				canvas.drawCircle(ship.location.x, ship.location.y, ship.radius, paints[i % paints.length]);
 			}
-			for (Entity projectile : player.mProjectiles) {
+			for (Projectile projectile : player.mProjectiles) {
 				if (projectile == null) {
 					continue;
 				}
