@@ -6,11 +6,11 @@ public class Factory extends Ship {
 	public static float DIAMETER = 135;
 	public static float TURN_SPEED = 0.0023f;
 	public static float ACCELERATION = 3f;
-	public static float MAXVELOCITY = 6f;
+	public static float MAXSPEED = 6f;
 	public static Type[] TARGET_PRIORITIES = { };
 
 	protected Factory(int id) {
-		super(id, Type.FACTORY, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXVELOCITY);
+		super(id, Type.FACTORY, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class Factory extends Ship {
 	}
 	
 	@Override
-	public void updateCourse(){
+	public void updateHeading(){
 		heading -= TURN_SPEED;
 	}
 }

@@ -10,13 +10,13 @@ public abstract class Entity {
 	public final float diameter;
 	public final float turnSpeed;
 	public final float acceleration;
+	public final float maxSpeed;
 	
 	public int health;
 	
 	public CircleF body;
 	public float heading; // in radians
 	public PointF velocity;
-	public float maxSpeed;
 	
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
