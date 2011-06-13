@@ -42,7 +42,7 @@ public class GameView extends View {
 					break;
 			}
 			
-			mPlayerEntityBitmaps.put(game.mPlayers.get(i), playerBitmaps);
+			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
 		
 
@@ -66,40 +66,49 @@ public class GameView extends View {
 	private Paint[] mBoundsPaints;
 	private Paint mLaserPaint;
 	private Paint mBitmapPaint;
+	
+	// Draw factories at the bottom, with frigates above them, bombers above
+	// frigates, and fighters above everything.
+	private int SHIP_LAYERS[] = { Ship.FACTORY, Ship.FRIGATE, Ship.BOMBER, Ship.FIGHTER };
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		// Update the game.
 		mGame.update();
-		
-		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-			Player player = mGame.mPlayers.get(i);
+
+		for (int shipType : SHIP_LAYERS) {
+			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+				Player player = mGame.mPlayers[i];
+				Map<Type, Bitmap> entityBitmaps = mPlayerEntityBitmaps.get(player);
 			
-			Map<Type, Bitmap> entityBitmaps = mPlayerEntityBitmaps.get(player);
-			
-			for (Ship ship : player.mShips) {
-				
-				Bitmap bitmap = entityBitmaps.get(ship.type);
-				
-				if (bitmap != null) {
-					// Scale the image so that its smallest dimension fills the circle.
-					// (Its largest dimension may spill outside the circle.)
-					Matrix matrix = new Matrix();
-					float scaleX = ship.diameter / bitmap.getWidth();
-					float scaleY = ship.diameter / bitmap.getHeight();
-					float scale = Math.max(scaleX, scaleY);
-					matrix.postScale(scale, scale);
-					matrix.postTranslate(ship.body.center.x - (scale / scaleX) * ship.radius, ship.body.center.y - (scale / scaleY) * ship.radius);
-					matrix.postRotate((float) Math.toDegrees(ship.heading), ship.body.center.x, ship.body.center.y);
+				for (Ship ship : player.mShipLists.get(shipType)) {
 					
-					canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+					Bitmap bitmap = entityBitmaps.get(ship.type);
+					
+					if (bitmap != null) {
+						// Scale the image so that its smallest dimension fills the circle.
+						// (Its largest dimension may spill outside the circle.)
+						Matrix matrix = new Matrix();
+						float scaleX = ship.diameter / bitmap.getWidth();
+						float scaleY = ship.diameter / bitmap.getHeight();
+						float scale = Math.max(scaleX, scaleY);
+						matrix.postScale(scale, scale);
+						matrix.postTranslate(ship.body.center.x - (scale / scaleX) * ship.radius, ship.body.center.y - (scale / scaleY) * ship.radius);
+						matrix.postRotate((float) Math.toDegrees(ship.heading), ship.body.center.x, ship.body.center.y);
+						
+						canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+					}
+					
+					canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, mBoundsPaints[i]);
 				}
-				
-				canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, mBoundsPaints[i]);
 			}
-			
-			for (Projectile projectile : player.mProjectiles) {
-				canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, mLaserPaint);
+		}
+
+		for (Player player : mGame.mPlayers) {
+			for (int projectileType : Projectile.TYPES) {
+				for (Projectile projectile : player.mProjectileLists.get(projectileType)) {
+					canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, mLaserPaint);
+				}
 			}
 		}
 	}

@@ -39,6 +39,10 @@ public class HolyArrayList<E> implements Iterable<E> {
 		return mList.size() - mRecycledIDs.size();
 	}
 	
+	public boolean isEmpty() {
+		return size() <= 0;
+	}
+	
 	public void clear() {
 		mList.clear();
 	}

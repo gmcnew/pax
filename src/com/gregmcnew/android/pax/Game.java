@@ -1,8 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE };
@@ -11,9 +8,9 @@ public class Game {
 	
 	public Game()
 	{
-		mPlayers = new ArrayList<Player>();
-		for (int player = 0; player < NUM_PLAYERS; player++) {
-			mPlayers.add(new Player(player, NUM_PLAYERS));
+		mPlayers = new Player[NUM_PLAYERS];
+		for (int i = 0; i < NUM_PLAYERS; i++) {
+			mPlayers[i] = new Player(i, NUM_PLAYERS);
 		}
 		reset();
 	}
@@ -51,8 +48,8 @@ public class Game {
 		}
 		
 		// See if the game is over.
-		boolean blueHasLost = mPlayers.get(0).hasLost();
-		boolean redHasLost = mPlayers.get(1).hasLost();
+		boolean blueHasLost = mPlayers[0].hasLost();
+		boolean redHasLost = mPlayers[1].hasLost();
 		
 		if (blueHasLost && redHasLost) {
 			mState = State.TIE;
@@ -67,10 +64,10 @@ public class Game {
 	
 	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
 	{
-		mPlayers.get(player).buildTarget = buildTarget;
+		mPlayers[player].buildTarget = buildTarget;
 	}
 	
-	public List<Player> mPlayers;
+	public Player[] mPlayers;
 	
 	private Game.State mState;
 

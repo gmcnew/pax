@@ -1,5 +1,8 @@
 package com.gregmcnew.android.pax;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.PointF;
 import android.view.Display;
@@ -10,16 +13,28 @@ public class Player {
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE };
 	public static int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 	
+	
 	// Public methods
 	
 	public Player(int playerNumber, int players) {
 		 buildTarget = BuildTarget.NONE;
-		 shipBodies = new Quadtree();
 		 money = 0;
 		 production = 0.75f;
 		 production *= 5; // warp speed!
-		 mShips = new HolyArrayList<Ship>();
-		 mProjectiles = new HolyArrayList<Projectile>();
+		 mShipLists = new ArrayList<HolyArrayList<Ship>>();
+		 mProjectileLists = new ArrayList<HolyArrayList<Projectile>>();
+			
+		 mShipLayers = new ArrayList<Quadtree>();
+		
+		 for (@SuppressWarnings("unused") int shipType : Ship.TYPES) {
+			 mShipLists.add(new HolyArrayList<Ship>());
+			 mShipLayers.add(new Quadtree());
+		 }
+		 
+		 for (@SuppressWarnings("unused") int projectileType : Projectile.TYPES) {
+			 mProjectileLists.add(new HolyArrayList<Projectile>());
+		 }
+		 
 		 playerNo = playerNumber;
 		 totalPlayers = players;
 		 reset();
@@ -27,16 +42,18 @@ public class Player {
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
-		mShips.clear();
-		mProjectiles.clear();
+		for (HolyArrayList<Ship> list : mShipLists) {
+			list.clear();
+		}
+		for (HolyArrayList<Projectile> list : mProjectileLists) {
+			list.clear();
+		}
 		
 		addShip(Ship.Type.FACTORY);
 	}
 	
 	public boolean hasLost() {
-		// The factory will always have ID 0, since it's the first ship to be created.
-		Ship shipZero = mShips.get(0);
-		return (shipZero == null || shipZero.type != Entity.Type.FACTORY);
+		return mShipLists.get(Ship.FACTORY).isEmpty();
 	}
 	
 	public void produce() {
@@ -45,82 +62,71 @@ public class Player {
 	
 	public void updateEntities() {
 		
-		for (Ship ship : mShips) {
+		for (int shipType : Ship.TYPES) {
+			for (Ship ship : mShipLists.get(shipType)) {
 			
-			if (ship.health <= 0) {
-				removeShip(ship);
-			}
-			else {
-				float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-				float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-				
-				ship.velocity.offset(dv_x, dv_y);
-				if (ship.getSpeed() > ship.maxSpeed) {
-					ship.fullSpeedAhead();
+				if (ship.health <= 0) {
+					removeShip(ship);
 				}
-				
-				float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-				float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-				
-				ship.body.center.offset(dx_t, dy_t);
-				
-				shipBodies.update(ship.id);
-				ship.updateHeading();
-				
-				if (ship.canShoot()) {
-					addProjectile(ship);
+				else {
+					float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+					float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+					
+					ship.velocity.offset(dv_x, dv_y);
+					if (ship.getSpeed() > ship.maxSpeed) {
+						ship.fullSpeedAhead();
+					}
+					
+					float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+					float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+					
+					ship.body.center.offset(dx_t, dy_t);
+					
+					mShipLayers.get(shipType).update(ship.id);
+					ship.updateHeading();
+					
+					if (ship.canShoot()) {
+						addProjectile(ship);
+					}
 				}
 			}
 		}
-		
-		for (Projectile projectile : mProjectiles) {
-			
-			if (projectile.health <= 0 || projectile.lifeMs <= 0) {
-				removeProjectile(projectile);
-			}
-			else {
-				float ax = (float) Math.random() - 0.5f;
-				float ay = (float) Math.random() - 0.5f;	
+
+		for (int projectileType : Projectile.TYPES) {
+			for (Projectile projectile : mProjectileLists.get(projectileType)) {
 				
-				float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-				float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-				
-				projectile.velocity.offset(dv_x, dv_y);
-				if (projectile.getSpeed() > projectile.maxSpeed) {
-					projectile.fullSpeedAhead();
+				if (projectile.health <= 0 || projectile.lifeMs <= 0) {
+					removeProjectile(projectile);
 				}
-				
-				float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-				float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-				
-				projectile.body.center.offset(dx_t, dy_t);
-				projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
+				else {
+					float ax = (float) Math.random() - 0.5f;
+					float ay = (float) Math.random() - 0.5f;	
+					
+					float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+					float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+					
+					projectile.velocity.offset(dv_x, dv_y);
+					if (projectile.getSpeed() > projectile.maxSpeed) {
+						projectile.fullSpeedAhead();
+					}
+					
+					float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+					float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+					
+					projectile.body.center.offset(dx_t, dy_t);
+					projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
+				}
 			}
 		}
 	}
 	
 	public void attack(Player victim) {
-		for (Projectile projectile : mProjectiles) {
-			int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
-			if (id != Game.NO_ENTITY) {
-				Ship target = victim.mShips.get(id);
+		for (int projectileType : Projectile.TYPES) {
+			for (Projectile projectile : mProjectileLists.get(projectileType)) {
+				projectile.attack(victim);
 				
-				int damage = projectile.health;
-				
-				// XXX: Make projectiles superpowered!
-				damage *= 100;
-				
-				target.health -= damage;
-				
-				// Kill the projectile.
-				removeProjectile(projectile);
-				
-				if (target.health <= 0) {
-					// Go ahead and remove the target from shipBodies
-					// so it doesn't block other projectiles.
-					// Its ID won't be recycled until later, when
-					// Player.updateEntities() is called.
-					victim.shipBodies.remove(id);
+				if (projectile.health <= 0) {
+					removeProjectile(projectile);
 				}
 			}
 		}
@@ -177,12 +183,13 @@ public class Player {
 		}
 		
 		if (ship != null) {
-			id = mShips.add(ship);
+			int shipType = type.ordinal() - Entity.MIN_SHIP_TYPE;
+			id = mShipLists.get(shipType).add(ship);
 			ship.id = id;
 			
 			// Fix the ship's location.
 			if (type != Ship.Type.FACTORY){ // If the ship being spawned ISN'T a factory...
-				Ship factory = mShips.get(0);
+				Ship factory = mShipLists.get(Ship.FACTORY).get(0);
 				float spawnX, spawnY;
 				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
 				spawnY = factory.body.center.y + (float) (55 * Math.sin(factory.heading));
@@ -206,7 +213,7 @@ public class Player {
 				ship.body.center.set(factoryX, factoryY);
 				ship.heading = theta - (float) Math.PI/2 - offset;
 			}
-			shipBodies.add(ship.id, ship.body);
+			mShipLayers.get(shipType).add(ship.id, ship.body);
 		}
 		
 		return id;
@@ -230,7 +237,7 @@ public class Player {
 		}
 		
 		if (projectile != null) {
-			id = mProjectiles.add(projectile);
+			id = mProjectileLists.get(projectile.type.ordinal() - Entity.MIN_PROJECTILE_TYPE).add(projectile);
 			projectile.id = id;
 		}
 		
@@ -239,21 +246,24 @@ public class Player {
 	
 	private void removeShip(Ship ship) {
 		int id = ship.id;
-		shipBodies.remove(id);
-		mShips.remove(id);
+		int shipType = ship.type.ordinal() - Entity.MIN_SHIP_TYPE;
+		mShipLayers.get(shipType).remove(id);
+		mShipLists.get(shipType).remove(id);
 	}
 	
 	private void removeProjectile(Projectile projectile) {
 		int id = projectile.id;
-		mProjectiles.remove(id);
+		int projectileType = projectile.type.ordinal() - Entity.MIN_PROJECTILE_TYPE;
+		mProjectileLists.get(projectileType).remove(id);
 	}
-
-	public HolyArrayList<Ship> mShips;
-	public HolyArrayList<Projectile> mProjectiles;
+	
+	public List<HolyArrayList<Ship>> mShipLists;
+	public List<HolyArrayList<Projectile>> mProjectileLists;
+	
+	public List<Quadtree> mShipLayers;
 	
 	public float money;
 	public float production;
-	public Quadtree shipBodies;
 	public BuildTarget buildTarget;
 	public int playerNo;
 	public int totalPlayers;
