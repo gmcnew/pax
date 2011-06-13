@@ -42,7 +42,7 @@ public abstract class Entity {
 		return (float) Math.sqrt(v_x*v_x + v_y*v_y);
 	}
 	
-	/**Sets the ship to max speed on its current heading**/
+	/**Sets the ship to max speed on its current heading.**/
 	public void fullSpeedAhead(){
 		velocity.x = (float) Math.cos(heading) * maxSpeed;
 		velocity.y = (float) Math.sin(heading) * maxSpeed;

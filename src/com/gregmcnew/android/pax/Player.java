@@ -20,7 +20,7 @@ public class Player {
 		 shipBodies = new Quadtree();
 		 money = 0;
 		 production = 0.75f;
-		 production *= 30; // warp speed!
+		 production *= 5; // warp speed!
 		 mShips = new ArrayList<Ship>();
 		 mProjectiles = new ArrayList<Projectile>();
 		 shipIDs = new IDPool();
@@ -48,8 +48,7 @@ public class Player {
 	}
 	
 	public boolean hasLost() {
-		// The factory will always have ID 0, since it's the first ship to be
-		// created.
+		// The factory will always have ID 0, since it's the first ship to be created.
 		Ship shipZero = mShips.get(0);
 		return (shipZero == null || shipZero.type != Entity.Type.FACTORY);
 	}
@@ -69,11 +68,8 @@ public class Player {
 				removeShip(ship);
 			}
 			else {
-				float ax = 1;//(float) Math.random() - 0.5f;
-				float ay = 1;//(float) Math.random() - 0.5f;
-				
-				float dv_x = ax * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-				float dv_y = ay * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
 				
 				ship.velocity.offset(dv_x, dv_y);
 				if (ship.getSpeed() > ship.maxSpeed) {
@@ -86,7 +82,7 @@ public class Player {
 				ship.body.center.offset(dx_t, dy_t);
 				
 				shipBodies.update(ship.id);
-				ship.updateHeading();
+				ship.updateCourse();
 				
 				if (ship.canShoot()) {
 					addProjectile(ship);
@@ -213,7 +209,7 @@ public class Player {
 			mShips.set(id, ship);
 			
 			// Fix the ship's location.
-			if (id != 0){
+			if (id != 0){ // If the ship being spawned ISN'T a factory...
 				Ship factory = mShips.get(0);
 				float spawnX, spawnY;
 				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
@@ -221,12 +217,12 @@ public class Player {
 				ship.body.center.set(spawnX, spawnY);
 				ship.heading = factory.heading;
 			}
-			else{
+			else{ // If the ship being spawned IS a factory...
 				float factoryX = 0, factoryY = 0;
 				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
 		    	
 				Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-				PointF screenSize = new PointF(display.getWidth(), display.getHeight());
+				PointF screenSize = new PointF(display.getWidth(), display.getHeight()); // Stores the screen size in a point.
 				
 				float orbitRadius = screenSize.x*1/3; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.

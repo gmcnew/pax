@@ -4,9 +4,9 @@ public class Fighter extends Ship {
 	
 	public static int HEALTH = 40;
 	public static float DIAMETER = 7.5f;
-	public static float TURN_SPEED = 0.025f;
-	public static float ACCELERATION = .5f;
-	public static float MAXVELOCITY = 1.5f;
+	public static float TURN_SPEED = 0.025f; //in radians per 40ms
+	public static float ACCELERATION = 120f;
+	public static float MAXVELOCITY = 150f;
 	public static Type[] TARGET_PRIORITIES = { Type.BOMBER, Type.FIGHTER, Type.FRIGATE, Type.FACTORY };
 
 	protected Fighter(int id) {
@@ -24,7 +24,7 @@ public class Fighter extends Ship {
 	}
 	
 	@Override
-	public void updateHeading(){
+	public void updateCourse(){
 		
 	}
 }
