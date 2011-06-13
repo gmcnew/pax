@@ -9,4 +9,6 @@ public abstract class Ship extends Entity {
 	public abstract Type[] getTargetPriorities();
 	
 	public abstract boolean canShoot();
+
+	public abstract void updateHeading();
 }

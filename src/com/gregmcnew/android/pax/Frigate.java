@@ -25,4 +25,9 @@ public class Frigate extends Ship {
 	public boolean canShoot() {
 		return false;
 	}
+	
+	@Override
+	public void updateHeading(){
+		
+	}
 }

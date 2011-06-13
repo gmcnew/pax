@@ -69,18 +69,24 @@ public class Player {
 				removeShip(ship);
 			}
 			else {
-				float ax = (float) Math.random() - 0.5f;
-				float ay = (float) Math.random() - 0.5f;
+				float ax = 1;//(float) Math.random() - 0.5f;
+				float ay = 1;//(float) Math.random() - 0.5f;
+				
 				float dv_x = ax * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
 				float dv_y = ay * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				
 				ship.velocity.offset(dv_x, dv_y);
 				if (ship.getSpeed() > ship.maxSpeed) {
 					ship.fullSpeedAhead();
 				}
+				
 				float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
 				float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+				
 				ship.body.center.offset(dx_t, dy_t);
+				
 				shipBodies.update(ship.id);
+				ship.updateHeading();
 				
 				if (ship.canShoot()) {
 					addProjectile(ship);
@@ -98,15 +104,19 @@ public class Player {
 			}
 			else {
 				float ax = (float) Math.random() - 0.5f;
-				float ay = (float) Math.random() - 0.5f;				
+				float ay = (float) Math.random() - 0.5f;	
+				
 				float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
 				float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+				
 				projectile.velocity.offset(dv_x, dv_y);
 				if (projectile.getSpeed() > projectile.maxSpeed) {
 					projectile.fullSpeedAhead();
 				}
+				
 				float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
 				float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+				
 				projectile.body.center.offset(dx_t, dy_t);
 				projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 			}
@@ -206,22 +216,27 @@ public class Player {
 			if (id != 0){
 				Ship factory = mShips.get(0);
 				float spawnX, spawnY;
-				spawnX = factory.body.center.x + (float) (60 * Math.cos(factory.heading));
-				spawnY = factory.body.center.y + (float) (60 * Math.sin(factory.heading));
+				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
+				spawnY = factory.body.center.y + (float) (55 * Math.sin(factory.heading));
 				ship.body.center.set(spawnX, spawnY);
 				ship.heading = factory.heading;
 			}
 			else{
 				float factoryX = 0, factoryY = 0;
-		    	Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
+		    	
+				Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 				PointF screenSize = new PointF(display.getWidth(), display.getHeight());
+				
 				float orbitRadius = screenSize.x*1/3; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
 				float theta = spacing*(float)(-.5 + playerNo);// The angle in radians at which this particular factory will be spawned.
+				
 				factoryX = screenSize.x/2 + (float) (orbitRadius * Math.cos(theta));
 				factoryY = screenSize.y/2 + (float) (orbitRadius * Math.sin(theta));
+				
 				ship.body.center.set(factoryX, factoryY);
-				ship.heading = theta - (float) Math.PI/2;
+				ship.heading = theta - (float) Math.PI/2 - offset;
 			}
 			shipBodies.add(ship.id, ship.body);
 		}

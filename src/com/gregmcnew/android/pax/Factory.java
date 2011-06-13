@@ -4,9 +4,9 @@ public class Factory extends Ship {
 	
 	public static int HEALTH = 20000;
 	public static float DIAMETER = 135;
-	public static float TURN_SPEED = 0.00028f;
-	public static float ACCELERATION = 0.002f;
-	public static float MAXVELOCITY = .1f;
+	public static float TURN_SPEED = 0.0042f;
+	public static float ACCELERATION = 10f;
+	public static float MAXVELOCITY = 10f;
 	public static Type[] TARGET_PRIORITIES = { };
 
 	protected Factory(int id) {
@@ -21,5 +21,10 @@ public class Factory extends Ship {
 	@Override
 	public boolean canShoot() {
 		return false;
+	}
+	
+	@Override
+	public void updateHeading(){
+		heading -= TURN_SPEED;
 	}
 }
