@@ -6,9 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.PointF;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 public class Player {
 
@@ -79,7 +77,9 @@ public class Player {
 				if (ship.getSpeed() > ship.maxSpeed) {
 					ship.fullSpeedAhead();
 				}
-				ship.body.center.offset(ship.velocity.x, ship.velocity.y);
+				float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+				ship.body.center.offset(dx_t, dy_t);
 				shipBodies.update(ship.id);
 				
 				if (ship.canShoot()) {
@@ -105,7 +105,9 @@ public class Player {
 				if (projectile.getSpeed() > projectile.maxSpeed) {
 					projectile.fullSpeedAhead();
 				}
-				projectile.body.center.offset(projectile.velocity.x, projectile.velocity.y);
+				float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+				float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+				projectile.body.center.offset(dx_t, dy_t);
 				projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 			}
 		}
@@ -211,12 +213,9 @@ public class Player {
 			}
 			else{
 				float factoryX = 0, factoryY = 0;
-				
-				//TODO: Find out how to get the center of the screen correctly.
-				
 		    	Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-				PointF screenSize = new PointF(display.getWidth(), display.getWidth());
-				float orbitRadius = screenSize.x*2/3; // The radius that the factory will orbit the center at.
+				PointF screenSize = new PointF(display.getWidth(), display.getHeight());
+				float orbitRadius = screenSize.x*1/3; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
 				float theta = spacing*(float)(-.5 + playerNo);// The angle in radians at which this particular factory will be spawned.
 				factoryX = screenSize.x/2 + (float) (orbitRadius * Math.cos(theta));
