@@ -9,8 +9,8 @@ public class Factory extends Ship {
 	public static float MAXSPEED = 6f;
 	public static Type[] TARGET_PRIORITIES = { };
 
-	protected Factory(int id) {
-		super(id, Type.FACTORY, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
+	protected Factory() {
+		super(Type.FACTORY, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
 	}
 
 	@Override

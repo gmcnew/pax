@@ -12,8 +12,8 @@ public class Frigate extends Ship {
 	// TODO: Consider adding ShipType.BOMBER as the lowest-priority target and
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
-	protected Frigate(int id) {
-		super(id, Type.FRIGATE, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, MAXACCELERATION, MAXSPEED);
+	protected Frigate() {
+		super(Type.FRIGATE, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, MAXACCELERATION, MAXSPEED);
 	}
 
 	@Override

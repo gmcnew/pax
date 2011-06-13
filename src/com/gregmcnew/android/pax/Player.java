@@ -1,8 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.PointF;
 import android.view.Display;
@@ -21,10 +18,8 @@ public class Player {
 		 money = 0;
 		 production = 0.75f;
 		 production *= 5; // warp speed!
-		 mShips = new ArrayList<Ship>();
-		 mProjectiles = new ArrayList<Projectile>();
-		 shipIDs = new IDPool();
-		 projectileIDs = new IDPool();
+		 mShips = new HolyArrayList<Ship>();
+		 mProjectiles = new HolyArrayList<Projectile>();
 		 playerNo = playerNumber;
 		 totalPlayers = players;
 		 reset();
@@ -32,17 +27,8 @@ public class Player {
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
-		for (Ship ship : mShips) {
-			if (ship != null) {
-				removeShip(ship);
-			}
-		}
-		
-		for (Projectile projectile : mProjectiles) {
-			if (projectile != null) {
-				removeProjectile(projectile);
-			}
-		}
+		mShips.clear();
+		mProjectiles.clear();
 		
 		addShip(Ship.Type.FACTORY);
 	}
@@ -60,9 +46,6 @@ public class Player {
 	public void updateEntities() {
 		
 		for (Ship ship : mShips) {
-			if (ship == null) {
-				continue;
-			}
 			
 			if (ship.health <= 0) {
 				removeShip(ship);
@@ -91,9 +74,6 @@ public class Player {
 		}
 		
 		for (Projectile projectile : mProjectiles) {
-			if (projectile == null) {
-				continue;
-			}
 			
 			if (projectile.health <= 0 || projectile.lifeMs <= 0) {
 				removeProjectile(projectile);
@@ -121,29 +101,26 @@ public class Player {
 	
 	public void attack(Player victim) {
 		for (Projectile projectile : mProjectiles) {
-			if (projectile != null) {
+			int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
+			if (id != Game.NO_ENTITY) {
+				Ship target = victim.mShips.get(id);
 				
-				int id = victim.shipBodies.collide(projectile.body.center.x, projectile.body.center.y, projectile.body.radius);
-				if (id != Game.NO_ENTITY) {
-					Ship target = victim.mShips.get(id);
-					
-					int damage = projectile.health;
-					
-					// XXX: Make projectiles superpowered!
-					damage *= 100;
-					
-					target.health -= damage;
-					
-					// Kill the projectile.
-					removeProjectile(projectile);
-					
-					if (target.health <= 0) {
-						// Go ahead and remove the target from shipBodies
-						// so it doesn't block other projectiles.
-						// Its ID won't be recycled until later, when
-						// Player.updateEntities() is called.
-						victim.shipBodies.remove(id);
-					}
+				int damage = projectile.health;
+				
+				// XXX: Make projectiles superpowered!
+				damage *= 100;
+				
+				target.health -= damage;
+				
+				// Kill the projectile.
+				removeProjectile(projectile);
+				
+				if (target.health <= 0) {
+					// Go ahead and remove the target from shipBodies
+					// so it doesn't block other projectiles.
+					// Its ID won't be recycled until later, when
+					// Player.updateEntities() is called.
+					victim.shipBodies.remove(id);
 				}
 			}
 		}
@@ -186,30 +163,25 @@ public class Player {
 		Ship ship = null;
 		switch (type) {
 			case FIGHTER:
-				ship = new Fighter(shipIDs.get());
+				ship = new Fighter();
 				break;
 			case BOMBER:
-				ship = new Bomber(shipIDs.get());
+				ship = new Bomber();
 				break;
 			case FRIGATE:
-				ship = new Frigate(shipIDs.get());
+				ship = new Frigate();
 				break;
 			case FACTORY:
-				ship = new Factory(shipIDs.get());
+				ship = new Factory();
 				break;
 		}
 		
 		if (ship != null) {
-			id = ship.id;
-			
-			// The ships array will need to grow if this isn't a recycled ID.
-			if (id == mShips.size()) {
-				mShips.add(null);
-			}
-			mShips.set(id, ship);
+			id = mShips.add(ship);
+			ship.id = id;
 			
 			// Fix the ship's location.
-			if (id != 0){ // If the ship being spawned ISN'T a factory...
+			if (type != Ship.Type.FACTORY){ // If the ship being spawned ISN'T a factory...
 				Ship factory = mShips.get(0);
 				float spawnX, spawnY;
 				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
@@ -247,24 +219,19 @@ public class Player {
 		Projectile projectile = null;
 		switch (parent.type) {
 			case FIGHTER:
-				projectile = new Laser(projectileIDs.get(), parent);
+				projectile = new Laser(parent);
 				break;
 			case BOMBER:
-				projectile = new Bomb(projectileIDs.get(), parent);
+				projectile = new Bomb(parent);
 				break;
 			case FRIGATE:
-				projectile = new Missile(projectileIDs.get(), parent);
+				projectile = new Missile(parent);
 				break;
 		}
 		
 		if (projectile != null) {
-			id = projectile.id;
-			
-			// The projectiles array will need to grow if this isn't a recycled ID.
-			if (id == mProjectiles.size()) {
-				mProjectiles.add(null);
-			}
-			mProjectiles.set(id, projectile);
+			id = mProjectiles.add(projectile);
+			projectile.id = id;
 		}
 		
 		return id;
@@ -273,20 +240,16 @@ public class Player {
 	private void removeShip(Ship ship) {
 		int id = ship.id;
 		shipBodies.remove(id);
-		mShips.set(id, null);
-		shipIDs.recycle(id);
+		mShips.remove(id);
 	}
 	
 	private void removeProjectile(Projectile projectile) {
 		int id = projectile.id;
-		mProjectiles.set(id, null);
-		projectileIDs.recycle(id);
+		mProjectiles.remove(id);
 	}
 
-	public List<Ship> mShips;
-	public List<Projectile> mProjectiles;
-	private IDPool shipIDs;
-	private IDPool projectileIDs;
+	public HolyArrayList<Ship> mShips;
+	public HolyArrayList<Projectile> mProjectiles;
 	
 	public float money;
 	public float production;

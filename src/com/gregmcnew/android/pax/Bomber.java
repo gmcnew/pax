@@ -9,8 +9,8 @@ public class Bomber extends Ship {
 	public static float MAXSPEED = 60f;
 	public static Type[] TARGET_PRIORITIES = { Type.FRIGATE, Type.FACTORY, Type.BOMBER, Type.FIGHTER };
 
-	protected Bomber(int id) {
-		super(id, Type.BOMBER, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
+	protected Bomber() {
+		super(Type.BOMBER, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
 	}
 
 	@Override

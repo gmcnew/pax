@@ -4,7 +4,6 @@ import android.graphics.PointF;
 
 /**Abstract class. Represents any entity in the game's id, health, velocity, etc.**/
 public abstract class Entity {
-	public final int id;
 	public final Type type;
 	public final Type[] targetPriorities;
 	public final float radius;
@@ -19,10 +18,11 @@ public abstract class Entity {
 	public float heading; // in radians
 	public PointF velocity;
 	
+	protected int id;
+	
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
-	protected Entity(int Id, Type Type, Type[] TargetPriorities, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
-		id = Id;
+	protected Entity(Type Type, Type[] TargetPriorities, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
 		radius = Diameter / 2;
@@ -32,6 +32,8 @@ public abstract class Entity {
 		maxSpeed = MaxSpeed;
 		
 		health = Health;
+		
+		id = Game.NO_ENTITY;
 		
 		body = new CircleF(new PointF(), radius);
 		heading = (float) (Math.random() * Math.PI * 2);

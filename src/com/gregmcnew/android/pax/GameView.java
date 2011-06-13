@@ -79,10 +79,6 @@ public class GameView extends View {
 			
 			for (Ship ship : player.mShips) {
 				
-				if (ship == null) {
-					continue;
-				}
-				
 				Bitmap bitmap = entityBitmaps.get(ship.type);
 				
 				if (bitmap != null) {
@@ -101,10 +97,9 @@ public class GameView extends View {
 				
 				canvas.drawCircle(ship.body.center.x, ship.body.center.y, ship.radius, mBoundsPaints[i]);
 			}
+			
 			for (Projectile projectile : player.mProjectiles) {
-				if (projectile != null) {
-					canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, mLaserPaint);
-				}
+				canvas.drawCircle(projectile.body.center.x, projectile.body.center.y, projectile.radius, mLaserPaint);
 			}
 		}
 	}
