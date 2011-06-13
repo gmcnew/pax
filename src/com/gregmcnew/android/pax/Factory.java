@@ -10,12 +10,7 @@ public class Factory extends Ship {
 	public static Type[] TARGET_PRIORITIES = { };
 
 	protected Factory(int id) {
-		super(id, Type.FACTORY, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
-	}
-
-	@Override
-	public Type[] getTargetPriorities() {
-		return TARGET_PRIORITIES;
+		super(id, Type.FACTORY, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
 	}
 
 	@Override

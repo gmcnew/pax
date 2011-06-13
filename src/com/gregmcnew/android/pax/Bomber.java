@@ -10,12 +10,7 @@ public class Bomber extends Ship {
 	public static Type[] TARGET_PRIORITIES = { Type.FRIGATE, Type.FACTORY, Type.BOMBER, Type.FIGHTER };
 
 	protected Bomber(int id) {
-		super(id, Type.BOMBER, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
-	}
-
-	@Override
-	public Type[] getTargetPriorities() {
-		return TARGET_PRIORITIES;
+		super(id, Type.BOMBER, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXSPEED);
 	}
 
 	@Override

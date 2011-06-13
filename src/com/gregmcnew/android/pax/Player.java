@@ -82,7 +82,7 @@ public class Player {
 				ship.body.center.offset(dx_t, dy_t);
 				
 				shipBodies.update(ship.id);
-				ship.updateCourse();
+				ship.updateHeading();
 				
 				if (ship.canShoot()) {
 					addProjectile(ship);
