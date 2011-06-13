@@ -6,6 +6,7 @@ import android.graphics.PointF;
 public abstract class Entity {
 	public final int id;
 	public final Type type;
+	public final Type[] targetPriorities;
 	public final float radius;
 	public final float diameter;
 	public final float turnSpeed;
@@ -20,9 +21,10 @@ public abstract class Entity {
 	
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
-	protected Entity(int Id, Type Type, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
+	protected Entity(int Id, Type Type, Type[] TargetPriorities, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
 		id = Id;
 		type = Type;
+		targetPriorities = TargetPriorities;
 		radius = Diameter / 2;
 		diameter = Diameter;
 		turnSpeed = TurnSpeed;
