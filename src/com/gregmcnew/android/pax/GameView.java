@@ -42,6 +42,10 @@ public class GameView extends View {
 					break;
 			}
 			
+			playerBitmaps.put(Type.LASER,   BitmapFactory.decodeResource(res, R.drawable.laser));
+			playerBitmaps.put(Type.BOMB,    BitmapFactory.decodeResource(res, R.drawable.bomb));
+			playerBitmaps.put(Type.MISSILE, BitmapFactory.decodeResource(res, R.drawable.missile));
+			
 			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
 		
