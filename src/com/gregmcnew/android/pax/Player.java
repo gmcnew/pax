@@ -70,7 +70,7 @@ public class Player {
 				// TODO: Refactor the following code into an Entity.update()
 				// function or something similar.
 				
-				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FACTORY || type == Entity.Type.FACTORY) {
+				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FRIGATE || type == Entity.Type.FACTORY) {
 				
 					Ship ship = (Ship) entity;
 					if (ship.health <= 0) {
