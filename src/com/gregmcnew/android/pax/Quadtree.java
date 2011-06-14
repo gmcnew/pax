@@ -56,7 +56,7 @@ public class Quadtree {
 		    CircleF circ2 = entry.getValue();
 		    float radiuses = radius + circ2.radius;
 		    float overlap = (radiuses * radiuses) - distanceSquared(circ2.center.x, circ2.center.y, centerX, centerY);
-		    if (overlap > maxOverlap) {
+		    if ((radius == NO_SEARCH_LIMIT && id == Entity.NO_ENTITY) || overlap > maxOverlap) {
 		    	maxOverlap = overlap;
 		    	id = entry.getKey();
 		    }
