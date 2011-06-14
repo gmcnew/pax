@@ -62,6 +62,6 @@ public abstract class Entity {
 	
 	public boolean wantsNewTarget() {
 		// TODO: Be smarter about whether an entity wants a new target.
-		return targetPriorities != null;
+		return targetPriorities != null && Math.random() > 0.99f;
 	}
 }
