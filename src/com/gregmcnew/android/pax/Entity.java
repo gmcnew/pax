@@ -14,6 +14,8 @@ public abstract class Entity {
 	
 	public int health;
 	
+	public Entity target;
+	
 	public CircleF body;
 	public float heading; // in radians
 	public PointF velocity;
@@ -32,6 +34,8 @@ public abstract class Entity {
 		maxSpeed = MaxSpeed;
 		
 		health = Health;
+		
+		target = null;
 		
 		id = Game.NO_ENTITY;
 		
