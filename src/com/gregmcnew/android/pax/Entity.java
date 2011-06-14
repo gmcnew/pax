@@ -64,4 +64,14 @@ public abstract class Entity {
 		// TODO: Be smarter about whether an entity wants a new target.
 		return targetPriorities != null && Math.random() > 0.99f;
 	}
+	
+	public void move(){
+		//Update position
+		
+		//Update heading
+		
+		//Update acceleration
+		
+		//Update velocity
+	}
 }
