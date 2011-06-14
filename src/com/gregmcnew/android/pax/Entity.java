@@ -59,4 +59,9 @@ public abstract class Entity {
 		velocity.x = (float) Math.cos(heading) * maxSpeed;
 		velocity.y = (float) Math.sin(heading) * maxSpeed;
 	}
+	
+	public boolean wantsNewTarget() {
+		// TODO: Be smarter about whether an entity wants a new target.
+		return targetPriorities != null;
+	}
 }

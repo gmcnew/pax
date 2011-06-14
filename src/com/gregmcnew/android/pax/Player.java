@@ -62,6 +62,14 @@ public class Player {
 		
 		for (Entity.Type type : Entity.Type.values()) {
 			for (Entity entity : mEntities.get(type)) {
+				
+				if (entity.wantsNewTarget()) {
+					mRetargetQueue.add(entity);
+				}
+				
+				// TODO: Refactor the following code into an Entity.update()
+				// function or something similar.
+				
 				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FACTORY || type == Entity.Type.FACTORY) {
 				
 					Ship ship = (Ship) entity;
