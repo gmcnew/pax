@@ -8,6 +8,8 @@ import android.graphics.RectF;
 
 public class Quadtree {
 	
+	public static float NO_SEARCH_LIMIT = -1;
+	
 	public Quadtree() {
 		bounds = null;
 		mCircs = new HashMap<Integer, CircleF>();
@@ -21,7 +23,7 @@ public class Quadtree {
 	*/
 	
 	public boolean add(int id, CircleF circ) {
-		if (id != Game.NO_ENTITY && (bounds == null || bounds.contains(circ.center.x, circ.center.y))) {
+		if (id != Entity.NO_ENTITY && (bounds == null || bounds.contains(circ.center.x, circ.center.y))) {
 			mCircs.put(id, circ);
 			return true;
 		}
@@ -48,7 +50,7 @@ public class Quadtree {
 	// If so, return the ID of the circle with the greatest overlap.
 	public int collide(float centerX, float centerY, float radius) {
 		float maxOverlap = 0;
-		int id = Game.NO_ENTITY;
+		int id = Entity.NO_ENTITY;
 		
 		for (HashMap.Entry<Integer, CircleF> entry : mCircs.entrySet()) {
 		    CircleF circ2 = entry.getValue();

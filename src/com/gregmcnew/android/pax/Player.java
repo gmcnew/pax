@@ -1,7 +1,9 @@
 package com.gregmcnew.android.pax;
 
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -21,9 +23,10 @@ public class Player {
 		 money = 0;
 		 production = 0.75f;
 		 production *= 5; // warp speed!
-		 mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
 		 
+		 mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
 		 mBodies = new EnumMap<Entity.Type, Quadtree>(Entity.Type.class);
+		 mRetargetQueue = new LinkedList<Entity>();
 		 
 		 for (Entity.Type type : Entity.Type.values()) {
 			 mEntities.put(type, new HolyArrayList<Entity>());
@@ -41,6 +44,8 @@ public class Player {
 			mEntities.get(type).clear();
 			mBodies.get(type).clear();
 		}
+		
+		mRetargetQueue.clear();
 		
 		addShip(Ship.Type.FACTORY);
 	}
@@ -160,7 +165,7 @@ public class Player {
 	
 	private int addShip(Entity.Type type) {
 		
-		int id = Game.NO_ENTITY;
+		int id = Entity.NO_ENTITY;
 			
 		Ship ship = null;
 		switch (type) {
@@ -216,7 +221,7 @@ public class Player {
 	
 	private int addProjectile(Ship parent) {
 		
-		int id = Game.NO_ENTITY;
+		int id = Entity.NO_ENTITY;
 		
 		Projectile projectile = null;
 		switch (parent.type) {
@@ -248,6 +253,10 @@ public class Player {
 	public Map<Entity.Type, HolyArrayList<Entity>> mEntities;
 	
 	public Map<Entity.Type, Quadtree> mBodies;
+	
+	// The retarget queue contains entities that want a new target. This queue
+	// should be handled and cleared on every call to Game.update().
+	public Queue<Entity> mRetargetQueue;
 	
 	public float money;
 	public float production;

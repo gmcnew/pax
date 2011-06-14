@@ -6,8 +6,8 @@ public class Projectile extends Entity {
 
 	public int lifeMs;
 	
-	protected Projectile(Type type, Type[] targetPriorities, int LifeMs, int health, float diameter, float turnSpeed, float acceleration, float maxVelocity) {
-		super(type, targetPriorities, health, diameter, turnSpeed, acceleration, maxVelocity);
+	protected Projectile(Type type, Type[] targetPriorities, float[] targetSearchLimits, int LifeMs, int health, float diameter, float turnSpeed, float acceleration, float maxVelocity) {
+		super(type, targetPriorities, targetSearchLimits, health, diameter, turnSpeed, acceleration, maxVelocity);
 		lifeMs = LifeMs;
 	}
 	
@@ -18,7 +18,7 @@ public class Projectile extends Entity {
 		// actually should have hit the other ship first).
 		for (Entity.Type type : Ship.TYPES) {
 			int id = victim.mBodies.get(type).collide(body.center.x, body.center.y, body.radius);
-			if (id != Game.NO_ENTITY) {
+			if (id != Entity.NO_ENTITY) {
 				Ship target = (Ship) victim.mEntities.get(type).get(id);
 				
 				int damage = health;

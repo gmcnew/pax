@@ -13,7 +13,7 @@ public class Frigate extends Ship {
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
 	protected Frigate() {
-		super(Type.FRIGATE, TARGET_PRIORITIES, HEALTH, DIAMETER, TURN_SPEED, MAXACCELERATION, MAXSPEED);
+		super(Type.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, MAXACCELERATION, MAXSPEED);
 	}
 
 	@Override

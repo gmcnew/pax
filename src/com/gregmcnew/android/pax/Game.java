@@ -4,7 +4,6 @@ public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE };
 	public static int NUM_PLAYERS = 2;
-	public static int NO_ENTITY = -1;
 	
 	public Game()
 	{
@@ -47,6 +46,13 @@ public class Game {
 			}
 		}
 		
+		for (Player player : mPlayers) {
+			for (Entity entity : player.mRetargetQueue) {
+				retarget(player, entity);
+			}
+			player.mRetargetQueue.clear();
+		}
+		
 		// See if the game is over.
 		boolean blueHasLost = mPlayers[0].hasLost();
 		boolean redHasLost = mPlayers[1].hasLost();
@@ -65,6 +71,31 @@ public class Game {
 	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
 	{
 		mPlayers[player].buildTarget = buildTarget;
+	}
+	
+	
+	// Private methods
+	
+	private void retarget(Player player, Entity entity) {
+		entity.target = null;
+		for (int i = 0; i < entity.targetPriorities.length && entity.target == null; i++) {
+			
+			Entity.Type targetType = entity.targetPriorities[i];
+			
+			float searchLimit = Quadtree.NO_SEARCH_LIMIT;
+			if (entity.targetSearchLimits != null) {
+				searchLimit = entity.targetSearchLimits[i];
+			}
+			
+			for (Player victim : mPlayers) {
+				if (victim != player) {
+					int id = victim.mBodies.get(targetType).collide(entity.body.center.x, entity.body.center.y, searchLimit);
+					if (id != Entity.NO_ENTITY) {
+						entity.target = victim.mEntities.get(targetType).get(id);
+					}
+				}
+			}
+		}
 	}
 	
 	public Player[] mPlayers;
