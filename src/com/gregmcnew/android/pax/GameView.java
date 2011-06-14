@@ -69,7 +69,10 @@ public class GameView extends View {
 	
 	// Draw factories at the bottom, with frigates above them, bombers above
 	// frigates, and fighters above everything.
-	private Entity.Type ENTITY_LAYERS[] = { Entity.Type.FACTORY, Entity.Type.FRIGATE, Entity.Type.BOMBER, Entity.Type.FIGHTER };//..FACTORY, Ship.FRIGATE, Ship.BOMBER, Ship.FIGHTER,  };
+	private Entity.Type ENTITY_LAYERS[] = {
+			Entity.Type.FACTORY, Entity.Type.FRIGATE, Entity.Type.BOMBER, Entity.Type.FIGHTER,
+			Entity.Type.LASER, Entity.Type.BOMB, Entity.Type.MISSILE
+			};
 
 	@Override
 	protected void onDraw(Canvas canvas) {
