@@ -36,6 +36,10 @@ public class Quadtree {
 		// In an actual quadtree, this function would do stuff. =)
 	}
 	
+	public void clear() {
+		mCircs.clear();
+	}
+	
 	public int collide(CircleF circ) {
 		return collide(circ.center.x, circ.center.y, circ.radius);
 	}

@@ -21,8 +21,6 @@ public abstract class Entity {
 	protected int id;
 
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
-	public static int MIN_SHIP_TYPE = Type.FIGHTER.ordinal();
-	public static int MIN_PROJECTILE_TYPE = Type.LASER.ordinal();
 	
 	protected Entity(Type Type, Type[] TargetPriorities, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
 		type = Type;

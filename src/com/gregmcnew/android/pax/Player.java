@@ -1,7 +1,7 @@
 package com.gregmcnew.android.pax;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -21,18 +21,13 @@ public class Player {
 		 money = 0;
 		 production = 0.75f;
 		 production *= 5; // warp speed!
-		 mShipLists = new ArrayList<HolyArrayList<Ship>>();
-		 mProjectileLists = new ArrayList<HolyArrayList<Projectile>>();
-			
-		 mShipLayers = new ArrayList<Quadtree>();
-		
-		 for (@SuppressWarnings("unused") int shipType : Ship.TYPES) {
-			 mShipLists.add(new HolyArrayList<Ship>());
-			 mShipLayers.add(new Quadtree());
-		 }
+		 mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
 		 
-		 for (@SuppressWarnings("unused") int projectileType : Projectile.TYPES) {
-			 mProjectileLists.add(new HolyArrayList<Projectile>());
+		 mBodies = new EnumMap<Entity.Type, Quadtree>(Entity.Type.class);
+		 
+		 for (Entity.Type type : Entity.Type.values()) {
+			 mEntities.put(type, new HolyArrayList<Entity>());
+			 mBodies.put(type, new Quadtree());
 		 }
 		 
 		 playerNo = playerNumber;
@@ -42,18 +37,16 @@ public class Player {
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
-		for (HolyArrayList<Ship> list : mShipLists) {
-			list.clear();
-		}
-		for (HolyArrayList<Projectile> list : mProjectileLists) {
-			list.clear();
+		for (Entity.Type type : Entity.Type.values()) {
+			mEntities.get(type).clear();
+			mBodies.get(type).clear();
 		}
 		
 		addShip(Ship.Type.FACTORY);
 	}
 	
 	public boolean hasLost() {
-		return mShipLists.get(Ship.FACTORY).isEmpty();
+		return mEntities.get(Entity.Type.FACTORY).isEmpty();
 	}
 	
 	public void produce() {
@@ -62,71 +55,74 @@ public class Player {
 	
 	public void updateEntities() {
 		
-		for (int shipType : Ship.TYPES) {
-			for (Ship ship : mShipLists.get(shipType)) {
-			
-				if (ship.health <= 0) {
-					removeShip(ship);
-				}
-				else {
-					float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-					float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-					
-					ship.velocity.offset(dv_x, dv_y);
-					if (ship.getSpeed() > ship.maxSpeed) {
-						ship.fullSpeedAhead();
-					}
-					
-					float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-					float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-					
-					ship.body.center.offset(dx_t, dy_t);
-					
-					mShipLayers.get(shipType).update(ship.id);
-					ship.updateHeading();
-					
-					if (ship.canShoot()) {
-						addProjectile(ship);
-					}
-				}
-			}
-		}
-
-		for (int projectileType : Projectile.TYPES) {
-			for (Projectile projectile : mProjectileLists.get(projectileType)) {
+		for (Entity.Type type : Entity.Type.values()) {
+			for (Entity entity : mEntities.get(type)) {
+				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FACTORY || type == Entity.Type.FACTORY) {
 				
-				if (projectile.health <= 0 || projectile.lifeMs <= 0) {
-					removeProjectile(projectile);
-				}
-				else {
-					float ax = (float) Math.random() - 0.5f;
-					float ay = (float) Math.random() - 0.5f;	
-					
-					float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-					float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-					
-					projectile.velocity.offset(dv_x, dv_y);
-					if (projectile.getSpeed() > projectile.maxSpeed) {
-						projectile.fullSpeedAhead();
+					Ship ship = (Ship) entity;
+					if (ship.health <= 0) {
+						removeEntity(ship);
 					}
+					else {
+						float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+						float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+						
+						ship.velocity.offset(dv_x, dv_y);
+						if (ship.getSpeed() > entity.maxSpeed) {
+							ship.fullSpeedAhead();
+						}
+						
+						float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+						float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+						
+						ship.body.center.offset(dx_t, dy_t);
+						
+						mBodies.get(type).update(ship.id);
+						ship.updateHeading();
+						
+						if (ship.canShoot()) {
+							addProjectile(ship);
+						}
+					}
+				}
+				else { // it's a projectile
+					Projectile projectile = (Projectile) entity;
 					
-					float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-					float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-					
-					projectile.body.center.offset(dx_t, dy_t);
-					projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
+					if (projectile.health <= 0 || projectile.lifeMs <= 0) {
+						removeEntity(projectile);
+					}
+					else {
+						float ax = (float) Math.random() - 0.5f;
+						float ay = (float) Math.random() - 0.5f;	
+						
+						float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+						float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
+						
+						projectile.velocity.offset(dv_x, dv_y);
+						if (projectile.getSpeed() > projectile.maxSpeed) {
+							projectile.fullSpeedAhead();
+						}
+						
+						float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+						float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+						
+						projectile.body.center.offset(dx_t, dy_t);
+						projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
+					}
 				}
 			}
 		}
 	}
 	
 	public void attack(Player victim) {
-		for (int projectileType : Projectile.TYPES) {
-			for (Projectile projectile : mProjectileLists.get(projectileType)) {
+		for (Entity.Type projectileType : Projectile.TYPES) {
+			for (Entity entity : mEntities.get(projectileType)) {
+				Projectile projectile = (Projectile) entity;
+				
 				projectile.attack(victim);
 				
 				if (projectile.health <= 0) {
-					removeProjectile(projectile);
+					removeEntity(projectile);
 				}
 			}
 		}
@@ -162,7 +158,7 @@ public class Player {
 		}
 	}
 	
-	private int addShip(Ship.Type type) {
+	private int addShip(Entity.Type type) {
 		
 		int id = Game.NO_ENTITY;
 			
@@ -183,13 +179,12 @@ public class Player {
 		}
 		
 		if (ship != null) {
-			int shipType = type.ordinal() - Entity.MIN_SHIP_TYPE;
-			id = mShipLists.get(shipType).add(ship);
+			id = mEntities.get(type).add(ship);
 			ship.id = id;
 			
 			// Fix the ship's location.
 			if (type != Ship.Type.FACTORY){ // If the ship being spawned ISN'T a factory...
-				Ship factory = mShipLists.get(Ship.FACTORY).get(0);
+				Ship factory = (Ship) mEntities.get(Entity.Type.FACTORY).get(0);
 				float spawnX, spawnY;
 				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
 				spawnY = factory.body.center.y + (float) (55 * Math.sin(factory.heading));
@@ -213,7 +208,7 @@ public class Player {
 				ship.body.center.set(factoryX, factoryY);
 				ship.heading = theta - (float) Math.PI/2 - offset;
 			}
-			mShipLayers.get(shipType).add(ship.id, ship.body);
+			mBodies.get(type).add(ship.id, ship.body);
 		}
 		
 		return id;
@@ -237,30 +232,22 @@ public class Player {
 		}
 		
 		if (projectile != null) {
-			id = mProjectileLists.get(projectile.type.ordinal() - Entity.MIN_PROJECTILE_TYPE).add(projectile);
+			id = mEntities.get(projectile.type).add(projectile);
 			projectile.id = id;
 		}
 		
 		return id;
 	}
 	
-	private void removeShip(Ship ship) {
-		int id = ship.id;
-		int shipType = ship.type.ordinal() - Entity.MIN_SHIP_TYPE;
-		mShipLayers.get(shipType).remove(id);
-		mShipLists.get(shipType).remove(id);
+	private void removeEntity(Entity entity) {
+		int id = entity.id;
+		mEntities.get(entity.type).remove(id);
+		mBodies.get(entity.type).remove(id);
 	}
 	
-	private void removeProjectile(Projectile projectile) {
-		int id = projectile.id;
-		int projectileType = projectile.type.ordinal() - Entity.MIN_PROJECTILE_TYPE;
-		mProjectileLists.get(projectileType).remove(id);
-	}
+	public Map<Entity.Type, HolyArrayList<Entity>> mEntities;
 	
-	public List<HolyArrayList<Ship>> mShipLists;
-	public List<HolyArrayList<Projectile>> mProjectileLists;
-	
-	public List<Quadtree> mShipLayers;
+	public Map<Entity.Type, Quadtree> mBodies;
 	
 	public float money;
 	public float production;
