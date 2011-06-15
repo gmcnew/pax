@@ -23,20 +23,20 @@ public class Player {
 		money = 0;
 		production = 0.75f;
 		production *= 5; // warp speed!
-		 
+		
 		mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
 		mBodies = new EnumMap<Entity.Type, Quadtree>(Entity.Type.class);
 		mRetargetQueue = new LinkedList<Entity>();
-		 
+		
 		for (Entity.Type type : Entity.Type.values()) {
 			mEntities.put(type, new HolyArrayList<Entity>());
-			 
+			
 			// Make the first split in the Y-dimension (yielding top and
 			// bottom halves).
 			// TODO: Allow an octree to grow to more than 1024 points if necessary.
 			mBodies.put(type, new Quadtree(Quadtree.Y, Entity.Radii[type.ordinal()], new Point2[1024]));
 		}
-		 
+		
 		playerNo = playerNumber;
 		totalPlayers = players;
 		reset();
