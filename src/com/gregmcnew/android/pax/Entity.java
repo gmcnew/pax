@@ -79,6 +79,11 @@ public abstract class Entity {
 	}
 	
 	public void updateHeading(){
+		if (target != null) {
+			float dx = target.body.center.x - body.center.x;
+			float dy = target.body.center.x - body.center.x;
+			targetHeading = (float) Math.atan2((double) dy, (double) dx);
+		}
 		//Gets the difference within +/- 2*pi.
 		difference = (targetHeading - heading) % (pi*2);
 		
