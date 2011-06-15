@@ -17,10 +17,6 @@ public class Projectile extends Entity {
 		// (of different types) and kills the first one it finds (when it
 		// actually should have hit the other ship first).
 		for (Entity.Type victimShipType : Ship.TYPES) {
-			
-			// TODO: The quadtree only stores ships' centers, so we need to add
-			// the radius of the target ship type to searchLimit.
-			
 			Point2 p = victim.mBodies.get(victimShipType).collide(body.center, body.radius);
 			if (p != null) {
 				assert(p.id != Entity.NO_ENTITY);

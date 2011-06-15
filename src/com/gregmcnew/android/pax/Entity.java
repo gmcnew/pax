@@ -29,6 +29,11 @@ public abstract class Entity {
 
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE }
 	
+	public static float[] Radii = {
+		Fighter.DIAMETER / 2, Bomber.DIAMETER / 2, Frigate.DIAMETER / 2, Factory.DIAMETER / 2,
+		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
+		};
+	
 	protected Entity(Type Type, Type[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;

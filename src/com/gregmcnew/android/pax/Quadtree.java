@@ -7,9 +7,11 @@ public class Quadtree {
 	
 	private static int MAX_SIZE = 5;
 	
-	public Quadtree(boolean dimension, Point2[] points) {
+	public Quadtree(boolean dimension, float entrySize, Point2[] points) {
 		
 		mPoints = points;
+		
+		mEntrySize = entrySize;
 		
 		mDimension = dimension;
 		
@@ -49,11 +51,11 @@ public class Quadtree {
 			int pivotIndex = partition(mDimension, mPoints, mMinIndex, mMaxIndex, pivotValue);
 			
 			if (low == null) {
-				low = new Quadtree(!mDimension, mPoints);
+				low = new Quadtree(!mDimension, mEntrySize, mPoints);
 			}
 			
 			if (high == null) {
-				high = new Quadtree(!mDimension, mPoints);
+				high = new Quadtree(!mDimension, mEntrySize, mPoints);
 			}
 			
 			low.reset(mMinIndex, pivotIndex);
@@ -66,6 +68,7 @@ public class Quadtree {
 	}
 	
 	public Point2 collide(Point2 center, float radius) {
+		radius += mEntrySize;
 		return collide(center, radius, radius * radius);
 	}
 	
@@ -158,6 +161,12 @@ public class Quadtree {
 	// Removals are rare, so it'd probably be inefficient to recalculate these.
 	private float mMinVal;
 	private float mMaxVal;
+	
+	// The tree stores points, but these points actually represent the centers
+	// of circular collision bodies. This means we need to add the circle's
+	// radius whenever collide() is called. (We're guaranteed that all entries
+	// in a given quadtree are for circles of the same size.)
+	private final float mEntrySize;
 	
 	private static int partition(boolean dimension, Point2[] points, int minIndex, int maxIndex, float pivotValue) {
 		int hole = minIndex;

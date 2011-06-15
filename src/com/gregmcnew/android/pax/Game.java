@@ -103,11 +103,6 @@ public class Game {
 				searchLimit = entity.targetSearchLimits[i];
 			}
 			
-			// TODO: The quadtree only stores ships' centers, so we need to add
-			// the radius of the target ship type to searchLimit. Or, better
-			// yet, construct each quadtree with a float which it knows to add
-			// to the searchLimit on every search.
-			
 			for (Player victim : mPlayers) {
 				if (victim != player) {
 					Point2 p = victim.mBodies.get(targetType).collide(entity.body.center, searchLimit);

@@ -34,7 +34,7 @@ public class Player {
 			 // Make the first split in the Y-dimension (yielding top and
 			 // bottom halves).
 			 // TODO: Allow an octree to grow to more than 1024 points if necessary.
-			 mBodies.put(type, new Quadtree(Quadtree.Y, new Point2[1024]));
+			 mBodies.put(type, new Quadtree(Quadtree.Y, Entity.Radii[type.ordinal()], new Point2[1024]));
 		 }
 		 
 		 playerNo = playerNumber;
