@@ -18,6 +18,7 @@ public abstract class Entity {
 	public int health;
 	
 	public Entity target;
+	public float targetHeading; // in radians
 	
 	public CircleF body;
 	public float heading; // in radians
@@ -65,11 +66,17 @@ public abstract class Entity {
 		return targetPriorities != null && Math.random() > 0.99f;
 	}
 	
+	public void updateHeading(){
+		
+	}
+	
 	public void move(){
 		//Update position
-		
+		float dx_t = velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+		float dy_t = velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+		body.center.offset(dx_t, dy_t);
 		//Update heading
-		
+		updateHeading();
 		//Update acceleration
 		
 		//Update velocity
