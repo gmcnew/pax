@@ -6,7 +6,7 @@ public class Missile extends Projectile {
 	public static float DIAMETER = 3;
 	public static float INITIAL_VELOCITY = 4;
 	public static float TURN_SPEED = 0.035f;
-	public static float ACCELERATION = 0;
+	public static float[] ACCELERATIONLIMS = {175f, 87.5f};
 	public static float MAXVELOCITY = 4f;
 	
 	// TODO: Set missile target priorities and search limits.
@@ -16,7 +16,7 @@ public class Missile extends Projectile {
 	public static int MAX_LIFE_MS = 5000;
 
 	protected Missile(Ship parent) {
-		super(Type.LASER, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATION, MAXVELOCITY);
+		super(Type.LASER, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.heading;

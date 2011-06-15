@@ -6,8 +6,8 @@ public class Projectile extends Entity {
 
 	public int lifeMs;
 	
-	protected Projectile(Type type, Type[] targetPriorities, float[] targetSearchLimits, int LifeMs, int health, float diameter, float turnSpeed, float acceleration, float maxVelocity) {
-		super(type, targetPriorities, targetSearchLimits, health, diameter, turnSpeed, acceleration, maxVelocity);
+	protected Projectile(Type type, Type[] targetPriorities, float[] targetSearchLimits, int LifeMs, int health, float diameter, float turnSpeed, float accelerationLimits[], float maxVelocity) {
+		super(type, targetPriorities, targetSearchLimits, health, diameter, turnSpeed, accelerationLimits, maxVelocity);
 		lifeMs = LifeMs;
 	}
 	

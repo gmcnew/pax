@@ -77,21 +77,7 @@ public class Player {
 						removeEntity(ship);
 					}
 					else {
-						float dv_x = (float)Math.cos(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-						float dv_y = (float)Math.sin(ship.heading) * ship.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-						
-						ship.velocity.offset(dv_x, dv_y);
-						if (ship.getSpeed() > entity.maxSpeed) {
-							ship.fullSpeedAhead();
-						}
-						
-						float dx_t = ship.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-						float dy_t = ship.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-						
-						ship.body.center.offset(dx_t, dy_t);
-						
-						mBodies.get(type).update(ship.id);
-						ship.updateHeading();
+						ship.move();
 						
 						if (ship.canShoot()) {
 							addProjectile(ship);
@@ -105,21 +91,7 @@ public class Player {
 						removeEntity(projectile);
 					}
 					else {
-						float ax = (float) Math.random() - 0.5f;
-						float ay = (float) Math.random() - 0.5f;	
-						
-						float dv_x = ax * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-						float dv_y = ay * projectile.acceleration * Pax.UPDATE_INTERVAL_MS / 1000;
-						
-						projectile.velocity.offset(dv_x, dv_y);
-						if (projectile.getSpeed() > projectile.maxSpeed) {
-							projectile.fullSpeedAhead();
-						}
-						
-						float dx_t = projectile.velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-						float dy_t = projectile.velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-						
-						projectile.body.center.offset(dx_t, dy_t);
+						projectile.move();
 						projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 					}
 				}
@@ -219,7 +191,7 @@ public class Player {
 				factoryY = screenSize.y/2 + (float) (orbitRadius * Math.sin(theta));
 				
 				ship.body.center.set(factoryX, factoryY);
-				ship.heading = theta - (float) Math.PI/2 - offset;
+				ship.heading = theta + (float) Math.PI/2 + offset;
 			}
 			mBodies.get(type).add(ship.id, ship.body);
 		}

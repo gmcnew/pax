@@ -12,8 +12,9 @@ public abstract class Entity {
 	public final float radius;
 	public final float diameter;
 	public final float turnSpeed;
-	public final float acceleration;
+	public final float[] accelerationLimits;
 	public final float maxSpeed;
+	public final float pi = (float)Math.PI;
 	
 	public int health;
 	
@@ -28,14 +29,14 @@ public abstract class Entity {
 
 	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
-	protected Entity(Type Type, Type[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float Acceleration, float MaxSpeed) {
+	protected Entity(Type Type, Type[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
 		targetSearchLimits = TargetSearchLimits;
 		radius = Diameter / 2;
 		diameter = Diameter;
 		turnSpeed = TurnSpeed;
-		acceleration = Acceleration;
+		accelerationLimits = AccelerationLimits;
 		maxSpeed = MaxSpeed;
 		
 		health = Health;
@@ -67,15 +68,27 @@ public abstract class Entity {
 	}
 	
 	public void updateHeading(){
+		float difference = (heading - targetHeading) % (pi*2);
 		
+		if(Math.abs(difference) > turnSpeed){
+			if(difference > pi){
+				heading += turnSpeed;
+			} else {
+				heading -= turnSpeed;
+			}
+		} else {
+			heading += difference;
+		}
 	}
 	
-	public void move(){
-		//Update position
+	public void updatePosition(){
 		float dx_t = velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
 		float dy_t = velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
 		body.center.offset(dx_t, dy_t);
-		//Update heading
+	}
+	
+	public void move(){
+		updatePosition();
 		updateHeading();
 		//Update acceleration
 		
