@@ -12,7 +12,7 @@ import android.view.WindowManager;
 
 public class Player {
 
-	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE };
+	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
 	public static int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 	
 	
