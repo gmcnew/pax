@@ -45,7 +45,7 @@ public abstract class Entity {
 		
 		id = NO_ENTITY;
 		
-		body = new CircleF(new PointF(), radius);
+		body = new CircleF(new Point2(), radius);
 		heading = (float) (Math.random() * Math.PI * 2);
 		velocity = new PointF();
 	}

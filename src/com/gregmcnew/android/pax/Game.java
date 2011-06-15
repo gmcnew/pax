@@ -37,6 +37,22 @@ public class Game {
 			player.updateEntities();
 		}
 		
+		// Rebuild all octrees.
+		for (Player player : mPlayers) {
+			for (Entity.Type type : Entity.Type.values()) {
+				
+				// Tweak all of the points in the quadtree, then reset it.
+				int i = 0;
+				Quadtree eTree = player.mBodies.get(type);
+				
+				for (Entity e : player.mEntities.get(type)) {
+					eTree.mPoints[i] = e.body.center;
+					i++;
+				}
+				eTree.reset(0, i);
+			}
+		}
+		
 		// Let projectiles kill stuff.
 		for (Player player : mPlayers) {
 			for (Player victim : mPlayers) {
@@ -70,7 +86,7 @@ public class Game {
 	
 	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
 	{
-		mPlayers[player].buildTarget = buildTarget;
+		mPlayers[player].mBuildTarget = buildTarget;
 	}
 	
 	
@@ -82,16 +98,22 @@ public class Game {
 			
 			Entity.Type targetType = entity.targetPriorities[i];
 			
-			float searchLimit = Quadtree.NO_SEARCH_LIMIT;
+			float searchLimit = 9000.1f; // XXX
 			if (entity.targetSearchLimits != null) {
 				searchLimit = entity.targetSearchLimits[i];
 			}
 			
+			// TODO: The quadtree only stores ships' centers, so we need to add
+			// the radius of the target ship type to searchLimit. Or, better
+			// yet, construct each quadtree with a float which it knows to add
+			// to the searchLimit on every search.
+			
 			for (Player victim : mPlayers) {
 				if (victim != player) {
-					int id = victim.mBodies.get(targetType).collide(entity.body.center.x, entity.body.center.y, searchLimit);
-					if (id != Entity.NO_ENTITY) {
-						entity.target = victim.mEntities.get(targetType).get(id);
+					Point2 p = victim.mBodies.get(targetType).collide(entity.body.center, searchLimit);
+					if (p != null) {
+						assert(p.id != Entity.NO_ENTITY);
+						entity.target = victim.mEntities.get(targetType).get(p.id);
 					}
 				}
 			}

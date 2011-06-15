@@ -19,7 +19,7 @@ public class Player {
 	// Public methods
 	
 	public Player(int playerNumber, int players) {
-		 buildTarget = BuildTarget.NONE;
+		 mBuildTarget = BuildTarget.NONE;
 		 money = 0;
 		 production = 0.75f;
 		 production *= 5; // warp speed!
@@ -30,7 +30,11 @@ public class Player {
 		 
 		 for (Entity.Type type : Entity.Type.values()) {
 			 mEntities.put(type, new HolyArrayList<Entity>());
-			 mBodies.put(type, new Quadtree());
+			 
+			 // Make the first split in the Y-dimension (yielding top and
+			 // bottom halves).
+			 // TODO: Allow an octree to grow to more than 1024 points if necessary.
+			 mBodies.put(type, new Quadtree(Quadtree.Y, new Point2[1024]));
 		 }
 		 
 		 playerNo = playerNumber;
@@ -42,7 +46,7 @@ public class Player {
 	public void reset() {
 		for (Entity.Type type : Entity.Type.values()) {
 			mEntities.get(type).clear();
-			mBodies.get(type).clear();
+			mBodies.get(type).reset(0, 0);
 		}
 		
 		mRetargetQueue.clear();
@@ -77,7 +81,7 @@ public class Player {
 						ship.move();
 						
 						if (ship.canShoot()) {
-							//addProjectile(ship);
+							addProjectile(ship);
 						}
 					}
 				}
@@ -111,10 +115,10 @@ public class Player {
 	}
 	
 	public void build() {
-		if (buildTarget != BuildTarget.NONE) {
-			int cost = BuildCosts[buildTarget.ordinal()]; 
+		if (mBuildTarget != BuildTarget.NONE) {
+			int cost = BuildCosts[mBuildTarget.ordinal()]; 
 			if (money >= cost) {
-				build(buildTarget);
+				build(mBuildTarget);
 				money -= cost;
 			}
 		}
@@ -163,6 +167,7 @@ public class Player {
 		if (ship != null) {
 			id = mEntities.get(type).add(ship);
 			ship.id = id;
+			ship.body.center.id = id;
 			
 			// Fix the ship's location.
 			if (type != Ship.Type.FACTORY){ // If the ship being spawned ISN'T a factory...
@@ -190,7 +195,6 @@ public class Player {
 				ship.body.center.set(factoryX, factoryY);
 				ship.heading = theta - (float) Math.PI/2 - offset;
 			}
-			mBodies.get(type).add(ship.id, ship.body);
 		}
 		
 		return id;
@@ -216,6 +220,7 @@ public class Player {
 		if (projectile != null) {
 			id = mEntities.get(projectile.type).add(projectile);
 			projectile.id = id;
+			projectile.body.center.id = id;
 		}
 		
 		return id;
@@ -224,7 +229,7 @@ public class Player {
 	private void removeEntity(Entity entity) {
 		int id = entity.id;
 		mEntities.get(entity.type).remove(id);
-		mBodies.get(entity.type).remove(id);
+		mBodies.get(entity.type).remove(entity.body.center);
 	}
 	
 	public Map<Entity.Type, HolyArrayList<Entity>> mEntities;
@@ -237,7 +242,7 @@ public class Player {
 	
 	public float money;
 	public float production;
-	public BuildTarget buildTarget;
+	public BuildTarget mBuildTarget;
 	public int playerNo;
 	public int totalPlayers;
 }

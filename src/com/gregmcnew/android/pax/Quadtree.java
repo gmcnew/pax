@@ -1,76 +1,178 @@
 package com.gregmcnew.android.pax;
 
-import java.util.HashMap;
-
-import android.graphics.RectF;
-
-// TODO: Make this an actual quadtree. =)
-
 public class Quadtree {
-	
-	public static float NO_SEARCH_LIMIT = -1;
-	
-	public Quadtree() {
-		bounds = null;
-		mCircs = new HashMap<Integer, CircleF>();
-	}
-	
-	/*
-	public Quadtree(float width, float height) {
-		bounds = new RectF(0, 0, width, height);
-		mCircs = new HashMap<Integer, CircleF>();
-	}
-	*/
-	
-	public boolean add(int id, CircleF circ) {
-		if (id != Entity.NO_ENTITY && (bounds == null || bounds.contains(circ.center.x, circ.center.y))) {
-			mCircs.put(id, circ);
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean remove(int id) {
-		return mCircs.remove(id) != null;
-	}
-	
-	public void update(int id) {
-		// In an actual quadtree, this function would do stuff. =)
-	}
-	
-	public void clear() {
-		mCircs.clear();
-	}
-	
-	public int collide(CircleF circ) {
-		return collide(circ.center.x, circ.center.y, circ.radius);
-	}
-	
-	// See if a given circle intersects with anything in the quadtree.
-	// If so, return the ID of the circle with the greatest overlap.
-	public int collide(float centerX, float centerY, float radius) {
-		float maxOverlap = 0;
-		int id = Entity.NO_ENTITY;
-		
-		for (HashMap.Entry<Integer, CircleF> entry : mCircs.entrySet()) {
-		    CircleF circ2 = entry.getValue();
-		    float radiuses = radius + circ2.radius;
-		    float overlap = (radiuses * radiuses) - distanceSquared(circ2.center.x, circ2.center.y, centerX, centerY);
-		    if ((radius == NO_SEARCH_LIMIT && id == Entity.NO_ENTITY) || overlap > maxOverlap) {
-		    	maxOverlap = overlap;
-		    	id = entry.getKey();
-		    }
-		}
-		
-		return id;
-	}
-	
-	private float distanceSquared(float x1, float y1, float x2, float y2) {
-		float dx = x1 - x2;
-		float dy = y1 - y2;
-		return dx * dx + dy * dy;
-	}
 
-	private HashMap<Integer, CircleF> mCircs;
-	public final RectF bounds;
+	public static boolean X = false;
+	public static boolean Y = true;
+	
+	private static int MAX_SIZE = 5;
+	
+	public Quadtree(boolean dimension, Point2[] points) {
+		
+		mPoints = points;
+		
+		mDimension = dimension;
+		
+		mMinIndex = 0;
+		mMaxIndex = 0;
+		
+		reset(mMinIndex, mMaxIndex);
+	}
+	public void reset(int minIndex, int maxIndex) {
+		
+		mMinIndex = minIndex;
+		mMaxIndex = maxIndex;
+		
+		isLeaf = (mMaxIndex - mMinIndex) <= MAX_SIZE;
+		
+		// Set mMin and mMax
+		boolean first = true;
+		for (int i = mMinIndex; i < mMaxIndex; i++) {
+			float q = (mDimension == X) ? mPoints[i].x : mPoints[i].y;
+			if (first) {
+				mMinVal = q;
+				mMaxVal = q;
+				first = false;
+			}
+			else if (q < mMinVal) {
+				mMinVal = q;
+			}
+			else if (q > mMaxVal) {
+				mMaxVal = q;
+			}
+		}
+		
+		if (!isLeaf) {
+			// Partition in this dimension, then create 'left' and 'right' nodes
+			// that use the other dimension.
+			float pivotValue = (mMinVal + mMaxVal) / 2;
+			int pivotIndex = partition(mDimension, mPoints, mMinIndex, mMaxIndex, pivotValue);
+			
+			if (low == null) {
+				low = new Quadtree(!mDimension, mPoints);
+			}
+			
+			if (high == null) {
+				high = new Quadtree(!mDimension, mPoints);
+			}
+			
+			low.reset(mMinIndex, pivotIndex);
+			high.reset(pivotIndex, mMaxIndex);
+		}
+		else {
+			low = null;
+			high = null;
+		}
+	}
+	
+	public Point2 collide(Point2 center, float radius) {
+		return collide(center, radius, radius * radius);
+	}
+	
+	// Return the closest point in this node that's within 'radius' of 'center'.
+	// We pass radius as well as radiusSquared in order to reduce square-root
+	// calculations.
+	private Point2 collide(Point2 center, float radius, float radiusSquared) {
+		Point2 closest = null;
+		
+		if (isLeaf) {
+			for (int i = mMinIndex; i < mMaxIndex; i++) {
+				Point2 point = mPoints[i];
+				float distanceSquared = point.distanceToSquared(center);
+				if (distanceSquared < radiusSquared) {
+					// Shorten the search distance, since there may be more
+					// points to check. No need to recalculate 'radius', since
+					// we won't use it.
+					radiusSquared = distanceSquared;
+					closest = point;
+				}
+			}
+		}
+		else {
+			float q = (low.mDimension == X) ? center.x : center.y;
+			
+			if (q + radius >= low.mMinVal && q - radius <= low.mMaxVal) {
+				closest = low.collide(center, radius, radiusSquared);
+			}
+			if (q + radius >= high.mMinVal && q - radius <= high.mMaxVal) {
+				
+				if (closest != null) {
+					// Limit our search even further, since
+					// left.collide() already found something.
+					radiusSquared = closest.distanceToSquared(center);
+					radius = (float) Math.sqrt(radiusSquared);
+				}
+				
+				Point2 rightClosest = high.collide(center, radius, radiusSquared);
+				if (rightClosest != null) {
+					closest = rightClosest;
+				}
+			}
+		}
+		
+		return closest;
+	}
+	
+	// Returns true if the point was removed.
+	public boolean remove(Point2 point) {
+		boolean removed = false;
+		if (isLeaf) {
+			for (int i = mMinIndex; i < mMaxIndex && !removed; i++) {
+				if (mPoints[i].equals(point)) {
+					// Replace this point with the one at the end of our range,
+					// then remove the point at the end of our range.
+					mMaxIndex--;
+					mPoints[i] = mPoints[mMaxIndex];
+					mPoints[mMaxIndex] = null;
+					removed = true;
+				}
+			}
+		}
+		else {
+			float q = (low.mDimension == X) ? point.x : point.y;
+			
+			if (q >= low.mMinVal && q <= low.mMaxVal) {
+				removed = low.remove(point);
+			}
+			else if (q >= high.mMinVal && q <= high.mMaxVal) {
+				removed = high.remove(point);
+			}
+		}
+		
+		return removed;
+	}
+	
+	public Point2[] mPoints;
+	
+	private boolean mDimension;
+	private boolean isLeaf;
+	private int mMinIndex;
+	// mMaxIndex shrinks when nodes are removed.
+	private int mMaxIndex;
+	
+	// Not used by leaves
+	private Quadtree low;
+	private Quadtree high;
+	
+	// These aren't updated when entries are removed, but that's okay.
+	// Removals are rare, so it'd probably be inefficient to recalculate these.
+	private float mMinVal;
+	private float mMaxVal;
+	
+	private static int partition(boolean dimension, Point2[] points, int minIndex, int maxIndex, float pivotValue) {
+		int hole = minIndex;
+		
+		for (int i = minIndex; i < maxIndex; i++) {
+			float q = (dimension == X) ? points[i].x : points[i].y;
+			if (q < pivotValue) {
+				// swap points[hole] and points[i]
+				Point2 temp = points[hole];
+				points[hole] = points[i];
+				points[i] = temp;
+				hole++;
+			}
+		}
+		
+		return hole;
+	}
 }
