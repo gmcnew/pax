@@ -106,6 +106,7 @@ public abstract class Entity {
 		}
 		if(Math.abs(difference) > pi/2){
 			velH -= accelerationLimits[0];
+			if(-velH > maxSpeed) velH = -maxSpeed;
 		} else { 
 			velH += accelerationLimits[0]*Math.cos(difference);
 			if(velH > maxSpeed) velH = maxSpeed;
