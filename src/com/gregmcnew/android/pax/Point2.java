@@ -1,6 +1,10 @@
 package com.gregmcnew.android.pax;
 
-public class Point2 implements Comparable<Point2> { 
+public class Point2 implements Comparable<Point2> {
+	
+	public Point2() {
+		this(0.0f, 0.0f);
+	}
 	
 	public Point2(float X, float Y) {
 		x = X;
