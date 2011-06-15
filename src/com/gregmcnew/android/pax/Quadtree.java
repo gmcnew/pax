@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import android.util.Log;
+
 public class Quadtree {
 
 	public static boolean X = false;
@@ -45,10 +47,11 @@ public class Quadtree {
 		}
 		
 		if (!isLeaf) {
-			// Partition in this dimension, then create 'left' and 'right' nodes
-			// that use the other dimension.
-			float pivotValue = (mMinVal + mMaxVal) / 2;
-			int pivotIndex = partition(mDimension, mPoints, mMinIndex, mMaxIndex, pivotValue);
+			// If this node covers a range in the X dimension (for example), we
+			// want to partition its elements in the Y dimension. After
+			// partitioning, create 'low' and 'high' nodes for the low and high
+			// ranges of the Y-values.
+			int pivotIndex = partition(!mDimension, mPoints, mMinIndex, mMaxIndex);
 			
 			if (low == null) {
 				low = new Quadtree(!mDimension, mEntrySize, mPoints);
@@ -65,9 +68,12 @@ public class Quadtree {
 			low = null;
 			high = null;
 		}
+		
+		mIsValid = true;
 	}
 	
 	public Point2 collide(Point2 center, float radius) {
+		assert(mIsValid);
 		radius += mEntrySize;
 		return collide(center, radius, radius * radius);
 	}
@@ -116,10 +122,40 @@ public class Quadtree {
 		return closest;
 	}
 	
+	public void invalidate() {
+		mIsValid = false;
+	}
+	
+	public void print() {
+		print(0);
+	}
+	
+	private static String spaces = "                                          ";
+	
+	private void print(int depth) {
+		Log.v("Quadtree.print", String.format("%s%s goes from %s=[%f..%f] (indices %d..%d)",
+				spaces.substring(0, depth * 2), (isLeaf ? "leaf" : "node"), (mDimension == X ? "x" : "y"),
+				mMinVal, mMaxVal, mMinIndex, mMaxIndex - 1));
+		if (isLeaf) {
+			for (int i = mMinIndex; i < mMaxIndex; i++) {
+				Log.v("Quadtree.print", String.format("%s- point %d: (%f,%f) with ID %d",
+						spaces.substring(0, depth * 2), i, mPoints[i].x, mPoints[i].y, mPoints[i].id));
+			}
+		}
+		else {
+			depth++;
+			low.print(depth);
+			high.print(depth);
+		}
+	}
+	
 	// Returns true if the point was removed.
 	public boolean remove(Point2 point) {
+		assert(mIsValid);
 		boolean removed = false;
+		Log.v("Quadtree.remove", String.format("removing point (%f,%f) with ID %d", point.x, point.y, point.id));
 		if (isLeaf) {
+			Log.v("Quadtree.remove", String.format("removing from leaf %d(%f --> %f) with %d points", mDimension ? 0 : 1, mMinVal, mMaxVal, mMaxIndex - mMinIndex));
 			for (int i = mMinIndex; i < mMaxIndex && !removed; i++) {
 				if (mPoints[i].equals(point)) {
 					// Replace this point with the one at the end of our range,
@@ -129,9 +165,16 @@ public class Quadtree {
 					mPoints[mMaxIndex] = null;
 					removed = true;
 				}
+				else if (mPoints[i].x == point.x && mPoints[i].y == point.y) {
+					Log.i("Quadtree.remove", String.format("interesting! duplicate point (%f,%f), different ID (%d vs %d)", point.x, point.y, point.id, mPoints[i].id));
+				}
+				else if (mPoints[i].id == point.id) {
+					Log.i("Quadtree.remove", String.format("interesting! different point (%f,%f) vs (%f,%f), duplicate ID (%d)", point.x, point.y, mPoints[i].x, mPoints[i].y, point.id));
+				}
 			}
 		}
 		else {
+			Log.v("Quadtree.remove", String.format("removing from node with %d points", mMaxIndex - mMinIndex));
 			float q = (low.mDimension == X) ? point.x : point.y;
 			
 			if (q >= low.mMinVal && q <= low.mMaxVal) {
@@ -168,7 +211,30 @@ public class Quadtree {
 	// in a given quadtree are for circles of the same size.)
 	private final float mEntrySize;
 	
-	private static int partition(boolean dimension, Point2[] points, int minIndex, int maxIndex, float pivotValue) {
+	private boolean mIsValid;
+	
+	private static int partition(boolean dimension, Point2[] points, int minIndex, int maxIndex) {
+		
+		// Pick a pivot value that bisects this range.
+		float min = 0;
+		float max = 0;
+		boolean first = true;
+		for (int i = minIndex; i < maxIndex; i++) {
+			float q = (dimension == X) ? points[i].x : points[i].y;
+			if (first) {
+				min = q;
+				max = q;
+				first = false;
+			}
+			else if (q < min) {
+				min = q;
+			}
+			else if (q > max) {
+				max = q;
+			}
+		}
+		float pivotValue = (min + max) / 2;
+		
 		int hole = minIndex;
 		
 		for (int i = minIndex; i < maxIndex; i++) {
