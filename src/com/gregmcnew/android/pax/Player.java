@@ -27,6 +27,7 @@ public class Player {
 		mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
 		mBodies = new EnumMap<Entity.Type, Quadtree>(Entity.Type.class);
 		mRetargetQueue = new LinkedList<Entity>();
+		mShooterQueue = new LinkedList<Ship>();
 		
 		for (Entity.Type type : Entity.Type.values()) {
 			mEntities.put(type, new HolyArrayList<Entity>());
@@ -62,6 +63,8 @@ public class Player {
 		money += production;
 	}
 	
+	// This function requires a valid collision space (for retargeting),
+	// so it can't add or move units. See moveEntities for that sort of thing.
 	public void updateEntities() {
 		
 		for (Entity.Type type : Entity.Type.values()) {
@@ -78,10 +81,8 @@ public class Player {
 						removeEntity(ship);
 					}
 					else {
-						ship.move();
-						
 						if (ship.canShoot()) {
-							addProjectile(ship);
+							mShooterQueue.add(ship);
 						}
 					}
 				}
@@ -92,12 +93,24 @@ public class Player {
 						removeEntity(projectile);
 					}
 					else {
-						projectile.move();
 						projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
 					}
 				}
 			}
 		}
+	}
+	
+	public void moveEntities() {
+		for (Entity.Type type : Entity.Type.values()) {
+			for (Entity entity : mEntities.get(type)) {
+				entity.move();
+			}
+		}
+		
+		for (Ship ship : mShooterQueue) {
+			addProjectile(ship);
+		}
+		mShooterQueue.clear();
 	}
 	
 	public void attack(Player victim) {
@@ -106,10 +119,8 @@ public class Player {
 				Projectile projectile = (Projectile) entity;
 				
 				projectile.attack(victim);
-				
-				if (projectile.health <= 0) {
-					removeEntity(projectile);
-				}
+
+				// The projectile will be removed elsewhere if it's dead now.
 			}
 		}
 	}
@@ -121,6 +132,28 @@ public class Player {
 				build(mBuildTarget);
 				money -= cost;
 			}
+		}
+	}
+	
+	public void invalidateCollisionSpaces() {
+		for (Entity.Type type : Entity.Type.values()) {
+			mBodies.get(type).invalidate();
+		}
+	}
+	
+	public void rebuildCollisionSpaces() {
+		
+		for (Entity.Type type : Entity.Type.values()) {
+			
+			// Tweak all of the points in the quadtree, then reset it.
+			int i = 0;
+			Quadtree eTree = mBodies.get(type);
+			
+			for (Entity e : mEntities.get(type)) {
+				eTree.mPoints[i] = e.body.center;
+				i++;
+			}
+			eTree.reset(0, i);
 		}
 	}
 	
@@ -227,9 +260,14 @@ public class Player {
 	}
 	
 	private void removeEntity(Entity entity) {
+		assert(entity.id != Entity.NO_ENTITY);
+		assert(entity.id == entity.body.center.id);
 		int id = entity.id;
+		
 		mEntities.get(entity.type).remove(id);
-		mBodies.get(entity.type).remove(entity.body.center);
+		
+		entity.id = Entity.NO_ENTITY;
+		entity.body.center.id = Entity.NO_ENTITY;
 	}
 	
 	public Map<Entity.Type, HolyArrayList<Entity>> mEntities;
@@ -239,6 +277,7 @@ public class Player {
 	// The retarget queue contains entities that want a new target. This queue
 	// should be handled and cleared on every call to Game.update().
 	public Queue<Entity> mRetargetQueue;
+	public Queue<Ship> mShooterQueue;
 	
 	public float money;
 	public float production;

@@ -33,24 +33,15 @@ public class Game {
 		// Allow all players to produce and build.
 		for (Player player : mPlayers) {
 			player.produce();
-			player.build();
 			player.updateEntities();
-		}
-		
-		// Rebuild all octrees.
-		for (Player player : mPlayers) {
-			for (Entity.Type type : Entity.Type.values()) {
-				
-				// Tweak all of the points in the quadtree, then reset it.
-				int i = 0;
-				Quadtree eTree = player.mBodies.get(type);
-				
-				for (Entity e : player.mEntities.get(type)) {
-					eTree.mPoints[i] = e.body.center;
-					i++;
-				}
-				eTree.reset(0, i);
-			}
+			
+			// Collision spaces should be marked as invalid when entities are being added or moved.
+			player.invalidateCollisionSpaces();
+			
+			player.build();
+			player.moveEntities();
+			
+			player.rebuildCollisionSpaces();
 		}
 		
 		// Let projectiles kill stuff.
