@@ -20,7 +20,7 @@ public class Projectile extends Entity {
 			Point2 p = victim.mBodies.get(victimShipType).collide(body.center, body.radius);
 			if (p != null) {
 				assert(p.id != Entity.NO_ENTITY);
-				Ship victimShip = (Ship) victim.mEntities.get(victimShipType).get(id);
+				Ship victimShip = (Ship) victim.mEntities.get(victimShipType).get(p.id);
 				
 				int damage = health;
 				
