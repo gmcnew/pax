@@ -45,6 +45,7 @@ public class HolyArrayList<E> implements Iterable<E> {
 	
 	public void clear() {
 		mList.clear();
+		mRecycledIDs.clear();
 	}
 
 	public Iterator<E> iterator() {
