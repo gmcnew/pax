@@ -17,9 +17,4 @@ public class Fighter extends Ship {
 	public boolean canShoot() {
 		return Math.random() > 0.99f;
 	}
-	
-	@Override
-	public void updateHeading(){
-		
-	}
 }

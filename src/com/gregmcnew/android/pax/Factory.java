@@ -18,7 +18,13 @@ public class Factory extends Ship {
 	}
 	
 	@Override
+	public void updateVelocity(){
+		velocity.x = maxSpeed * (float)Math.cos(heading);
+		velocity.y = maxSpeed * (float)Math.sin(heading);
+	}
+	
+	@Override
 	public void updateHeading(){
-		heading += TURN_SPEED;
+		heading -= TURN_SPEED;
 	}
 }

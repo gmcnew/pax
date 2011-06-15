@@ -19,8 +19,8 @@ public abstract class Entity {
 	public int health;
 	
 	public Entity target;
-	public float targetHeading; // in radians
-	
+	public float targetHeading = pi/2; 
+	public float difference; // difference between heading and targetHeading.	
 	public CircleF body;
 	public float heading; // in radians
 	public PointF velocity;
@@ -67,11 +67,23 @@ public abstract class Entity {
 		return targetPriorities != null && Math.random() > 0.99f;
 	}
 	
+	public void updatePosition(){
+		float dx_t = velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
+		float dy_t = velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
+		body.center.offset(dx_t, dy_t);
+	}
+	
 	public void updateHeading(){
-		float difference = (heading - targetHeading) % (pi*2);
+		//Gets the difference within +/- 2*pi.
+		difference = (targetHeading - heading) % (pi*2);
 		
-		if(Math.abs(difference) > turnSpeed){
-			if(difference > pi){
+		//Gets difference within +/- pi.
+		if(Math.abs(difference) >= pi){
+			difference += (difference > 0) ? -2*pi : 2*pi;
+		}
+		
+		if(Math.abs(difference) >= turnSpeed){ //If the difference is less than what the ship can turn in one update...
+			if(difference >= 0){
 				heading += turnSpeed;
 			} else {
 				heading -= turnSpeed;
@@ -81,17 +93,30 @@ public abstract class Entity {
 		}
 	}
 	
-	public void updatePosition(){
-		float dx_t = velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
-		float dy_t = velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
-		body.center.offset(dx_t, dy_t);
+	public void updateVelocity(){
+		//Find velocities components in terms of the ships coord. frame.
+		float cosH = (float)Math.cos(heading);
+		float sinH = (float)Math.sin(heading);
+		float velH = velocity.y * sinH + velocity.x * cosH; //Speed in the direction of heading.
+		float velP = velocity.x * sinH - velocity.y * cosH; //Speed in the direction 90deg CW of heading.
+		if(velP > 0){
+			velP = (velP > accelerationLimits[1]) ? velP - accelerationLimits[1] : 0;
+		} else if(velP < 0) {
+			velP = (Math.abs(velP) > accelerationLimits[1]) ? velP + accelerationLimits[1] : 0;
+		}
+		if(Math.abs(difference) > pi/2){
+			velH -= accelerationLimits[0];
+		} else { 
+			velH += accelerationLimits[0]*Math.cos(difference);
+			if(velH > maxSpeed) velH = maxSpeed;
+		}
+		velocity.x = velH * cosH + velP * sinH;
+		velocity.y = velH * sinH - velP * cosH;
 	}
 	
 	public void move(){
 		updatePosition();
 		updateHeading();
-		//Update acceleration
-		
-		//Update velocity
+		updateVelocity();
 	}
 }

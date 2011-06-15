@@ -9,6 +9,4 @@ public abstract class Ship extends Entity {
 	}
 		
 	public abstract boolean canShoot();
-
-	public abstract void updateHeading();
 }

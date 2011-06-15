@@ -67,9 +67,6 @@ public class Player {
 					mRetargetQueue.add(entity);
 				}
 				
-				// TODO: Refactor the following code into an Entity.update()
-				// function or something similar.
-				
 				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FRIGATE || type == Entity.Type.FACTORY) {
 				
 					Ship ship = (Ship) entity;
@@ -80,7 +77,7 @@ public class Player {
 						ship.move();
 						
 						if (ship.canShoot()) {
-							addProjectile(ship);
+							//addProjectile(ship);
 						}
 					}
 				}
@@ -191,7 +188,7 @@ public class Player {
 				factoryY = screenSize.y/2 + (float) (orbitRadius * Math.sin(theta));
 				
 				ship.body.center.set(factoryX, factoryY);
-				ship.heading = theta + (float) Math.PI/2 + offset;
+				ship.heading = theta - (float) Math.PI/2 - offset;
 			}
 			mBodies.get(type).add(ship.id, ship.body);
 		}
