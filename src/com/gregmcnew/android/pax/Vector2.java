@@ -6,8 +6,8 @@ public class Vector2 {
 		mA = a;
 		mB = b;
 		
-		mX = mB.mX - mA.mX;
-		mY = mB.mY - mA.mY;
+		mX = mB.x - mA.x;
+		mY = mB.y - mA.y;
 		
 		mTag = tag;
 	}
@@ -33,8 +33,8 @@ public class Vector2 {
 		float dy = otherVector.mY;
 		mA = otherVector.mA.add(dx * startHitTime, dy * startHitTime);
 		mB = otherVector.mA.add(dx * endHitTime, dy * endHitTime);
-		mX = mB.mX - mA.mX;
-		mY = mB.mY - mA.mY;
+		mX = mB.x - mA.x;
+		mY = mB.y - mA.y;
 		mTag = otherVector.mTag;
 	}
 	
@@ -47,8 +47,8 @@ public class Vector2 {
 	}
 	
 	public float crossZ(Point2 otherA, Point2 otherB) {
-		float otherX = otherB.mX - otherA.mX;
-		float otherY = otherB.mY - otherA.mY;
+		float otherX = otherB.x - otherA.x;
+		float otherY = otherB.y - otherA.y;
 		return (mX * otherY) - (mY * otherX);
 	}
 	
