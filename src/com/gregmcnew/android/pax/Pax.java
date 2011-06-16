@@ -75,7 +75,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     	public void run() {
     		
     		if (SELF_BENCHMARK) {
-    			for (mFrames = 0; mFrames < 1000; mFrames++) {
+    			for (mFrames = 0; mFrames < 300; mFrames++) {
     				mGame.update();
     				/*
 	    			mView.invalidate();
