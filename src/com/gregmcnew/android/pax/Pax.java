@@ -18,7 +18,6 @@ import android.widget.Toast;
 public class Pax extends Activity implements OnClickListener, OnKeyListener, OnTouchListener {
     
     public final static boolean SELF_BENCHMARK = false;
-    public final static boolean BENCHMARK = false;
 	
 	static int UPDATE_INTERVAL_MS = 40;
     
@@ -35,14 +34,6 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     @Override
     public void onResume() {
     	super.onResume();
-    	if (BENCHMARK) {
-    		try {
-				Thread.sleep(3000, 0);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
     	
     	thisContext = this;
         
@@ -71,7 +62,10 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     	mFrames = 0;
     	
         mHandler.postDelayed(mUpdateViewTask, 0);
-        
+
+        if (SELF_BENCHMARK) {
+        	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
+        }
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
     }
     
@@ -81,43 +75,15 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     	public void run() {
     		
     		if (SELF_BENCHMARK) {
-    			for (mFrames = 0; mFrames < 100; mFrames++) {
-        	    	//Log.i("Petri:run", String.format("frame %d", mFrames));
-	    			if (mFrames == 10) {
-	    				float gridWidth = 2;
-	    				float gridHeight = 3;
-	    				for (int x = 0; x < gridWidth; x++) {
-	    					for (int y = 0; y < gridHeight; y++) {
-	    						float xPos = mView.getWidth() * ((0.5f + x) / gridWidth);
-	    						float yPos = mView.getHeight() * ((0.5f + y) / gridHeight);
-	    						xPos += mRandom.nextInt(30) - 15;
-	    						yPos += mRandom.nextInt(30) - 15;
-	    						//addBlob(xPos, yPos); 
-	    					}
-	    				}
-	    			}
+    			for (mFrames = 0; mFrames < 1000; mFrames++) {
+    				mGame.update();
+    				/*
 	    			mView.invalidate();
+		    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
+		    		*/
     			}
     			
-    			updateState(Game.State.TIE);
-    			return;
-    		}
-    		else if (BENCHMARK) {
-    			
-    			if (mFrames % 10 == 1) {
-    				//addBlob(mRandom.nextInt(mView.getWidth()), mRandom.nextInt(mView.getHeight()));
-    			}
-    			
-        		mView.invalidate();
-	    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
-	    		
-	    		updateState(mGame.getState());
-	    		
-	    		if (mFrames > 200) {
-	    			updateState(Game.State.TIE);
-	    		}
-	    		
-	    		mFrames++;
+        		updateState(Game.State.TIE);
     		}
     		else {
         		mView.invalidate();
@@ -132,14 +98,6 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     public void onDestroy() {
     	if (SELF_BENCHMARK) {
     		Debug.stopMethodTracing();
-    	}
-    	else if (BENCHMARK) {
-    		try {
-				Thread.sleep(3000, 0);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
     	}
     	super.onDestroy();
     }
@@ -163,7 +121,9 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     					resultString = "The game is over!";
     			}
     			Toast.makeText(this, resultString, Toast.LENGTH_LONG).show();
-    			//finish();
+    			if (SELF_BENCHMARK) {
+    				finish();
+    			}
     		}
 		}
     }
