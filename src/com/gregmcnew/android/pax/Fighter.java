@@ -7,10 +7,10 @@ public class Fighter extends Ship {
 	public static float TURN_SPEED = 0.025f; //in radians per 40ms
 	public static float[]ACCELERATIONLIMS = {120f, 60f};
 	public static float MAXSPEED = 150f;
-	public static Type[] TARGET_PRIORITIES = { Type.BOMBER, Type.FIGHTER, Type.FRIGATE, Type.FACTORY };
+	public static int[] TARGET_PRIORITIES = { Entity.BOMBER, Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };
 
 	protected Fighter() {
-		super(Type.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 	}
 
 	@Override

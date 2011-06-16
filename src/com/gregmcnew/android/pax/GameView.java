@@ -3,8 +3,6 @@ package com.gregmcnew.android.pax;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.gregmcnew.android.pax.Entity.Type;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -20,31 +18,31 @@ public class GameView extends View {
 		super(context);
 		mGame = game;
 		
-		mPlayerEntityBitmaps = new HashMap<Player, Map<Type, Bitmap>>();
+		mPlayerEntityBitmaps = new HashMap<Player, Bitmap[]>();
 		
 		// Load all bitmaps
 		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-			HashMap<Type, Bitmap> playerBitmaps = new HashMap<Type, Bitmap>();
+			Bitmap[] playerBitmaps = new Bitmap[Entity.TYPES.length];
 			Resources res = getResources();
 			
 			switch (i) {
 				case 0:
-					playerBitmaps.put(Type.FIGHTER, BitmapFactory.decodeResource(res, R.drawable.fighter_p1));
-					playerBitmaps.put(Type.BOMBER,  BitmapFactory.decodeResource(res, R.drawable.bomber_p1));
-					playerBitmaps.put(Type.FRIGATE, BitmapFactory.decodeResource(res, R.drawable.frigate_p1));
-					playerBitmaps.put(Type.FACTORY, BitmapFactory.decodeResource(res, R.drawable.factory_p1));
+					playerBitmaps[Entity.FIGHTER] = BitmapFactory.decodeResource(res, R.drawable.fighter_p1);
+					playerBitmaps[Entity.BOMBER]  = BitmapFactory.decodeResource(res, R.drawable.bomber_p1);
+					playerBitmaps[Entity.FRIGATE] = BitmapFactory.decodeResource(res, R.drawable.frigate_p1);
+					playerBitmaps[Entity.FACTORY] = BitmapFactory.decodeResource(res, R.drawable.factory_p1);
 					break;
 				case 1:
-					playerBitmaps.put(Type.FIGHTER, BitmapFactory.decodeResource(res, R.drawable.fighter_p2));
-					playerBitmaps.put(Type.BOMBER,  BitmapFactory.decodeResource(res, R.drawable.bomber_p2));
-					playerBitmaps.put(Type.FRIGATE, BitmapFactory.decodeResource(res, R.drawable.frigate_p2));
-					playerBitmaps.put(Type.FACTORY, BitmapFactory.decodeResource(res, R.drawable.factory_p2));
+					playerBitmaps[Entity.FIGHTER] = BitmapFactory.decodeResource(res, R.drawable.fighter_p2);
+					playerBitmaps[Entity.BOMBER]  = BitmapFactory.decodeResource(res, R.drawable.bomber_p2);
+					playerBitmaps[Entity.FRIGATE] = BitmapFactory.decodeResource(res, R.drawable.frigate_p2);
+					playerBitmaps[Entity.FACTORY] = BitmapFactory.decodeResource(res, R.drawable.factory_p2);
 					break;
 			}
 			
-			playerBitmaps.put(Type.LASER,   BitmapFactory.decodeResource(res, R.drawable.laser));
-			playerBitmaps.put(Type.BOMB,    BitmapFactory.decodeResource(res, R.drawable.bomb));
-			playerBitmaps.put(Type.MISSILE, BitmapFactory.decodeResource(res, R.drawable.missile));
+			playerBitmaps[Entity.LASER]   = BitmapFactory.decodeResource(res, R.drawable.laser);
+			playerBitmaps[Entity.BOMB]    = BitmapFactory.decodeResource(res, R.drawable.bomb);
+			playerBitmaps[Entity.MISSILE] = BitmapFactory.decodeResource(res, R.drawable.missile);
 			
 			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
@@ -73,9 +71,9 @@ public class GameView extends View {
 	
 	// Draw factories at the bottom, with frigates above them, bombers above
 	// frigates, and fighters above everything.
-	private Entity.Type ENTITY_LAYERS[] = {
-			Entity.Type.FACTORY, Entity.Type.FRIGATE, Entity.Type.BOMBER, Entity.Type.FIGHTER,
-			Entity.Type.LASER, Entity.Type.BOMB, Entity.Type.MISSILE
+	private int ENTITY_LAYERS[] = {
+			Entity.FACTORY, Entity.FRIGATE, Entity.BOMBER, Entity.FIGHTER,
+			Entity.LASER, Entity.BOMB, Entity.MISSILE
 			};
 
 	@Override
@@ -83,36 +81,45 @@ public class GameView extends View {
 		// Update the game.
 		mGame.update();
 
-		for (Entity.Type entityType : ENTITY_LAYERS) {
+		for (int entityType : ENTITY_LAYERS) {
+			float radius = Entity.Radii[entityType];
+			radius *= 2; // some ships are bigger than their circles
+			float minXDrawable = 0 - radius;
+			float maxXDrawable = 320 + radius;
+			float minYDrawable = 0 - radius;
+			float maxYDrawable = 480 + radius;
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 				Player player = mGame.mPlayers[i];
-				Map<Type, Bitmap> entityBitmaps = mPlayerEntityBitmaps.get(player);
+				Bitmap[] entityBitmaps = mPlayerEntityBitmaps.get(player);
 			
-				for (Entity entity : player.mEntities.get(entityType)) {
+				for (Entity entity : player.mEntities[entityType]) {
 					
-					Bitmap bitmap = entityBitmaps.get(entity.type);
+					if (entity.body.center.x > minXDrawable && entity.body.center.x < maxXDrawable && entity.body.center.y > minYDrawable && entity.body.center.y < maxYDrawable) {
 					
-					if (bitmap != null) {
-						// Scale the image so that its smallest dimension fills the circle.
-						// (Its largest dimension may spill outside the circle.)
-						Matrix matrix = new Matrix();
-						float scaleX = entity.diameter / bitmap.getWidth();
-						float scaleY = entity.diameter / bitmap.getHeight();
-						float scale = Math.max(scaleX, scaleY);
-						matrix.postScale(scale, scale);
-						matrix.postTranslate(entity.body.center.x - (scale / scaleX) * entity.radius, entity.body.center.y - (scale / scaleY) * entity.radius);
-						matrix.postRotate((float) Math.toDegrees(entity.heading), entity.body.center.x, entity.body.center.y);
+						Bitmap bitmap = entityBitmaps[entity.type];
 						
-						canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+						if (bitmap != null) {
+							// Scale the image so that its smallest dimension fills the circle.
+							// (Its largest dimension may spill outside the circle.)
+							Matrix matrix = new Matrix();
+							float scaleX = entity.diameter / bitmap.getWidth();
+							float scaleY = entity.diameter / bitmap.getHeight();
+							float scale = Math.max(scaleX, scaleY);
+							matrix.postScale(scale, scale);
+							matrix.postTranslate(entity.body.center.x - (scale / scaleX) * entity.radius, entity.body.center.y - (scale / scaleY) * entity.radius);
+							matrix.postRotate((float) Math.toDegrees(entity.heading), entity.body.center.x, entity.body.center.y);
+							
+							canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+						}
+						
+						canvas.drawCircle(entity.body.center.x, entity.body.center.y, entity.radius, mBoundsPaints[i]);
 					}
-					
-					canvas.drawCircle(entity.body.center.x, entity.body.center.y, entity.radius, mBoundsPaints[i]);
 				}
 			}
 		}
 	}
 	
-	private HashMap<Player, Map<Type, Bitmap>> mPlayerEntityBitmaps;
+	private Map<Player, Bitmap[]> mPlayerEntityBitmaps;
 	
 	private Game mGame;
 }

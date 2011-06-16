@@ -87,7 +87,7 @@ public class Game {
 		entity.target = null;
 		for (int i = 0; i < entity.targetPriorities.length && entity.target == null; i++) {
 			
-			Entity.Type targetType = entity.targetPriorities[i];
+			int targetType = entity.targetPriorities[i];
 			
 			float searchLimit = 9000.1f; // XXX
 			if (entity.targetSearchLimits != null) {
@@ -96,10 +96,10 @@ public class Game {
 			
 			for (Player victim : mPlayers) {
 				if (victim != player) {
-					Point2 p = victim.mBodies.get(targetType).collide(entity.body.center, searchLimit);
-					if (p != null) {
-						assert(p.id != Entity.NO_ENTITY);
-						entity.target = victim.mEntities.get(targetType).get(p.id);
+					Entity closest = victim.mEntities[targetType].collide(entity.body.center, searchLimit);
+					if (closest != null) {
+						entity.target = closest;
+						break;
 					}
 				}
 			}

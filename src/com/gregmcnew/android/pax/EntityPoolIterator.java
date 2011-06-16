@@ -3,9 +3,9 @@ package com.gregmcnew.android.pax;
 import java.util.Iterator;
 import java.util.List;
 
-public class HolyArrayListIterator<E> implements Iterator<E> {
+public class EntityPoolIterator implements Iterator<Entity> {
 
-	public HolyArrayListIterator(HolyArrayList<E> hal, List<E> list) {
+	public EntityPoolIterator(EntityPool hal, List<Entity> list) {
 		mHal = hal;
 		mList = list;
 		i = 0;
@@ -25,7 +25,7 @@ public class HolyArrayListIterator<E> implements Iterator<E> {
 	}
 
 	@Override
-	public E next() {
+	public Entity next() {
 		int size = mList.size();
 		
 		// Skip null (recycled) entries.
@@ -41,8 +41,8 @@ public class HolyArrayListIterator<E> implements Iterator<E> {
 		mHal.remove(i);
 	}
 	
-	private HolyArrayList<E> mHal;
-	private List<E> mList;
+	private EntityPool mHal;
+	private List<Entity> mList;
 	private int i;
 
 }

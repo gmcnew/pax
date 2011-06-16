@@ -11,7 +11,7 @@ public class Laser extends Projectile {
 	public static int MAX_LIFE_MS = 1000;
 
 	protected Laser(Ship parent) {
-		super(Type.LASER, null, null, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.LASER, null, null, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.heading;

@@ -10,13 +10,13 @@ public class Missile extends Projectile {
 	public static float MAXVELOCITY = 4f;
 	
 	// TODO: Set missile target priorities and search limits.
-	public static Type[] TARGET_PRIORITIES = { };
+	public static int[] TARGET_PRIORITIES = { };
 	public static float[] TARGET_SEARCH_LIMITS = { };
 	
 	public static int MAX_LIFE_MS = 5000;
 
 	protected Missile(Ship parent) {
-		super(Type.LASER, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.LASER, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.heading;

@@ -7,13 +7,13 @@ public class Frigate extends Ship {
 	public static float TURN_SPEED = 0.01f;
 	public static float[] ACCELERATIONLIMS = {30f, 15f};
 	public static float MAXSPEED = 20f;
-	public static Type[] TARGET_PRIORITIES = { Type.FIGHTER, Type.FRIGATE, Type.FACTORY };
+	public static int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };
 	
 	// TODO: Consider adding ShipType.BOMBER as the lowest-priority target and
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
 	protected Frigate() {
-		super(Type.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 	}
 
 	@Override

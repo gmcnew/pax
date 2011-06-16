@@ -6,8 +6,8 @@ import android.graphics.PointF;
 public abstract class Entity {
 	
 	public static int NO_ENTITY = -1;
-	public final Type type;
-	public final Type[] targetPriorities;
+	public final int type;
+	public final int[] targetPriorities;
 	public final float[] targetSearchLimits;
 	public final float radius;
 	public final float diameter;
@@ -27,14 +27,21 @@ public abstract class Entity {
 	
 	protected int id;
 
-	public static enum Type { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE }
+	public static final int FIGHTER = 0;
+	public static final int BOMBER  = 1;
+	public static final int FRIGATE = 2;
+	public static final int FACTORY = 3;
+	public static final int LASER   = 4;
+	public static final int BOMB    = 5;
+	public static final int MISSILE = 6;
+	public static final int[] TYPES = { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
 	public static float[] Radii = {
 		Fighter.DIAMETER / 2, Bomber.DIAMETER / 2, Frigate.DIAMETER / 2, Factory.DIAMETER / 2,
 		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
 		};
 	
-	protected Entity(Type Type, Type[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
+	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
 		targetSearchLimits = TargetSearchLimits;

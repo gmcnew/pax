@@ -1,8 +1,6 @@
 package com.gregmcnew.android.pax;
 
-import java.util.EnumMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
 import android.content.Context;
@@ -24,18 +22,13 @@ public class Player {
 		production = 0.75f;
 		production *= 5; // warp speed!
 		
-		mEntities = new EnumMap<Entity.Type, HolyArrayList<Entity>>(Entity.Type.class);
-		mBodies = new EnumMap<Entity.Type, Quadtree>(Entity.Type.class);
+		mEntities = new EntityPool[Entity.TYPES.length];
+		
 		mRetargetQueue = new LinkedList<Entity>();
 		mShooterQueue = new LinkedList<Ship>();
 		
-		for (Entity.Type type : Entity.Type.values()) {
-			mEntities.put(type, new HolyArrayList<Entity>());
-			
-			// Make the first split in the Y-dimension (yielding top and
-			// bottom halves).
-			// TODO: Allow an octree to grow to more than 1024 points if necessary.
-			mBodies.put(type, new Quadtree(Quadtree.Y, Entity.Radii[type.ordinal()], new Point2[1024]));
+		for (int type : Entity.TYPES) {
+			mEntities[type] = new EntityPool(type);
 		}
 		
 		playerNo = playerNumber;
@@ -45,18 +38,17 @@ public class Player {
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
-		for (Entity.Type type : Entity.Type.values()) {
-			mEntities.get(type).clear();
-			mBodies.get(type).reset(0, 0);
+		for (int type : Entity.TYPES) {
+			mEntities[type].clear();
 		}
 		
 		mRetargetQueue.clear();
 		
-		addShip(Ship.Type.FACTORY);
+		addShip(Entity.FACTORY);
 	}
 	
 	public boolean hasLost() {
-		return mEntities.get(Entity.Type.FACTORY).isEmpty();
+		return mEntities[Entity.FACTORY].isEmpty();
 	}
 	
 	public void produce() {
@@ -67,14 +59,14 @@ public class Player {
 	// so it can't add or move units. See moveEntities for that sort of thing.
 	public void updateEntities() {
 		
-		for (Entity.Type type : Entity.Type.values()) {
-			for (Entity entity : mEntities.get(type)) {
+		for (int type : Entity.TYPES) {
+			for (Entity entity : mEntities[type]) {
 				
 				if (entity.wantsNewTarget()) {
 					mRetargetQueue.add(entity);
 				}
 				
-				if (type == Entity.Type.FIGHTER || type == Entity.Type.BOMBER || type == Entity.Type.FRIGATE || type == Entity.Type.FACTORY) {
+				if (type == Entity.FIGHTER || type == Entity.BOMBER || type == Entity.FRIGATE || type == Entity.FACTORY) {
 				
 					Ship ship = (Ship) entity;
 					if (ship.health <= 0) {
@@ -101,8 +93,8 @@ public class Player {
 	}
 	
 	public void moveEntities() {
-		for (Entity.Type type : Entity.Type.values()) {
-			for (Entity entity : mEntities.get(type)) {
+		for (int type : Entity.TYPES) {
+			for (Entity entity : mEntities[type]) {
 				entity.move();
 			}
 		}
@@ -114,8 +106,8 @@ public class Player {
 	}
 	
 	public void attack(Player victim) {
-		for (Entity.Type projectileType : Projectile.TYPES) {
-			for (Entity entity : mEntities.get(projectileType)) {
+		for (int type : Projectile.TYPES) {
+			for (Entity entity : mEntities[type]) {
 				Projectile projectile = (Projectile) entity;
 				
 				projectile.attack(victim);
@@ -136,24 +128,15 @@ public class Player {
 	}
 	
 	public void invalidateCollisionSpaces() {
-		for (Entity.Type type : Entity.Type.values()) {
-			mBodies.get(type).invalidate();
+		for (int type : Entity.TYPES) {
+			mEntities[type].invalidateCollisionSpaces();
 		}
 	}
 	
 	public void rebuildCollisionSpaces() {
-		
-		for (Entity.Type type : Entity.Type.values()) {
-			
-			// Tweak all of the points in the quadtree, then reset it.
-			int i = 0;
-			Quadtree eTree = mBodies.get(type);
-			
-			for (Entity e : mEntities.get(type)) {
-				eTree.mPoints[i] = e.body.center;
-				i++;
-			}
-			eTree.reset(0, i);
+
+		for (int type : Entity.TYPES) {
+			mEntities[type].rebuildCollisionSpaces();
 		}
 	}
 	
@@ -163,13 +146,13 @@ public class Player {
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
 			case FIGHTER:
-				addShip(Ship.Type.FIGHTER);
+				addShip(Entity.FIGHTER);
 				break;
 			case BOMBER:
-				addShip(Ship.Type.BOMBER);
+				addShip(Entity.BOMBER);
 				break;
 			case FRIGATE:
-				addShip(Ship.Type.FRIGATE);
+				addShip(Entity.FRIGATE);
 				break;
 			case UPGRADE:
 				production += 0.25f;
@@ -177,41 +160,39 @@ public class Player {
 		}
 	}
 	
-	private int addShip(Entity.Type type) {
+	private int addShip(int type) {
 		
 		int id = Entity.NO_ENTITY;
 			
 		Ship ship = null;
 		switch (type) {
-			case FIGHTER:
+			case Entity.FIGHTER:
 				ship = new Fighter();
 				break;
-			case BOMBER:
+			case Entity.BOMBER:
 				ship = new Bomber();
 				break;
-			case FRIGATE:
+			case Entity.FRIGATE:
 				ship = new Frigate();
 				break;
-			case FACTORY:
+			case Entity.FACTORY:
 				ship = new Factory();
 				break;
 		}
 		
 		if (ship != null) {
-			id = mEntities.get(type).add(ship);
-			ship.id = id;
-			ship.body.center.id = id;
+			id = mEntities[type].add(ship);
 			
 			// Fix the ship's location.
-			if (type != Ship.Type.FACTORY){ // If the ship being spawned ISN'T a factory...
-				Ship factory = (Ship) mEntities.get(Entity.Type.FACTORY).get(0);
+			if (type != Entity.FACTORY) { // If the ship being spawned ISN'T a factory...
+				Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
 				float spawnX, spawnY;
 				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
 				spawnY = factory.body.center.y + (float) (55 * Math.sin(factory.heading));
 				ship.body.center.set(spawnX, spawnY);
 				ship.heading = factory.heading;
 			}
-			else{ // If the ship being spawned IS a factory...
+			else { // If the ship being spawned IS a factory...
 				float factoryX = 0, factoryY = 0;
 				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
 		    	
@@ -239,40 +220,29 @@ public class Player {
 		
 		Projectile projectile = null;
 		switch (parent.type) {
-			case FIGHTER:
+			case Entity.FIGHTER:
 				projectile = new Laser(parent);
 				break;
-			case BOMBER:
+			case Entity.BOMBER:
 				projectile = new Bomb(parent);
 				break;
-			case FRIGATE:
+			case Entity.FRIGATE:
 				projectile = new Missile(parent);
 				break;
 		}
 		
 		if (projectile != null) {
-			id = mEntities.get(projectile.type).add(projectile);
-			projectile.id = id;
-			projectile.body.center.id = id;
+			id = mEntities[projectile.type].add(projectile);
 		}
 		
 		return id;
 	}
 	
 	private void removeEntity(Entity entity) {
-		assert(entity.id != Entity.NO_ENTITY);
-		assert(entity.id == entity.body.center.id);
-		int id = entity.id;
-		
-		mEntities.get(entity.type).remove(id);
-		
-		entity.id = Entity.NO_ENTITY;
-		entity.body.center.id = Entity.NO_ENTITY;
+		mEntities[entity.type].remove(entity.id);
 	}
 	
-	public Map<Entity.Type, HolyArrayList<Entity>> mEntities;
-	
-	public Map<Entity.Type, Quadtree> mBodies;
+	public EntityPool[] mEntities;
 	
 	// The retarget queue contains entities that want a new target. This queue
 	// should be handled and cleared on every call to Game.update().

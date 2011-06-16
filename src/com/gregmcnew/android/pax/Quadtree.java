@@ -188,7 +188,7 @@ public class Quadtree {
 		return removed;
 	}
 	
-	public Point2[] mPoints;
+	protected final Point2[] mPoints;
 	
 	private boolean mDimension;
 	private boolean isLeaf;
