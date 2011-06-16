@@ -19,13 +19,15 @@ public class GameView extends View {
 		super(context);
 		mGame = game;
 		mOrientation = Configuration.ORIENTATION_PORTRAIT;
+		mHeight = 480;
+		mWidth = 320;
 		
 		mPlayerEntityBitmaps = new HashMap<Player, Bitmap[]>();
 		
 		// Load all bitmaps
+		Resources res = getResources();
 		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 			Bitmap[] playerBitmaps = new Bitmap[Entity.TYPES.length];
-			Resources res = getResources();
 			
 			switch (i) {
 				case 0:
@@ -49,6 +51,8 @@ public class GameView extends View {
 			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
 		}
 		
+		mBackgroundBitmap = BitmapFactory.decodeResource(res, R.drawable.background);
+		
 
 		mBoundsPaints = new Paint[2];
 		mBoundsPaints[0] = new Paint();
@@ -70,10 +74,14 @@ public class GameView extends View {
 	public void updateOrientation(int orientation) {
 		if (orientation != mOrientation) {
 			mOrientation = orientation;
-
+			
 			mAngleFudge = (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
 				? (float) (-Math.PI / 2)
 				: 0.0f;
+
+			int temp = mWidth;
+			mWidth = mHeight;
+			mHeight = temp;
 		}
 	}
 	
@@ -93,15 +101,26 @@ public class GameView extends View {
 		// Update the game.
 		mGame.update();
 
+		Matrix matrix = new Matrix();
+		{
+			float scaleX = (float) mWidth / mBackgroundBitmap.getWidth();
+			float scaleY = (float) mHeight / mBackgroundBitmap.getHeight();
+			float scale = Math.max(scaleX, scaleY);
+			matrix.postScale(scale, scale);
+			matrix.postTranslate((scaleX - scale) * (mBackgroundBitmap.getWidth() / 2),
+					(scaleY - scale) * (mBackgroundBitmap.getHeight() / 2));
+			canvas.drawBitmap(mBackgroundBitmap, matrix, mBitmapPaint);
+		}
+
 		for (int entityType : ENTITY_LAYERS) {
 			float radius = Entity.Radii[entityType];
 			radius *= 2; // some ships are bigger than their circles
 			
 			// TODO: Figure out window bounds intelligently.
 			float minXDrawable = 0 - radius;
-			float maxXDrawable = 320 + radius;
+			float maxXDrawable = mWidth + radius;
 			float minYDrawable = 0 - radius;
-			float maxYDrawable = 480 + radius;
+			float maxYDrawable = mHeight + radius;
 			
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 				Player player = mGame.mPlayers[i];
@@ -127,7 +146,7 @@ public class GameView extends View {
 						if (bitmap != null) {
 							// Scale the image so that its smallest dimension fills the circle.
 							// (Its largest dimension may spill outside the circle.)
-							Matrix matrix = new Matrix();
+							matrix.reset();
 							float scaleX = entity.diameter / bitmap.getWidth();
 							float scaleY = entity.diameter / bitmap.getHeight();
 							float scale = Math.max(scaleX, scaleY);
@@ -145,6 +164,8 @@ public class GameView extends View {
 		}
 	}
 	
+	private Bitmap mBackgroundBitmap;
+	
 	private Map<Player, Bitmap[]> mPlayerEntityBitmaps;
 	
 	private Game mGame;
@@ -153,4 +174,7 @@ public class GameView extends View {
 	
 	// Added to an entity's heading when rotating its bitmap.
 	private float mAngleFudge;
+	
+	private int mHeight;
+	private int mWidth;
 }
