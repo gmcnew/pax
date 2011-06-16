@@ -3,6 +3,7 @@ package com.gregmcnew.android.pax;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -67,6 +68,12 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
         }
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
+    }
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){        
+        super.onConfigurationChanged(newConfig);
+        mView.updateOrientation(newConfig.orientation);
     }
     
     private Random mRandom;
