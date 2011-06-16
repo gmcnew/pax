@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 public class Pax extends Activity implements OnClickListener, OnKeyListener, OnTouchListener {
     
-    public final static boolean SELF_BENCHMARK = false;
+    public final static boolean SELF_BENCHMARK = true;
 	
 	static int UPDATE_INTERVAL_MS = 40;
     
@@ -27,7 +27,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         super.onCreate(savedInstanceState);
         
         if (SELF_BENCHMARK) {
-        	Debug.startMethodTracing("dmtrace.trace", 32 * 1024 * 1024);
+        	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
     }
     
@@ -81,6 +81,10 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 	    			mView.invalidate();
 		    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
 		    		*/
+    				
+    				if (mFrames % 25 == 0 && mGame.getState() != Game.State.IN_PROGRESS) {
+    					mGame.reset();
+    				}
     			}
     			
         		updateState(Game.State.TIE);
