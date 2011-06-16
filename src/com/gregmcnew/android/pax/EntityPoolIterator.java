@@ -8,28 +8,26 @@ public class EntityPoolIterator implements Iterator<Entity> {
 	public EntityPoolIterator(EntityPool hal, List<Entity> list) {
 		mHal = hal;
 		mList = list;
+		mSize = list.size();
 		i = 0;
 	}
 	
 	@Override
 	public boolean hasNext() {
-		int t = i;
-		int size = mList.size();
-		
-		// Skip null (recycled) entries.
-		while (t < size && mList.get(t) == null) {
-			t++;
+
+		// Skip null (recycled) entries. It's okay to advance i, since we don't
+		// want it pointing at null entries anyway.
+		while (i < mSize && mList.get(i) == null) {
+			i++;
 		}
 		
-		return t < size;
+		return i < mSize;
 	}
 
 	@Override
 	public Entity next() {
-		int size = mList.size();
-		
 		// Skip null (recycled) entries.
-		while (i < size && mList.get(i) == null) {
+		while (i < mSize && mList.get(i) == null) {
 			i++;
 		}
 		
@@ -41,8 +39,9 @@ public class EntityPoolIterator implements Iterator<Entity> {
 		mHal.remove(i);
 	}
 	
-	private EntityPool mHal;
-	private List<Entity> mList;
+	private final EntityPool mHal;
+	private final List<Entity> mList;
+	private final int mSize;
 	private int i;
 
 }
