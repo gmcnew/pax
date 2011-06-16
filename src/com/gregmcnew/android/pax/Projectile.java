@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 public class Projectile extends Entity {
 
 	@SuppressWarnings("hiding")
-	public static int[] TYPES = { Entity.LASER, Entity.BOMB, Entity.MISSILE };
+	public static final int[] TYPES = { Entity.LASER, Entity.BOMB, Entity.MISSILE };
 
 	public int lifeMs;
 	

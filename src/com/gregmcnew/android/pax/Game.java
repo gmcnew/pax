@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE }
-	public static int NUM_PLAYERS = 2;
+	public static final int NUM_PLAYERS = 2;
 	
 	public Game()
 	{

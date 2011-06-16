@@ -4,10 +4,10 @@ import android.util.Log;
 
 public class Quadtree {
 
-	public static boolean X = false;
-	public static boolean Y = true;
+	public static final boolean X = false;
+	public static final boolean Y = true;
 	
-	private static int MAX_SIZE = 5;
+	private static final int MAX_SIZE = 5;
 	
 	public Quadtree(boolean dimension, float entrySize, Point2[] points) {
 		

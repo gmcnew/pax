@@ -5,7 +5,8 @@ import android.graphics.PointF;
 /**Abstract class. Represents any entity in the game's id, health, velocity, etc.**/
 public abstract class Entity {
 	
-	public static int NO_ENTITY = -1;
+	public static final int NO_ENTITY = -1;
+	
 	public final int type;
 	public final int[] targetPriorities;
 	public final float[] targetSearchLimits;

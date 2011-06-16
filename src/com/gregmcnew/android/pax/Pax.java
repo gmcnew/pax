@@ -17,9 +17,9 @@ import android.widget.Toast;
 
 public class Pax extends Activity implements OnClickListener, OnKeyListener, OnTouchListener {
     
-    public final static boolean SELF_BENCHMARK = true;
+    public static final boolean SELF_BENCHMARK = false;
 	
-	static int UPDATE_INTERVAL_MS = 40;
+	public static final int UPDATE_INTERVAL_MS = 40;
     
     /** Called when the activity is first created. */
     @Override
