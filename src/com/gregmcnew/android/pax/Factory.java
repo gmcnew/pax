@@ -4,7 +4,7 @@ public class Factory extends Ship {
 	
 	public static final int HEALTH = 20000;
 	public static final float DIAMETER = 135;
-	public static final float TURN_SPEED = 0.0023f;
+	public static final float TURN_SPEED = 0.0015f;
 	public static final float[] ACCELERATIONLIMS = {3f, 1.5f};
 	public static final float MAXSPEED = 6f;
 

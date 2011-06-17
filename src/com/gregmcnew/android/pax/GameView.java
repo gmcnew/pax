@@ -198,6 +198,7 @@ public class GameView extends View {
 								matrix.reset();
 								float scale = 1.0f;
 								matrix.postScale(scale, scale);
+								//TODO: Center the outline on the factory
 								matrix.postTranslate((float) (posX - scale * bitmap.getWidth() / 2), (float) (posY - scale * bitmap.getHeight() / 2));
 								
 								double displayAngle = mAngleFudge + Math.PI / 2;
@@ -210,7 +211,7 @@ public class GameView extends View {
 								// amount.
 								displayAngle += 0.001f;
 								
-								matrix.postRotate((float) Math.toDegrees(displayAngle), posX, posY);
+								matrix.postRotate((float) Math.toDegrees(displayAngle - Math.PI/2), posX, posY); // The indicator doesn't follow the factory
 								
 								canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
 							}
