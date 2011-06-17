@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -197,14 +196,15 @@ public class Player {
 				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
 		    	
 				Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-				PointF screenSize = new PointF(display.getWidth(), display.getHeight()); // Stores the screen size in a point.
+				float screenX = Math.min(display.getWidth(), display.getHeight());
+				float screenY = Math.max(display.getWidth(), display.getHeight());
 				
-				float orbitRadius = screenSize.x*1/3; // The radius that the factory will orbit the center at.
+				float orbitRadius = screenX/3; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
 				float theta = spacing*(float)(-.5 + playerNo);// The angle in radians at which this particular factory will be spawned.
 				
-				factoryX = screenSize.x/2 + (float) (orbitRadius * Math.cos(theta));
-				factoryY = screenSize.y/2 + (float) (orbitRadius * Math.sin(theta));
+				factoryX = screenX/2 + (float) (orbitRadius * Math.cos(theta));
+				factoryY = screenY/2 + (float) (orbitRadius * Math.sin(theta));
 				
 				ship.body.center.set(factoryX, factoryY);
 				ship.heading = theta - (float) Math.PI/2 - offset;

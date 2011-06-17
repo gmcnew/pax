@@ -4,23 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 
 public class GameView extends View {
 
 	public GameView(Context context, Game game) {
 		super(context);
 		mGame = game;
-		mOrientation = Configuration.ORIENTATION_PORTRAIT;
-		mHeight = 480;
-		mWidth = 320;
+		mContext = context;
+		mHeight = 0;
+		mWidth = 0;
 		
 		mPlayerEntityBitmaps = new HashMap<Player, Bitmap[]>();
 		
@@ -71,18 +73,28 @@ public class GameView extends View {
 		mBitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	}
 	
-	public void updateOrientation(int orientation) {
-		if (orientation != mOrientation) {
-			mOrientation = orientation;
-			
-			mAngleFudge = (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
-				? (float) (-Math.PI / 2)
-				: 0.0f;
-
-			int temp = mWidth;
-			mWidth = mHeight;
-			mHeight = temp;
+	public void updateOrientation() {
+        Display display = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        
+		mRotation = display.getRotation();
+		
+		switch (mRotation) {
+			case Surface.ROTATION_0:
+				mAngleFudge = 0;
+				break;
+			case Surface.ROTATION_90:
+				mAngleFudge = (float) -Math.PI * 0.5f;
+				break;
+			case Surface.ROTATION_180:
+				mAngleFudge = (float) -Math.PI;
+				break;
+			case Surface.ROTATION_270:
+				mAngleFudge = (float) -Math.PI * 1.5f;
+				break;
 		}
+		
+		mWidth = display.getWidth();
+		mHeight = display.getHeight();
 	}
 	
 	private Paint[] mBoundsPaints;
@@ -100,6 +112,10 @@ public class GameView extends View {
 	protected void onDraw(Canvas canvas) {
 		// Update the game.
 		mGame.update();
+		
+		if (mWidth == 0) {
+			updateOrientation();
+		}
 
 		Matrix matrix = new Matrix();
 		{
@@ -128,20 +144,31 @@ public class GameView extends View {
 			
 				for (Entity entity : player.mEntities[entityType]) {
 					
-					if (entity.body.center.x > minXDrawable && entity.body.center.x < maxXDrawable && entity.body.center.y > minYDrawable && entity.body.center.y < maxYDrawable) {
-					
-						Bitmap bitmap = entityBitmaps[entity.type];
-						
-						float posX;
-						float posY;
-						if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
+					float posX;
+					float posY;
+					switch (mRotation) {
+						case Surface.ROTATION_0:
 							posX = entity.body.center.x;
 							posY = entity.body.center.y;
-						}
-						else {
-							posY = 320 - entity.body.center.x;
+							break;
+						case Surface.ROTATION_90:
 							posX = entity.body.center.y;
-						}
+							posY = mHeight - entity.body.center.x;
+							break;
+						case Surface.ROTATION_180:
+							posX = mWidth - entity.body.center.x;
+							posY = mHeight - entity.body.center.y;
+							break;
+						case Surface.ROTATION_270:
+						default:
+							posX = mWidth - entity.body.center.y;
+							posY = entity.body.center.x;
+							break;
+					}
+					
+					if (posX > minXDrawable && posX < maxXDrawable && posY > minYDrawable && posY < maxYDrawable) {
+					
+						Bitmap bitmap = entityBitmaps[entity.type];
 						
 						if (bitmap != null) {
 							// Scale the image so that its smallest dimension fills the circle.
@@ -169,8 +196,9 @@ public class GameView extends View {
 	private Map<Player, Bitmap[]> mPlayerEntityBitmaps;
 	
 	private Game mGame;
+	private Context mContext;
 	
-	private int mOrientation;
+	private int mRotation;
 	
 	// Added to an entity's heading when rotating its bitmap.
 	private float mAngleFudge;

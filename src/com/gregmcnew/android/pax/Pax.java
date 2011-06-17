@@ -73,7 +73,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     @Override
     public void onConfigurationChanged(Configuration newConfig){        
         super.onConfigurationChanged(newConfig);
-        mView.updateOrientation(newConfig.orientation);
+        mView.updateOrientation();
     }
     
     private Random mRandom;
