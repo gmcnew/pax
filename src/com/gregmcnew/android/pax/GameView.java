@@ -26,8 +26,16 @@ public class GameView extends View {
 		
 		mPlayerEntityBitmaps = new HashMap<Player, Bitmap[]>();
 		
-		// Load all bitmaps
+		mBuildIndicatorBitmaps = new Bitmap[Player.BuildTarget.values().length];
+		
 		Resources res = getResources();
+		
+		mBuildIndicatorBitmaps[Player.BuildTarget.FIGHTER.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.fighter_outline);
+		mBuildIndicatorBitmaps[Player.BuildTarget.BOMBER.ordinal()]  = BitmapFactory.decodeResource(res, R.drawable.bomber_outline);
+		mBuildIndicatorBitmaps[Player.BuildTarget.FRIGATE.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.frigate_outline);
+		mBuildIndicatorBitmaps[Player.BuildTarget.UPGRADE.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.upgrade_outline);
+		
+		// Load all bitmaps
 		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 			Bitmap[] playerBitmaps = new Bitmap[Entity.TYPES.length];
 			
@@ -184,6 +192,30 @@ public class GameView extends View {
 							canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
 						}
 						
+						if (entityType == Entity.FACTORY) {
+							bitmap = mBuildIndicatorBitmaps[player.mBuildTarget.ordinal()];
+							if (bitmap != null) {
+								matrix.reset();
+								float scale = 1.0f;
+								matrix.postScale(scale, scale);
+								matrix.postTranslate((float) (posX - scale * bitmap.getWidth() / 2), (float) (posY - scale * bitmap.getHeight() / 2));
+								
+								double displayAngle = mAngleFudge + Math.PI / 2;
+								
+								// If displayAngle is an increment of 90
+								// degrees, the bitmap will only be drawn on
+								// pixel boundaries. This looks weird, since the
+								// ship is moving smoothly. To fix this, we can
+								// increase the rotation by an insignificant
+								// amount.
+								displayAngle += 0.001f;
+								
+								matrix.postRotate((float) Math.toDegrees(displayAngle), posX, posY);
+								
+								canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+							}
+						}
+						
 						canvas.drawCircle(posX, posY, entity.radius, mBoundsPaints[i]);
 					}
 				}
@@ -194,6 +226,8 @@ public class GameView extends View {
 	private Bitmap mBackgroundBitmap;
 	
 	private Map<Player, Bitmap[]> mPlayerEntityBitmaps;
+	
+	private Bitmap[] mBuildIndicatorBitmaps;
 	
 	private Game mGame;
 	private Context mContext;
