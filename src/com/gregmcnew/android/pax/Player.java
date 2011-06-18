@@ -1,5 +1,6 @@
 package com.gregmcnew.android.pax;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -73,6 +74,17 @@ public class Player {
 					}
 					else {
 						if (ship.canShoot()) {
+							switch (ship.type){
+							case Entity.FIGHTER:
+								ship.shotsLeft = 5;
+								break;
+							case Entity.BOMBER:
+								ship.shotsLeft = 1;
+								break;
+							case Entity.FRIGATE:
+								ship.shotsLeft = 10;
+								break;
+							}
 							mShooterQueue.add(ship);
 						}
 					}
@@ -98,10 +110,21 @@ public class Player {
 			}
 		}
 		
+		ArrayList<Ship> toBeRemoved = new ArrayList<Ship>(); //The list of ships that need to be removed from the queue.
+		
 		for (Ship ship : mShooterQueue) {
-			addProjectile(ship);
+			if(ship.updatesSinceShot <= ship.shotInterval){
+				ship.updatesSinceShot++;
+			}
+			else{
+				addProjectile(ship);
+				ship.updatesSinceShot = 0;
+			}
+			if(ship.shotsLeft == 0){
+				toBeRemoved.add(ship);
+			}
 		}
-		mShooterQueue.clear();
+		mShooterQueue.removeAll(toBeRemoved);
 	}
 	
 	public void attack(Player victim) {
@@ -234,6 +257,8 @@ public class Player {
 		if (projectile != null) {
 			id = mEntities[projectile.type].add(projectile);
 		}
+		
+		parent.shotsLeft--;
 		
 		return id;
 	}

@@ -8,6 +8,7 @@ public class Frigate extends Ship {
 	public static final float[] ACCELERATIONLIMS = {30f, 15f};
 	public static final float MAXSPEED = 20f;
 	public static final int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };
+	public static final int shotInterval = 3;
 	
 	// TODO: Consider adding ShipType.BOMBER as the lowest-priority target and
 	// reducing the accuracy of frigate missiles when homing in on bombers.
@@ -18,6 +19,7 @@ public class Frigate extends Ship {
 
 	@Override
 	public boolean canShoot() {
+		if(shotsLeft > 0) return false;
 		return false;
 	}
 }

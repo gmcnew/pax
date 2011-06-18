@@ -4,7 +4,7 @@ public class Laser extends Projectile {
 
 	public static final int HEALTH = 40;
 	public static final float DIAMETER = 3;
-	public static final float INITIAL_VELOCITY = 350;
+	public static final float INITIAL_VELOCITY = 1000;
 	public static final float TURN_SPEED = 0;
 	public static final float[] ACCELERATIONLIMS = {0, 0};
 	public static final float MAXVELOCITY = 3;
