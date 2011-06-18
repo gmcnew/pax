@@ -153,9 +153,7 @@ public class Quadtree {
 	public boolean remove(Point2 point) {
 		assert(mIsValid);
 		boolean removed = false;
-		Log.v("Quadtree.remove", String.format("removing point (%f,%f) with ID %d", point.x, point.y, point.id));
 		if (isLeaf) {
-			Log.v("Quadtree.remove", String.format("removing from leaf %d(%f --> %f) with %d points", mDimension ? 0 : 1, mMinVal, mMaxVal, mMaxIndex - mMinIndex));
 			for (int i = mMinIndex; i < mMaxIndex && !removed; i++) {
 				if (mPoints[i].equals(point)) {
 					// Replace this point with the one at the end of our range,
@@ -165,16 +163,9 @@ public class Quadtree {
 					mPoints[mMaxIndex] = null;
 					removed = true;
 				}
-				else if (mPoints[i].x == point.x && mPoints[i].y == point.y) {
-					Log.i("Quadtree.remove", String.format("interesting! duplicate point (%f,%f), different ID (%d vs %d)", point.x, point.y, point.id, mPoints[i].id));
-				}
-				else if (mPoints[i].id == point.id) {
-					Log.i("Quadtree.remove", String.format("interesting! different point (%f,%f) vs (%f,%f), duplicate ID (%d)", point.x, point.y, mPoints[i].x, mPoints[i].y, point.id));
-				}
 			}
 		}
 		else {
-			Log.v("Quadtree.remove", String.format("removing from node with %d points", mMaxIndex - mMinIndex));
 			float q = (low.mDimension == X) ? point.x : point.y;
 			
 			if (q >= low.mMinVal && q <= low.mMaxVal) {
