@@ -2,7 +2,6 @@ package com.gregmcnew.android.pax;
 
 public class Projectile extends Entity {
 
-	@SuppressWarnings("hiding")
 	public static final int[] TYPES = { Entity.LASER, Entity.BOMB, Entity.MISSILE };
 
 	public int lifeMs;
@@ -24,7 +23,7 @@ public class Projectile extends Entity {
 				int damage = health;
 				
 				// XXX: Make projectiles superpowered!
-				damage *= 100;
+				damage *= 10;
 				
 				health -= damage;
 				victimShip.health -= damage;
