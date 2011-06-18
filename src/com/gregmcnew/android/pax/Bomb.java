@@ -11,7 +11,7 @@ public class Bomb extends Projectile {
 	public static final int MAX_LIFE_MS = 1000;
 
 	protected Bomb(Ship parent) {
-		super(Entity.LASER, null, null, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.BOMB, null, null, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.targetHeading;

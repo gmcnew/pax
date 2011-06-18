@@ -23,7 +23,7 @@ public class Projectile extends Entity {
 				int damage = health;
 				
 				// XXX: Make projectiles superpowered!
-				damage *= 10;
+				//damage *= 10;
 				
 				health -= damage;
 				victimShip.health -= damage;
