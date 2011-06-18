@@ -198,8 +198,17 @@ public class GameView extends View {
 								matrix.reset();
 								float scale = 1.0f;
 								matrix.postScale(scale, scale);
-								//TODO: Center the outline on the factory
-								matrix.postTranslate((float) (posX - scale * bitmap.getWidth() / 2), (float) (posY - scale * bitmap.getHeight() / 2));
+								double positionInRads = Math.atan2(posY - mHeight / 2, posX - mWidth / 2);
+								if (positionInRads <= 0){
+									positionInRads = Math.PI * 2 - positionInRads; // Normalizes to [0...2pi] instead of [-pi...pi]
+								}
+								float positionRadius = (float) Math.sqrt((posY - mHeight / 2)*(posY - mHeight / 2) + (posX - mWidth / 2)*(posX - mWidth / 2));
+								double rotation = Math.PI / 20;
+								float preOffsetX = positionRadius * (float) Math.sin(rotation);
+								float preOffsetY = positionRadius * (1 - (float) Math.cos(rotation));
+								float offsetX = preOffsetX * (float)Math.sin(positionInRads - Math.PI/2) - preOffsetY * (float)Math.cos(positionInRads - Math.PI/2);
+								float offsetY = preOffsetX * (float)Math.cos(positionInRads - Math.PI/2) + preOffsetY * (float)Math.sin(positionInRads - Math.PI/2);
+								matrix.postTranslate((float) (posX - scale * bitmap.getWidth() / 2) + offsetX, (float) (posY - scale * bitmap.getHeight() / 2) + offsetY);
 								
 								double displayAngle = mAngleFudge + Math.PI / 2;
 								
