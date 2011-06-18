@@ -40,6 +40,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.factory_p2,
     		R.drawable.fighter_p2,
     		R.drawable.frigate_p2,
+    		
+    		R.drawable.ohyeah,
     };
 
     
@@ -90,14 +92,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.FIGHTER] = painterMap.get(R.drawable.fighter_p1);
 					painters[Entity.BOMBER]  = painterMap.get(R.drawable.bomber_p1);
 					painters[Entity.FRIGATE] = painterMap.get(R.drawable.frigate_p1);
-					painters[Entity.FACTORY] = painterMap.get(R.drawable.factory_p1);
+					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohyeah);
 					break;
 				case 1:
 				default:
 					painters[Entity.FIGHTER] = painterMap.get(R.drawable.fighter_p2);
 					painters[Entity.BOMBER]  = painterMap.get(R.drawable.bomber_p2);
 					painters[Entity.FRIGATE] = painterMap.get(R.drawable.frigate_p2);
-					painters[Entity.FACTORY] = painterMap.get(R.drawable.factory_p2);
+					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohyeah);
 					break;
 			}
 			
@@ -215,6 +217,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
 				gl.glGenTextures(1, mTextureBufferIDs, 0);
 				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferIDs[0]);
+				textureBuffer.position(0);
+	            gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, textureBuffer.capacity() * 2, textureBuffer, GL11.GL_STATIC_DRAW);
 				
 			}
 			 {
