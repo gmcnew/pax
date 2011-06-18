@@ -7,7 +7,7 @@ public class Laser extends Projectile {
 	public static final float INITIAL_VELOCITY = 1000;
 	public static final float TURN_SPEED = 0;
 	public static final float[] ACCELERATIONLIMS = {0, 0};
-	public static final float MAXVELOCITY = 3;
+	public static final float MAXVELOCITY = 1000;
 	public static final int MAX_LIFE_MS = 1000;
 
 	protected Laser(Ship parent) {

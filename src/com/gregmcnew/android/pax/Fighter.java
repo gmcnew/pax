@@ -18,6 +18,6 @@ public class Fighter extends Ship {
 	@Override
 	public boolean canShoot() {
 		if(shotsLeft > 0) return false;
-		return Math.random() > 0.99f;
+		return false;
 	}
 }

@@ -63,12 +63,6 @@ public abstract class Entity {
 		velocity = new PointF();
 	}
 	
-	public float getSpeed(){
-		float v_x = velocity.x;
-		float v_y = velocity.y;
-		return (float) Math.sqrt(v_x*v_x + v_y*v_y);
-	}
-	
 	/**Sets the ship to max speed on its current heading.**/
 	public void fullSpeedAhead(){
 		velocity.x = (float) Math.cos(heading) * maxSpeed;
