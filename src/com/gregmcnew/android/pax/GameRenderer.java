@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
-import javax.microedition.khronos.opengles.GL11Ext;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -181,16 +180,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			vertexBuffer.put(vertices);
 			vertexBuffer.position(0);
 
-			int numIndices = 6;
-			byteBuffer = ByteBuffer.allocateDirect(numIndices * 2);
+			byteBuffer = ByteBuffer.allocateDirect(vertices.length * 2);
 			byteBuffer.order(ByteOrder.nativeOrder());
 			indexBuffer = byteBuffer.asCharBuffer();
-				indexBuffer.put((char) 0);
-				indexBuffer.put((char) 1);
-				indexBuffer.put((char) 2);
-				indexBuffer.put((char) 1);
-				indexBuffer.put((char) 2);
-				indexBuffer.put((char) 3);
+			for (int i = 0; i < vertices.length; i++) {
+				indexBuffer.put((char) i);
+			}
+			indexBuffer.position(0);
 			
 			byteBuffer = ByteBuffer.allocateDirect(texture.length * Float.SIZE);
 			byteBuffer.order(ByteOrder.nativeOrder());
@@ -199,37 +195,39 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			textureBuffer.position(0);
 			
 			if (SUPPORTS_GL11) {
-				int[] bufferIDs = new int[2];
 				GL11 gl11 = (GL11) gl;
+				
+				int[] bufferIDs = new int[2];
+				int[] textureIDs = new int[1];
 				gl11.glGenBuffers(2, bufferIDs, 0);
+				gl.glGenTextures(1, textureIDs, 0);
 				mVertexBufferObjectID = bufferIDs[0];
 				mElementBufferObjectID = bufferIDs[1];
+				mTextureBufferObjectID = textureIDs[0];
 
-	            // Upload the vertex data
-	            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-	            vertexBuffer.position(0);
-	            gl11.glBufferData(GL11.GL_ARRAY_BUFFER, vertexBuffer.capacity(), vertexBuffer, GL11.GL_STATIC_DRAW);
+				// Upload the vertex data
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
+				vertexBuffer.position(0);
+				gl11.glBufferData(GL11.GL_ARRAY_BUFFER, vertexBuffer.capacity(), vertexBuffer, GL11.GL_STATIC_DRAW);
 
-	            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-	            indexBuffer.position(0);
-	            gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.capacity() * 2, indexBuffer, GL11.GL_STATIC_DRAW);
+				gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
+				indexBuffer.position(0);
+				gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.capacity() * 2, indexBuffer, GL11.GL_STATIC_DRAW);
 	            
-
-				gl.glGenTextures(1, mTextureBufferIDs, 0);
-				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferIDs[0]);
+				gl11.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferObjectID);
 				textureBuffer.position(0);
-	            gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, textureBuffer.capacity() * 2, textureBuffer, GL11.GL_STATIC_DRAW);
-				
+				gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, textureBuffer.capacity(), textureBuffer, GL11.GL_STATIC_DRAW);
 			}
-			 {
-				// Generate and bind a texture pointer.
-				Log.v("EntityPainter", String.format("bound to texture %d", mTextureBufferIDs[0]));
-				gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-				gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-
-				// Send the bitmap to the video device.
-				GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-			}
+			
+			// Set texture filtering parameters.
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+			
+			// Send the bitmap to the video device.
+			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+			
+			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			
 			bitmap.recycle();
 		}
@@ -238,68 +236,29 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			draw(gl, entity.body.center.x, entity.body.center.y, entity.radius, (float) Math.toDegrees(entity.heading));
 		}
 		
-		/*
-		 * A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
-		 */
+		// A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
 		public void draw(GL10 gl, float moveX, float moveY, float radius, float rotateDegrees) {
 			
 	        // Make sure we're not using any transformations left over from the
 			// the last draw().
-	        gl.glLoadIdentity();
-
-			//Log.v("EntityPainter", "binding texture...");
-			//gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferIDs[0]);
-
-			//Log.v("EntityPainter", "setting frontface...");
-			// Set face rotation.
+			gl.glLoadIdentity();
+	        
 			gl.glFrontFace(GL10.GL_CW);
 
 			// Point to our vertex and texture buffers.
 			if (SUPPORTS_GL11) {
 
-				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferIDs[0]);
-				
-	            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-	            gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-	            
-	            //Set the face rotation
-	            gl.glFrontFace(GL10.GL_CCW);
+				//gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferObjectID);
 
 				GL11 gl11 = (GL11) gl;
 	            
-				
-				
-				
-				
-	            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-	            gl11.glVertexPointer(2, GL10.GL_FLOAT, 0, 0);
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
+				gl11.glVertexPointer(2, GL10.GL_FLOAT, 0, 0);
 
-	            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferIDs[0]);
-	            gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0);
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
+				gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0);
 
-	            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-	            
-	            
-	            
-	            
-	            
-	            
-	            /*
-	            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-	            gl11.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
-				Log.v("EntityPainter", "setting text coord pointer...");
-	            gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
-	            
-				Log.v("EntityPainter", "binding to element buffer...");
-	            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-	            
-				Log.v("EntityPainter", "finished binding to element buffer.");
-	            gl.glEnableClientState(GL11Ext.GL_MATRIX_INDEX_ARRAY_OES);
-	            gl.glEnableClientState(GL11Ext.GL_WEIGHT_ARRAY_OES);
-	            */
-	            
-	            //GL11Ext.glWeightPointerOES(2, GL10.GL_FLOAT, 0, VERTEX_WEIGHT_BUFFER_INDEX_OFFSET  * FLOAT_SIZE);
-	            //GL11Ext.glMatrixIndexPointerOES(2, GL10.GL_UNSIGNED_BYTE, 0, VERTEX_PALETTE_INDEX_OFFSET );
+				gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
 			}
 			else {
 				gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
@@ -315,30 +274,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			// We use 2D vertices, so every vertex is represented by 2 floats in
 			// 'vertices'.
 			gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
-			
-			/*
-            GL11 gl11 = (GL11) gl;
-            GL11Ext gl11Ext = (GL11Ext) gl;
-            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-            int VERTEX_SIZE = 8;
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferIDs[0]);
-            gl11.glVertexPointer(2, GL10.GL_FLOAT, VERTEX_SIZE, 0);
-            gl11.glTexCoordPointer(2, GL10.GL_FLOAT, VERTEX_SIZE, VERTEX_TEXTURE_BUFFER_INDEX_OFFSET * FLOAT_SIZE);
-
-            gl.glEnableClientState(GL11Ext.GL_MATRIX_INDEX_ARRAY_OES);
-            gl.glEnableClientState(GL11Ext.GL_WEIGHT_ARRAY_OES);
-
-            gl11Ext.glWeightPointerOES(2, GL10.GL_FLOAT, VERTEX_SIZE, VERTEX_WEIGHT_BUFFER_INDEX_OFFSET  * FLOAT_SIZE);
-            gl11Ext.glMatrixIndexPointerOES(2, GL10.GL_UNSIGNED_BYTE, VERTEX_SIZE, VERTEX_PALETTE_INDEX_OFFSET );
-
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectId);
-            gl11.glDrawElements(GL10.GL_TRIANGLES, mIndexCount, GL10.GL_UNSIGNED_SHORT, 0);
-            gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-            gl.glDisableClientState(GL11Ext.GL_MATRIX_INDEX_ARRAY_OES);
-            gl.glDisableClientState(GL11Ext.GL_WEIGHT_ARRAY_OES);
-            gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
-            gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0);
-            */
 		}
 
         private CharBuffer  indexBuffer;
@@ -359,10 +294,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				1.0f, 0.0f  // bottom right (vertex 3)
 		};
 		
-		private int[] mVertexBufferIDs  = new int[2];
-		private int[] mTextureBufferIDs = new int[1];
 		private int mVertexBufferObjectID;
 		private int mElementBufferObjectID;
+		private int mTextureBufferObjectID;
 	}
 
 	private Context mContext; 
