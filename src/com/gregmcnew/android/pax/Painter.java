@@ -36,6 +36,9 @@ public class Painter {
 		
 		mVBOSupport = vboSupport;
 		
+		mWidth = width;
+		mHeight = height;
+		
 		float halfWidth = width / 2;
 		vertices[0] = vertices[2] = -halfWidth; // bottom-left, top-left;
 		vertices[4] = vertices[6] =  halfWidth; // bottom-right, top-right;
@@ -115,8 +118,20 @@ public class Painter {
 		draw(gl, entity.body.center.x, entity.body.center.y, (float) Math.toDegrees(entity.heading));
 	}
 	
+	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees) {
+		float centerX = (maxX + minX) / 2;
+		float centerY = (maxY + minY) / 2;
+		float scaleX = (maxX - minX) / mWidth;
+		float scaleY = (maxY - minY) / mHeight;
+		draw(gl, centerX, centerY, scaleX, scaleY, rotateDegrees);
+	}
+	
 	// A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
 	public void draw(GL10 gl, float moveX, float moveY, float rotateDegrees) {
+		draw(gl, moveX, moveY, 1f, 1f, rotateDegrees);
+	}
+	
+	public void draw(GL10 gl, float moveX, float moveY, float scaleX, float scaleY, float rotateDegrees) {
 		
         // Make sure we're not using any transformations left over from the
 		// the last draw().
@@ -157,6 +172,7 @@ public class Painter {
 		
 		// Rotate about the Z-axis.
 		gl.glRotatef(rotateDegrees, 0f, 0f, 1f);
+		gl.glScalef(scaleX, scaleY, 0f);
 
 		// We use 2D vertices, so every vertex is represented by 2 floats in
 		// 'vertices'.
@@ -184,6 +200,9 @@ public class Painter {
 			1.0f, 1.0f, // top right    (vertex 4)
 			1.0f, 0.0f  // bottom right (vertex 3)
 	};
+	
+	private float mWidth;
+	private float mHeight;
 	
 	private int mVertexBufferObjectID;
 	private int mElementBufferObjectID;
