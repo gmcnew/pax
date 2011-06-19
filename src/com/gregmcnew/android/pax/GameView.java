@@ -48,20 +48,22 @@ public class GameView extends GLSurfaceView {
 			    	// Ignore the "NONE" build target.
 			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
 			    	
-			    	int selection;
+			    	int selection = numBuildTargets;
 			    	if (mRotation % 2 == 0) {
-			    		selection = (int) (x * numBuildTargets / getWidth());
+			    		if (y >= getHeight() * 0.67) {
+			    			selection = (int) (x * numBuildTargets / getWidth());
+			    		}
 			    	}
 			    	else {
-			    		selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
+			    		if (x >= getWidth() * 0.67) {
+			    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
+			    		}
 			    	}
 			    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
 			    	
-			    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
 			    	if (selection < numBuildTargets) {
-			    		buildTarget = Player.BuildTarget.values()[selection];
+				    	mGame.setBuildTarget(0, Player.BuildTarget.values()[selection]);
 			    	}
-			    	mGame.setBuildTarget(0, buildTarget);
 			    	
 			    	/*
 			    	if (addBlob(x, y)) {

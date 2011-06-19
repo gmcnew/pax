@@ -123,6 +123,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
+
+		mHighlight = Painter.Create(gl, mVBOSupport, bitmaps.get(R.drawable.white20));
 		
 		for (Bitmap bitmap : bitmaps.values()) {
 			bitmap.recycle();
@@ -169,8 +171,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		if (Pax.BACKGROUND_IMAGE) {
 			mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.background), Math.max(mGameWidth, mGameHeight));
         }
-
-		mHighlight = Painter.CreateSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.white20), highlightWidth, mButtonSize);
 		
 		mBuildTargetPainters = new Painter[4];
 		mBuildTargetPainters[0] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.fighter_outline), mButtonSize);
@@ -218,20 +218,63 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		float dy = mGameHeight / 4;
 		float x = (dx - mGameWidth) / 2;
 		float y = (dy - mGameHeight) / 2;
-		
-		if (mRotation % 2 == 0) {
-			// Draw buttons along the bottom of the screen
-			dy = 0;
-			y = (mButtonSize - mGameHeight) / 2;
-		}
-		else {
-			// Draw buttons along the right side of the screen.
-			dx = 0;
-			x = (mGameWidth - mButtonSize) / 2;
-		}
 		for (int i = 0; i < 4; i++) {
+			
+			float buildProgress = mGame.mPlayers[0].money / Player.BuildCosts[i];
+			if (buildProgress > 1) {
+				buildProgress = 1;
+			}
+			
+			// Oh no...
+			
+			float buttonMinX;
+			float buttonMaxX;
+			float buttonMinY;
+			float buttonMaxY;
+			
+			float progressMaxX;
+			float progressMaxY;
+			
+			float halfButtonSize = mButtonSize / 2;
+			if (mRotation % 2 == 0) {
+				// Draw buttons along the bottom of the screen
+				dy = 0;
+				y = halfButtonSize - (mGameHeight / 2);
+				
+				buttonMinY = y - mButtonSize / 2;
+				buttonMaxY = y + mButtonSize / 2;
+				buttonMinX = x - dx / 2;
+				buttonMaxX = x + dx / 2;
+				
+				progressMaxX = buttonMinX + mButtonSize / 3;//dx * buildProgress;
+				progressMaxY = buttonMinY + mButtonSize * buildProgress;
+			}
+			else {
+				// Draw buttons along the right side of the screen.
+				dx = 0;
+				x = (mGameWidth / 2) - halfButtonSize;
+				
+				buttonMinY = y - dy / 2;
+				buttonMaxY = y + dy / 2;
+				buttonMinX = x + mButtonSize / 2;
+				buttonMaxX = x - mButtonSize / 2;
+				
+				progressMaxX = buttonMinX - (mButtonSize * buildProgress);
+				progressMaxY = buttonMinY + mButtonSize / 3;//dy * buildProgress;
+			}
+			
 			if (i == mGame.mPlayers[0].mBuildTarget.ordinal()) {
-				mHighlight.draw(gl, x, y, 90 * mRotation);
+
+				// Draw a 'selected' box behind the entire button.
+				mHighlight.drawFillBounds(gl, buttonMinX, buttonMaxX, buttonMinY, buttonMaxY, 0);
+				
+				// Draw a 'progress' box behind part of the button.
+				mHighlight.drawFillBounds(gl,
+						buttonMinX,
+						progressMaxX,
+						buttonMinY,
+						progressMaxY,
+						0);
 			}
 			
 			mBuildTargetPainters[i].draw(gl, x, y, 90 * mRotation);
