@@ -114,7 +114,6 @@ public class Pax extends Activity {
     	if (SELF_BENCHMARK) {
     		Debug.stopMethodTracing();
     	}
-    	mPlayer.stop();
     	super.onDestroy();
     }
     
