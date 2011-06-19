@@ -67,7 +67,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         if (SELF_BENCHMARK) {
         	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
         }
-    	mGame.setBuildTarget(1, Player.BuildTarget.FIGHTER);
+    	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
     }
     
     @Override

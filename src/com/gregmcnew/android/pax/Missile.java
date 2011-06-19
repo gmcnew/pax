@@ -6,7 +6,7 @@ public class Missile extends Projectile {
 	public static final float DIAMETER = 3;
 	public static final float INITIAL_VELOCITY = 100;
 	public static final float TURN_SPEED = 0.15f;
-	public static final float[] ACCELERATIONLIMS = {100f, 40f};
+	public static final float[] ACCELERATIONLIMS = {100f, 45f};
 	public static final float MAXVELOCITY = 400;
 	
 	// TODO: Set missile target priorities and search limits.

@@ -7,7 +7,7 @@ public class Frigate extends Ship {
 	public static final float TURN_SPEED = 0.015f;
 	public static final float[] ACCELERATIONLIMS = {10f, 5f};
 	public static final float MAXSPEED = 30f;
-	public static final int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };
+	public static final int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.BOMBER, Entity.FACTORY };
 	public static final int shotInterval = 1;
 	
 	// TODO: Consider adding ShipType.BOMBER as the lowest-priority target and
