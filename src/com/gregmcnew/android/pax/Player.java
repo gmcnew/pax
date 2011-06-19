@@ -39,6 +39,7 @@ public class Player {
 		}
 		
 		mRetargetQueue.clear();
+		mShooterQueue.clear();
 		
 		addShip(Entity.FACTORY);
 	}
