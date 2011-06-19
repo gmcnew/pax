@@ -44,11 +44,10 @@ public class Pax extends Activity {
         }
         else {
         	mView = new GameView(this, mGame);
-            mView.setEGLConfigChooser(false);
-            mView.setRenderer(new GameRenderer(this, mGame));
             setContentView(mView);
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
+            
             mPlayer = MediaPlayer.create(this, R.raw.music);
             mPlayer.start();
         }
@@ -77,7 +76,6 @@ public class Pax extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig){        
         super.onConfigurationChanged(newConfig);
-        mView.onConfigurationChanged(newConfig);
     }
     
     private Random mRandom;
@@ -142,6 +140,9 @@ public class Pax extends Activity {
     		}
 		}
     }
+    
+    // To be used for log messages.
+    public static final String TAG = "Pax";
     
     private Game mGame;
     private GameView mView;

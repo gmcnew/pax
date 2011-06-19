@@ -119,6 +119,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
         gl.glViewport(0, 0, width, height);
+        Log.v(Pax.TAG, String.format("GameRenderer.onSurfaceChanged with width %d, height %d", width, height));
         
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();

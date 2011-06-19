@@ -1,7 +1,6 @@
 package com.gregmcnew.android.pax;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,11 +14,11 @@ public class GameView extends GLSurfaceView {
 		super(activity);
 		mGame = game;
 		mContext = activity;
+		mRenderer = new GameRenderer(activity, mGame);
+		
+		setEGLConfigChooser(false);
+		setRenderer(mRenderer);
 	}
-	
-    public void onConfigurationChanged(Configuration newConfig) {
-    	
-    }
 	
 	@Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -73,4 +72,5 @@ public class GameView extends GLSurfaceView {
 	
 	private Game mGame;
 	private Activity mContext;
+	private Renderer mRenderer;
 }
