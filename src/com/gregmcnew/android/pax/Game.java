@@ -44,7 +44,7 @@ public class Game {
 		numUpdates++;
 		if (numUpdates % 25 == 0) {
 			long dt = System.currentTimeMillis() - firstUpdateTime;
-			Log.v("Game.update", String.format("average update interval: %d", dt / numUpdates));
+			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", numUpdates, dt / numUpdates));
 		}
 		
 		// Allow all players to produce and build.
