@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import android.content.Context;
-import android.view.Display;
-import android.view.WindowManager;
-
 public class Player {
 
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
@@ -215,19 +211,14 @@ public class Player {
 				ship.heading = factory.heading;
 			}
 			else { // If the ship being spawned IS a factory...
-				float factoryX = 0, factoryY = 0;
 				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
-		    	
-				Display display = ((WindowManager) Pax.thisContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-				float screenX = Math.min(display.getWidth(), display.getHeight());
-				float screenY = Math.max(display.getWidth(), display.getHeight());
 				
-				float orbitRadius = screenX/3; // The radius that the factory will orbit the center at.
+				float orbitRadius = 320 / 3; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
-				float theta = spacing*(float)(-.5 + playerNo);// The angle in radians at which this particular factory will be spawned.
+				float theta = spacing*(float)(playerNo);// The angle in radians at which this particular factory will be spawned.
 				
-				factoryX = screenX/2 + (float) (orbitRadius * Math.cos(theta));
-				factoryY = screenY/2 + (float) (orbitRadius * Math.sin(theta));
+				float factoryX = (float) (orbitRadius * Math.cos(theta));
+				float factoryY = (float) (orbitRadius * Math.sin(theta));
 				
 				ship.body.center.set(factoryX, factoryY);
 				ship.heading = theta - (float) Math.PI/2 - offset;
