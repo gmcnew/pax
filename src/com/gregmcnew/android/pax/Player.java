@@ -23,6 +23,8 @@ public class Player {
 			mEntities[type] = new EntityPool(type);
 		}
 		
+		mBuildTarget = BuildTarget.NONE;
+		
 		playerNo = playerNumber;
 		totalPlayers = players;
 		reset();
@@ -36,8 +38,6 @@ public class Player {
 		
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
-		
-		mBuildTarget = BuildTarget.NONE;
 		money = 0;
 		production = 0.75f;
 		production *= 5; // warp speed!
