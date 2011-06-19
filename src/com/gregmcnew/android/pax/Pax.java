@@ -55,7 +55,7 @@ public class Pax extends Activity {
             	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
-    	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
+        
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
     }
     
