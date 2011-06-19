@@ -221,12 +221,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			
 			float buildIndicatorRotation = 90 * mRotation;
 			
-			if (player == 1) {
+			if ((player == 1) ^ (mRotation >= 2)) {
 				dx = -dx;
 				dy = -dy;
 				x = -x;
 				y = -y;
-				
+			}
+			
+			if (player == 1) {
 				buildIndicatorRotation += 180;
 			}
 			
@@ -247,22 +249,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				float progressMaxX;
 				float progressMaxY;
 				
+				float flip = ((player == 1) ^ (mRotation >= 2)) ? -1 : 1;
+				
 				float halfButtonSize = mButtonSize / 2;
 				if (mRotation % 2 == 0) {
 					// Draw buttons along the bottom of the screen
 					dy = 0;
-					y = halfButtonSize - (mGameHeight / 2);
-					if (player != 0) {
-						y = -y;
-					}
+					y = flip * (halfButtonSize - (mGameHeight / 2));
 					
-					buttonMinY = y - (player == 0 ? 1 : -1) * mButtonSize / 2;
-					buttonMaxY = y + (player == 0 ? 1 : -1) * mButtonSize / 2;
+					buttonMinY = y - flip * mButtonSize / 2;
+					buttonMaxY = y + flip * mButtonSize / 2;
 					buttonMinX = x - dx / 2;
 					buttonMaxX = x + dx / 2;
 
-					progressMaxX = buttonMinX + (player == 0 ? 1 : -1) * mButtonSize / 3;//dx * buildProgress;
-					progressMaxY = buttonMinY + (player == 0 ? 1 : -1) * mButtonSize * buildProgress;
+					progressMaxX = buttonMinX + flip * mButtonSize / 3;//dx * buildProgress;
+					progressMaxY = buttonMinY + flip * mButtonSize * buildProgress;
 				}
 				else {
 					// Draw buttons along the right side of the screen.
@@ -274,11 +275,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					
 					buttonMinY = y - dy / 2;
 					buttonMaxY = y + dy / 2;
-					buttonMinX = x + (player == 0 ? 1 : -1) * mButtonSize / 2;
-					buttonMaxX = x - (player == 0 ? 1 : -1) * mButtonSize / 2;
+					buttonMinX = x + flip * mButtonSize / 2;
+					buttonMaxX = x - flip * mButtonSize / 2;
 					
-					progressMaxX = buttonMinX - (player == 0 ? 1 : -1) * (mButtonSize * buildProgress);
-					progressMaxY = buttonMinY + (player == 0 ? 1 : -1) * mButtonSize / 3;//dy * buildProgress;
+					progressMaxX = buttonMinX - flip * (mButtonSize * buildProgress);
+					progressMaxY = buttonMinY + flip * mButtonSize / 3;//dy * buildProgress;
 				}
 				
 				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {

@@ -50,27 +50,19 @@ public class GameView extends GLSurfaceView {
 			    	
 			    	int selection;
 			    	int player = -1;
+			    	int xGridPos = (int) (x * 4 / getWidth());
+			    	int yGridPos = (int) (y * 4 / getHeight());
 			    	if (mRotation % 2 == 0) {
-			    		if (y >= getHeight() * 0.67) {
-			    			player = 0;
-			    		}
-			    		else if (y < getHeight() * 0.33) {
-			    			player = 1;
-			    		}
+			    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
 			    		selection = (int) (x * numBuildTargets / getWidth());
 			    	}
 			    	else {
-			    		if (x >= getWidth() * 0.67) {
-			    			player = 0;
-			    		}
-			    		else if (x < getWidth() * 0.33) {
-			    			player = 1;
-			    		}
+			    		player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
 		    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
 			    	}
 			    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
 			    	
-			    	if (player == 1) {
+			    	if ((player == 1) ^ (mRotation >= 2)) {
 			    		selection = (numBuildTargets - 1) - selection;
 			    	}
 			    	
