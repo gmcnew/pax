@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 public class Pax extends Activity {
     
-    public static final boolean SELF_BENCHMARK = true;
+    public static final boolean SELF_BENCHMARK = false;
 	
 	public static final int UPDATE_INTERVAL_MS = 40;
     
@@ -44,12 +44,11 @@ public class Pax extends Activity {
         }
         else {
         	mView = new GameView(this, mGame);
-            mView.setEGLConfigChooser(false);
-            mView.setRenderer(new GameRenderer(this, mGame));
             setContentView(mView);
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
-            //mPlayer = MediaPlayer.create(this, R.raw.music);
+            
+            mPlayer = MediaPlayer.create(this, R.raw.music);
         }
     	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
@@ -58,7 +57,7 @@ public class Pax extends Activity {
     @Override
     public void onResume() {
     	super.onResume();
-    	//mPlayer.start();
+    	mPlayer.start();
     	if (!SELF_BENCHMARK) {
     		mView.onResume();
     	}
@@ -69,14 +68,13 @@ public class Pax extends Activity {
     	super.onPause();
     	mPlayer.pause();
     	if (!SELF_BENCHMARK) {
-    		//mView.onPause();
+    		mView.onPause();
     	}
     }
     
     @Override
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
-        mView.onConfigurationChanged(newConfig);
     }
     
     private Random mRandom;
@@ -141,6 +139,9 @@ public class Pax extends Activity {
     		}
 		}
     }
+    
+    // To be used for log messages.
+    public static final String TAG = "Pax";
     
     private Game mGame;
     private GameView mView;

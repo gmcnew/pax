@@ -42,6 +42,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     		R.drawable.ohblue,
     		R.drawable.ohred,
+    		
+    		R.drawable.background,
     };
 
     
@@ -82,16 +84,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		}
 
 		// Resources! Resources for everyone!
-    	Map<Integer, EntityPainter> painterMap = new HashMap<Integer, EntityPainter>();
+		Map<Integer, Painter> painterMap = new HashMap<Integer, Painter>();
 		Resources resources = mContext.getResources();
 		for (int resource : RESOURCES_TO_LOAD) {
-			painterMap.put(resource, new EntityPainter(gl, BitmapFactory.decodeResource(resources, resource))); 
+			painterMap.put(resource, new Painter(gl, BitmapFactory.decodeResource(resources, resource))); 
 		}
 		
-    	mPlayerEntityPainters = new HashMap<Player, EntityPainter[]>();
-    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
-    		EntityPainter[] painters = new EntityPainter[Entity.TYPES.length];
-    	
+		mBackgroundPainter = painterMap.get(R.drawable.background);
+		
+		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
+		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+			Painter[] painters = new Painter[Entity.TYPES.length];
+			
 			switch (player) {
 				case 0:
 					painters[Entity.FIGHTER] = painterMap.get(R.drawable.ohblue);
@@ -119,9 +123,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
         gl.glViewport(0, 0, width, height);
+        Log.v(Pax.TAG, String.format("GameRenderer.onSurfaceChanged with width %d, height %d", width, height));
         
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
+        
+        mWidth = width;
+        mHeight = height;
         
         // Make sure the largest screen dimension is equal to 480 game units.
         float halfScale = Math.max(width, height) / (GAME_VIEW_SIZE * 2);
@@ -146,12 +154,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		mGame.update();
 		
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        mBackgroundPainter.draw(gl, 0, 0, Math.max(mWidth, mHeight) / 2, 0f);
 		
 		for (int entityType : ENTITY_LAYERS) {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 				
 				Player player = mGame.mPlayers[i];
-				EntityPainter[] painters = mPlayerEntityPainters.get(player);
+				Painter[] painters = mPlayerEntityPainters.get(player);
 			
 				for (Entity entity : player.mEntities[entityType]) {
 					painters[entityType].draw(gl, entity);
@@ -160,11 +169,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		}
 	}
 
-	public class EntityPainter {
+	public class Painter {
 		
 		boolean SUPPORTS_GL11 = false;
 
-		public EntityPainter(GL10 gl, Bitmap bitmap) {
+		public Painter(GL10 gl, Bitmap bitmap) {
 			
 			float width = bitmap.getWidth();
 			float height = bitmap.getHeight();
@@ -325,5 +334,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
 	private Context mContext; 
 	private Game mGame;
-	private Map<Player, EntityPainter[]> mPlayerEntityPainters;
+	private int mWidth;
+	private int mHeight;
+	private Map<Player, Painter[]> mPlayerEntityPainters;
+	private Painter mBackgroundPainter;
 }
