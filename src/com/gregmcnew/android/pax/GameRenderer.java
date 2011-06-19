@@ -161,7 +161,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) {
 		mGame.update();
 		
-        if (Pax.BACKGROUND_IMAGE && mBackgroundPainter != null) {
+        if (mBackgroundPainter != null) {
         	mBackgroundPainter.draw(gl, 0, 0, Math.max(mWidth, mHeight) / 2, 0f);
         }
         else {
