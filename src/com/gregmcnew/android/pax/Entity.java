@@ -71,7 +71,7 @@ public abstract class Entity {
 	
 	public boolean wantsNewTarget() {
 		// TODO: Be smarter about whether an entity wants a new target.
-		return targetPriorities != null && Math.random() > 0.99f;
+		return targetPriorities != null && Math.random() > 0.90f;
 	}
 	
 	public void updatePosition(){
@@ -81,10 +81,17 @@ public abstract class Entity {
 	}
 	
 	public void updateHeading(){
+		float dx, dy;
 		if (target != null) {
-			float dx = target.body.center.x - body.center.x;
-			float dy = target.body.center.x - body.center.x;
-			targetHeading = (float) Math.atan2((double) dy, (double) dx);
+			dx = target.body.center.x - body.center.x;
+			dy = target.body.center.y - body.center.y;
+		} else {
+			dx = 200 - body.center.x;
+			dy = 400 - body.center.y;
+		}
+		targetHeading = (float) Math.atan2((double) dy, (double) dx);
+		if (targetHeading <= 0){
+			targetHeading = (float)Math.PI * 2 + targetHeading; // Normalizes to [0...2pi] instead of [-pi...pi]
 		}
 		//Gets the difference within +/- 2*pi.
 		difference = (targetHeading - heading) % (pi*2);
