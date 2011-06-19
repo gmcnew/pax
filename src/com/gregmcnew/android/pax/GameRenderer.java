@@ -39,8 +39,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.factory_p2,
     		R.drawable.fighter_p2,
     		R.drawable.frigate_p2,
-    		
-    		R.drawable.ohyeah,
+
+    		R.drawable.ohblue,
+    		R.drawable.ohred,
     };
 
     
@@ -88,17 +89,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	
 			switch (player) {
 				case 0:
-					painters[Entity.FIGHTER] = painterMap.get(R.drawable.fighter_p1);
-					painters[Entity.BOMBER]  = painterMap.get(R.drawable.bomber_p1);
-					painters[Entity.FRIGATE] = painterMap.get(R.drawable.frigate_p1);
-					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohyeah);
+					painters[Entity.FIGHTER] = painterMap.get(R.drawable.ohblue);
+					painters[Entity.BOMBER]  = painterMap.get(R.drawable.ohblue);
+					painters[Entity.FRIGATE] = painterMap.get(R.drawable.ohblue);
+					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohblue);
 					break;
 				case 1:
 				default:
-					painters[Entity.FIGHTER] = painterMap.get(R.drawable.fighter_p2);
-					painters[Entity.BOMBER]  = painterMap.get(R.drawable.bomber_p2);
-					painters[Entity.FRIGATE] = painterMap.get(R.drawable.frigate_p2);
-					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohyeah);
+					painters[Entity.FIGHTER] = painterMap.get(R.drawable.ohred);
+					painters[Entity.BOMBER]  = painterMap.get(R.drawable.ohred);
+					painters[Entity.FRIGATE] = painterMap.get(R.drawable.ohred);
+					painters[Entity.FACTORY] = painterMap.get(R.drawable.ohred);
 					break;
 			}
 			
@@ -156,7 +157,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
 	public class EntityPainter {
 		
-		boolean SUPPORTS_GL11 = true;
+		boolean SUPPORTS_GL11 = false;
 
 		public EntityPainter(GL10 gl, Bitmap bitmap) {
 			
@@ -197,37 +198,48 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			if (SUPPORTS_GL11) {
 				GL11 gl11 = (GL11) gl;
 				
-				int[] bufferIDs = new int[2];
-				int[] textureIDs = new int[1];
+				// Generate buffer IDs.
+				int[] bufferIDs = new int[3];
 				gl11.glGenBuffers(2, bufferIDs, 0);
-				gl.glGenTextures(1, textureIDs, 0);
 				mVertexBufferObjectID = bufferIDs[0];
 				mElementBufferObjectID = bufferIDs[1];
-				mTextureBufferObjectID = textureIDs[0];
+				mTextureBufferObjectID = bufferIDs[2];
+				
+				// Generate texture IDs.
+				int[] textureIDs = new int[1];
+				gl.glGenTextures(1, textureIDs, 0);
+				mTextureID = textureIDs[0];
 
 				// Upload the vertex data
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
 				vertexBuffer.position(0);
 				gl11.glBufferData(GL11.GL_ARRAY_BUFFER, vertexBuffer.capacity(), vertexBuffer, GL11.GL_STATIC_DRAW);
 
+				// Upload the index data
 				gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
 				indexBuffer.position(0);
 				gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.capacity() * 2, indexBuffer, GL11.GL_STATIC_DRAW);
 	            
-				gl11.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferObjectID);
+				// Upload the texture vertices
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
 				textureBuffer.position(0);
-				gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, textureBuffer.capacity(), textureBuffer, GL11.GL_STATIC_DRAW);
+				gl11.glBufferData(GL11.GL_ARRAY_BUFFER, textureBuffer.capacity(), textureBuffer, GL11.GL_STATIC_DRAW);
+
 			}
 			
 			// Set texture filtering parameters.
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+			//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+			//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+
 			
 			// Send the bitmap to the video device.
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
+			gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_GENERATE_MIPMAP, GL11.GL_TRUE);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+			gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 			GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-			
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 			
 			bitmap.recycle();
 		}
@@ -247,14 +259,20 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
 			// Point to our vertex and texture buffers.
 			if (SUPPORTS_GL11) {
-
-				//gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureBufferObjectID);
+				
+				gl.glEnableClientState(GL10.GL_TEXTURE_2D);
+				gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+				
+				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 
 				GL11 gl11 = (GL11) gl;
+				
+				// Point to our buffers
 	            
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
 				gl11.glVertexPointer(2, GL10.GL_FLOAT, 0, 0);
-
+				
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
 				gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0);
 
@@ -297,6 +315,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		private int mVertexBufferObjectID;
 		private int mElementBufferObjectID;
 		private int mTextureBufferObjectID;
+		private int mTextureID;
 	}
 
 	private Context mContext; 

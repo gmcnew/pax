@@ -1,252 +1,76 @@
 package com.gregmcnew.android.pax;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.view.Display;
-import android.view.Surface;
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.opengl.GLSurfaceView;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
-public class GameView extends View {
+public class GameView extends GLSurfaceView {
 
-	public GameView(Context context, Game game) {
-		super(context);
+	public GameView(Activity activity, Game game) {
+		
+		super(activity);
 		mGame = game;
-		mContext = context;
-		mHeight = 0;
-		mWidth = 0;
-		
-		mPlayerEntityBitmaps = new HashMap<Player, Bitmap[]>();
-		
-		mBuildIndicatorBitmaps = new Bitmap[Player.BuildTarget.values().length];
-		
-		Resources res = getResources();
-		
-		mBuildIndicatorBitmaps[Player.BuildTarget.FIGHTER.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.fighter_outline);
-		mBuildIndicatorBitmaps[Player.BuildTarget.BOMBER.ordinal()]  = BitmapFactory.decodeResource(res, R.drawable.bomber_outline);
-		mBuildIndicatorBitmaps[Player.BuildTarget.FRIGATE.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.frigate_outline);
-		mBuildIndicatorBitmaps[Player.BuildTarget.UPGRADE.ordinal()] = BitmapFactory.decodeResource(res, R.drawable.upgrade_outline);
-		
-		// Load all bitmaps
-		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-			Bitmap[] playerBitmaps = new Bitmap[Entity.TYPES.length];
-			
-			switch (i) {
-				case 0:
-					playerBitmaps[Entity.FIGHTER] = BitmapFactory.decodeResource(res, R.drawable.fighter_p1);
-					playerBitmaps[Entity.BOMBER]  = BitmapFactory.decodeResource(res, R.drawable.bomber_p1);
-					playerBitmaps[Entity.FRIGATE] = BitmapFactory.decodeResource(res, R.drawable.frigate_p1);
-					playerBitmaps[Entity.FACTORY] = BitmapFactory.decodeResource(res, R.drawable.factory_p1);
-					break;
-				case 1:
-					playerBitmaps[Entity.FIGHTER] = BitmapFactory.decodeResource(res, R.drawable.fighter_p2);
-					playerBitmaps[Entity.BOMBER]  = BitmapFactory.decodeResource(res, R.drawable.bomber_p2);
-					playerBitmaps[Entity.FRIGATE] = BitmapFactory.decodeResource(res, R.drawable.frigate_p2);
-					playerBitmaps[Entity.FACTORY] = BitmapFactory.decodeResource(res, R.drawable.factory_p2);
-					break;
-			}
-			
-			playerBitmaps[Entity.LASER]   = BitmapFactory.decodeResource(res, R.drawable.laser);
-			playerBitmaps[Entity.BOMB]    = BitmapFactory.decodeResource(res, R.drawable.bomb);
-			playerBitmaps[Entity.MISSILE] = BitmapFactory.decodeResource(res, R.drawable.missile);
-			
-			mPlayerEntityBitmaps.put(game.mPlayers[i], playerBitmaps);
-		}
-		
-		mBackgroundBitmap = BitmapFactory.decodeResource(res, R.drawable.background);
-		
-
-		mBoundsPaints = new Paint[2];
-		mBoundsPaints[0] = new Paint();
-		mBoundsPaints[1] = new Paint();
-		mBoundsPaints[0].setARGB(192, 0, 64, 255);
-		mBoundsPaints[1].setARGB(192, 192, 0, 0);
-		for (Paint paint : mBoundsPaints) {
-			paint.setStyle(Paint.Style.STROKE);
-			paint.setStrokeWidth(2);
-		}
-		
-		mLaserPaint = new Paint();
-		mLaserPaint.setARGB(255, 255, 255, 255);
-		mLaserPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		
-		mBitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+		mContext = activity;
 	}
 	
-	public void updateOrientation() {
-        Display display = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        
-		mRotation = display.getRotation();
-		
-		switch (mRotation) {
-			case Surface.ROTATION_0:
-				mAngleFudge = 0;
-				break;
-			case Surface.ROTATION_90:
-				mAngleFudge = (float) -Math.PI * 0.5f;
-				break;
-			case Surface.ROTATION_180:
-				mAngleFudge = (float) -Math.PI;
-				break;
-			case Surface.ROTATION_270:
-				mAngleFudge = (float) -Math.PI * 1.5f;
-				break;
-		}
-		
-		mWidth = display.getWidth();
-		mHeight = display.getHeight();
-	}
+    public void onConfigurationChanged(Configuration newConfig) {
+    	
+    }
 	
-	private Paint[] mBoundsPaints;
-	private Paint mLaserPaint;
-	private Paint mBitmapPaint;
-	
-	// Draw factories at the bottom, with frigates above them, bombers above
-	// frigates, and fighters above everything.
-	private int ENTITY_LAYERS[] = {
-			Entity.FACTORY, Entity.FRIGATE, Entity.BOMBER, Entity.FIGHTER,
-			Entity.LASER, Entity.BOMB, Entity.MISSILE
-			};
-
 	@Override
-	protected void onDraw(Canvas canvas) {
-		// Update the game.
-		mGame.update();
-		
-		if (mWidth == 0) {
-			updateOrientation();
-		}
+    public boolean onTouchEvent(MotionEvent event) {
+    	if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
+    		Log.i("Pax:onTouch", String.format("event has %d pointers", event.getPointerCount()));
+    		
+    		if (mGame.getState() == Game.State.IN_PROGRESS) { 
+		    	for (int i = 0; i < event.getPointerCount(); i++) {
+			    	float x = event.getX(i);
+			    	float y = event.getY(i);
+			    	Log.i("Pax:onTouch", String.format("(%f, %f)", x, y));
+			    	// Ignore the "NONE" build target.
+			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
+			    	
+			    	// TODO: Allow landscape mode to work reasonably.
+			    	int selection = (int) (x * numBuildTargets / getWidth());
+			    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
+			    	
+			    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
+			    	if (selection < numBuildTargets) {
+			    		buildTarget = Player.BuildTarget.values()[selection];
+			    	}
+			    	mGame.setBuildTarget(0, buildTarget);
+			    	
+			    	/*
+			    	if (addBlob(x, y)) {
+			    		mView.addGlow(x, y);
+			    		mView.invalidate();
+			    	}
+			    	*/
+		    	}
+    		}
+    		else {
+				mGame.restart();
+    		}
+    	}
+    	
+    	// We consumed the event.
+    	return true;
+    }
+    
+    public void onClick(View v) {
+    	Log.i("onClick", "Click detected");
+    }
 
-		Matrix matrix = new Matrix();
-		{
-			float scaleX = (float) mWidth / mBackgroundBitmap.getWidth();
-			float scaleY = (float) mHeight / mBackgroundBitmap.getHeight();
-			float scale = Math.max(scaleX, scaleY);
-			matrix.postScale(scale, scale);
-			matrix.postTranslate((scaleX - scale) * (mBackgroundBitmap.getWidth() / 2),
-					(scaleY - scale) * (mBackgroundBitmap.getHeight() / 2));
-			canvas.drawBitmap(mBackgroundBitmap, matrix, mBitmapPaint);
-		}
-
-		for (int entityType : ENTITY_LAYERS) {
-			float radius = Entity.Radii[entityType];
-			radius *= 2; // some ships are bigger than their circles
-			
-			// TODO: Figure out window bounds intelligently.
-			float minXDrawable = 0 - radius;
-			float maxXDrawable = mWidth + radius;
-			float minYDrawable = 0 - radius;
-			float maxYDrawable = mHeight + radius;
-			
-			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-				Player player = mGame.mPlayers[i];
-				Bitmap[] entityBitmaps = mPlayerEntityBitmaps.get(player);
-			
-				for (Entity entity : player.mEntities[entityType]) {
-					
-					float posX;
-					float posY;
-					switch (mRotation) {
-						case Surface.ROTATION_0:
-							posX = entity.body.center.x;
-							posY = entity.body.center.y;
-							break;
-						case Surface.ROTATION_90:
-							posX = entity.body.center.y;
-							posY = mHeight - entity.body.center.x;
-							break;
-						case Surface.ROTATION_180:
-							posX = mWidth - entity.body.center.x;
-							posY = mHeight - entity.body.center.y;
-							break;
-						case Surface.ROTATION_270:
-						default:
-							posX = mWidth - entity.body.center.y;
-							posY = entity.body.center.x;
-							break;
-					}
-					
-					if (posX > minXDrawable && posX < maxXDrawable && posY > minYDrawable && posY < maxYDrawable) {
-					
-						Bitmap bitmap = entityBitmaps[entity.type];
-						
-						if (bitmap != null) {
-							// Scale the image so that its smallest dimension fills the circle.
-							// (Its largest dimension may spill outside the circle.)
-							matrix.reset();
-							float scaleX = entity.diameter / bitmap.getWidth();
-							float scaleY = entity.diameter / bitmap.getHeight();
-							float scale = Math.max(scaleX, scaleY);
-							matrix.postScale(scale, scale);
-							matrix.postTranslate(posX - (scale / scaleX) * entity.radius, posY - (scale / scaleY) * entity.radius);
-							matrix.postRotate((float) Math.toDegrees(entity.heading + mAngleFudge), posX, posY);
-							
-							canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
-						}
-						
-						if (entityType == Entity.FACTORY) {
-							bitmap = mBuildIndicatorBitmaps[player.mBuildTarget.ordinal()];
-							if (bitmap != null) {
-								matrix.reset();
-								float scale = 1.0f;
-								matrix.postScale(scale, scale);
-								double positionInRads = Math.atan2(posY - mHeight / 2, posX - mWidth / 2);
-								if (positionInRads <= 0){
-									positionInRads = Math.PI * 2 - positionInRads; // Normalizes to [0...2pi] instead of [-pi...pi]
-								}
-								float positionRadius = (float) Math.sqrt((posY - mHeight / 2)*(posY - mHeight / 2) + (posX - mWidth / 2)*(posX - mWidth / 2));
-								double rotation = Math.PI / 20;
-								float preOffsetX = positionRadius * (float) Math.sin(rotation);
-								float preOffsetY = positionRadius * (1 - (float) Math.cos(rotation));
-								float offsetX = preOffsetX * (float)Math.sin(positionInRads - Math.PI/2) - preOffsetY * (float)Math.cos(positionInRads - Math.PI/2);
-								float offsetY = preOffsetX * (float)Math.cos(positionInRads - Math.PI/2) + preOffsetY * (float)Math.sin(positionInRads - Math.PI/2);
-								matrix.postTranslate((float) (posX - scale * bitmap.getWidth() / 2) + offsetX, (float) (posY - scale * bitmap.getHeight() / 2) + offsetY);
-								
-								double displayAngle = mAngleFudge + Math.PI / 2;
-								
-								// If displayAngle is an increment of 90
-								// degrees, the bitmap will only be drawn on
-								// pixel boundaries. This looks weird, since the
-								// ship is moving smoothly. To fix this, we can
-								// increase the rotation by an insignificant
-								// amount.
-								displayAngle += 0.001f;
-								
-								matrix.postRotate((float) Math.toDegrees(displayAngle - Math.PI/2), posX, posY); // The indicator doesn't follow the factory
-								
-								canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
-							}
-						}
-						
-						canvas.drawCircle(posX, posY, entity.radius, mBoundsPaints[i]);
-					}
-				}
-			}
-		}
+	public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
+		Log.i("onKey", String.format("%d, %s", keyCode, keyEvent.toString()));
+		mContext.finish();
+		return true;
 	}
-	
-	private Bitmap mBackgroundBitmap;
-	
-	private Map<Player, Bitmap[]> mPlayerEntityBitmaps;
-	
-	private Bitmap[] mBuildIndicatorBitmaps;
 	
 	private Game mGame;
-	private Context mContext;
-	
-	private int mRotation;
-	
-	// Added to an entity's heading when rotating its bitmap.
-	private float mAngleFudge;
-	
-	private int mHeight;
-	private int mWidth;
+	private Activity mContext;
 }

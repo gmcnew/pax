@@ -11,12 +11,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
-public class Pax extends Activity implements OnClickListener, OnKeyListener, OnTouchListener {
+public class Pax extends Activity {
     
     public static final boolean SELF_BENCHMARK = false;
 	
@@ -30,16 +27,12 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         if (SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
     	
     	thisContext = this;
         
         mGame = new Game();
         
+        /*
         mView = new GameView(this, mGame);
         
         setContentView(mView);
@@ -49,6 +42,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         
         mView.setFocusable(true);
         mView.setFocusableInTouchMode(true);
+        */
         
         //mLastResult = Dish.Result.IN_PROGRESS;
         
@@ -67,13 +61,34 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
         if (SELF_BENCHMARK) {
         	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
         }
+        else {
+        	mView = new GameView(this, mGame);
+            mView.setEGLConfigChooser(false);
+            mView.setRenderer(new GameRenderer(this, mGame));
+            setContentView(mView);
+            mView.requestFocus();
+            mView.setFocusableInTouchMode(true);
+        }
+    	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	mView.onResume();
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	mView.onPause();
     }
     
     @Override
     public void onConfigurationChanged(Configuration newConfig){        
         super.onConfigurationChanged(newConfig);
-        mView.updateOrientation();
+        mView.onConfigurationChanged(newConfig);
     }
     
     private Random mRandom;
@@ -193,7 +208,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
     
     private Game mGame;
     private GameView mView;
-    private Handler mHandler;
     private Game.State mLastState;
+    private Handler mHandler;
     public static Pax thisContext;
 }
