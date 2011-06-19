@@ -13,10 +13,6 @@ public class Player {
 	// Public methods
 	
 	public Player(int playerNumber, int players) {
-		mBuildTarget = BuildTarget.NONE;
-		money = 0;
-		production = 0.75f;
-		production *= 5; // warp speed!
 		
 		mEntities = new EntityPool[Entity.TYPES.length];
 		
@@ -40,6 +36,11 @@ public class Player {
 		
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
+		
+		mBuildTarget = BuildTarget.NONE;
+		money = 0;
+		production = 0.75f;
+		production *= 5; // warp speed!
 		
 		addShip(Entity.FACTORY);
 	}
