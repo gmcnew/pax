@@ -4,6 +4,7 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -48,6 +49,8 @@ public class Pax extends Activity {
             setContentView(mView);
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
+            mPlayer = MediaPlayer.create(this, R.raw.music);
+            mPlayer.start();
         }
     	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
@@ -56,6 +59,7 @@ public class Pax extends Activity {
     @Override
     public void onResume() {
     	super.onResume();
+    	mPlayer.start();
     	if (!SELF_BENCHMARK) {
     		mView.onResume();
     	}
@@ -64,6 +68,7 @@ public class Pax extends Activity {
     @Override
     public void onPause() {
     	super.onPause();
+    	mPlayer.pause();
     	if (!SELF_BENCHMARK) {
     		mView.onPause();
     	}
@@ -109,6 +114,7 @@ public class Pax extends Activity {
     	if (SELF_BENCHMARK) {
     		Debug.stopMethodTracing();
     	}
+    	mPlayer.stop();
     	super.onDestroy();
     }
     
@@ -141,6 +147,7 @@ public class Pax extends Activity {
     private Game mGame;
     private GameView mView;
     private Game.State mLastState;
+    private MediaPlayer mPlayer;
     private Handler mHandler;
     public static Pax thisContext;
 }
