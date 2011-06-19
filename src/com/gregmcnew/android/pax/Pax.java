@@ -50,7 +50,6 @@ public class Pax extends Activity {
             mView.setFocusableInTouchMode(true);
             
             mPlayer = MediaPlayer.create(this, R.raw.music);
-            mPlayer.start();
         }
     	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
@@ -75,7 +74,7 @@ public class Pax extends Activity {
     }
     
     @Override
-    public void onConfigurationChanged(Configuration newConfig){        
+    public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
     }
     
