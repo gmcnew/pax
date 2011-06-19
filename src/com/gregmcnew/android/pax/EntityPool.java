@@ -1,6 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -28,8 +27,12 @@ public class EntityPool implements Iterable<Entity> {
 		else {
 			// Grow if necessary. This shouldn't happen much.
 			if (mNextIndex >= mSize) {
+				Entity[] oldList = mList;
+				mList = new Entity[mSize * 2];
+				for (int i = 0; i < mSize; i++) {
+					mList[i] = oldList[i];
+				}
 				mSize *= 2;
-				mList = Arrays.copyOf(mList, mSize);
 			}
 			
 			id = mNextIndex;
