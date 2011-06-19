@@ -1,8 +1,10 @@
 package com.gregmcnew.android.pax;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +20,19 @@ public class GameView extends GLSurfaceView {
 		
 		setEGLConfigChooser(false);
 		setRenderer(mRenderer);
+		updateRotation();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		updateRotation();
+	}
+	
+	private void updateRotation() {
+		Display display = mContext.getWindowManager().getDefaultDisplay();
+		mRotation = display.getRotation();
+		mRenderer.updateRotation(mRotation);
 	}
 	
 	@Override
@@ -33,8 +48,13 @@ public class GameView extends GLSurfaceView {
 			    	// Ignore the "NONE" build target.
 			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
 			    	
-			    	// TODO: Allow landscape mode to work reasonably.
-			    	int selection = (int) (x * numBuildTargets / getWidth());
+			    	int selection;
+			    	if (mRotation % 2 == 0) {
+			    		selection = (int) (x * numBuildTargets / getWidth());
+			    	}
+			    	else {
+			    		selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
+			    	}
 			    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
 			    	
 			    	Player.BuildTarget buildTarget = Player.BuildTarget.NONE;
@@ -72,5 +92,6 @@ public class GameView extends GLSurfaceView {
 	
 	private Game mGame;
 	private Activity mContext;
-	private Renderer mRenderer;
+	private GameRenderer mRenderer;
+	private int mRotation;
 }

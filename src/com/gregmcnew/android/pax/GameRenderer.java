@@ -20,7 +20,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private static final float[] BG_RGB = { 0.094f, 0.137f, 0.145f };
 	
 	// The size of the screen's largest dimension, measured in game units. 
-	public static final float GAME_VIEW_SIZE = 480.0f;
+	public static final float GAME_VIEW_SIZE = 1000f;
 	
     
     private static final int[] RESOURCES_TO_LOAD = {
@@ -40,6 +40,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     		R.drawable.ohblue,
     		R.drawable.ohred,
+    		
+    		R.drawable.fighter_outline,
+    		R.drawable.bomber_outline,
+    		R.drawable.frigate_outline,
+    		R.drawable.upgrade_outline,
+    		R.drawable.white20,
     };
 
     
@@ -47,6 +53,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	mContext = context;
     	mGame = game;
     	mVBOSupport = SUPPORTS_GL11;
+    }
+    
+    public void updateRotation(int rotation) {
+    	mRotation = rotation;
+    	Log.v(Pax.TAG, String.format("rotation is now %d", rotation));
     }
     
 	@Override
@@ -126,28 +137,46 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
         gl.glViewport(0, 0, width, height);
         Log.v(Pax.TAG, String.format("GameRenderer.onSurfaceChanged with width %d, height %d", width, height));
-        
-        // Initialize the background image.
 		
-		if (Pax.BACKGROUND_IMAGE) {
-			mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.background), Math.max(width, height));
-        }
-        
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
         
         mWidth = width;
         mHeight = height;
         
-        // Make sure the largest screen dimension is equal to 480 game units.
-        float halfScale = Math.max(width, height) / (GAME_VIEW_SIZE * 2);
-        float halfX = width * halfScale;
-        float halfY = height * halfScale;
+        // Make sure the largest screen dimension is equal to GAME_VIEW_SIZE
+        // game units.
+        float maxDimension = Math.max(width, height);
+        
+        mGameWidth = GAME_VIEW_SIZE * width / maxDimension;
+        mGameHeight = GAME_VIEW_SIZE * height / maxDimension;
+        
+        float halfX = mGameWidth / 2;
+        float halfY = mGameHeight / 2;
         
         GLU.gluOrtho2D(gl, -halfX, halfX, -halfY, halfY);
  
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
+		
+		// Create the button highlight image.
+		float highlightWidth = Math.min(mGameWidth, mGameHeight) / 4;
+		mButtonSize = Math.max(mGameWidth, mGameHeight) / 15;
+        
+        // Initialize the background image.
+		
+		Resources res = mContext.getResources();
+		if (Pax.BACKGROUND_IMAGE) {
+			mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.background), Math.max(mGameWidth, mGameHeight));
+        }
+
+		mHighlight = Painter.CreateSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.white20), highlightWidth, mButtonSize);
+		
+		mBuildTargetPainters = new Painter[4];
+		mBuildTargetPainters[0] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.fighter_outline), mButtonSize);
+		mBuildTargetPainters[1] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.bomber_outline), mButtonSize);
+		mBuildTargetPainters[2] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.frigate_outline), mButtonSize);
+		mBuildTargetPainters[3] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.upgrade_outline), mButtonSize);
 	}
 	
 	// Draw factories at the bottom, with frigates above them, bombers above
@@ -176,9 +205,38 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				Painter[] painters = mPlayerEntityPainters.get(player);
 			
 				for (Entity entity : player.mEntities[entityType]) {
+					
+					painters[entityType].setCameraRotationDegrees(90 * mRotation);
 					painters[entityType].draw(gl, entity);
 				}
 			}
+		}
+		
+		// Draw UI elements along a short edge of the screen.
+		
+		float dx = mGameWidth / 4;
+		float dy = mGameHeight / 4;
+		float x = (dx - mGameWidth) / 2;
+		float y = (dy - mGameHeight) / 2;
+		
+		if (mRotation % 2 == 0) {
+			// Draw buttons along the bottom of the screen
+			dy = 0;
+			y = (mButtonSize - mGameHeight) / 2;
+		}
+		else {
+			// Draw buttons along the right side of the screen.
+			dx = 0;
+			x = (mGameWidth - mButtonSize) / 2;
+		}
+		for (int i = 0; i < 4; i++) {
+			if (i == mGame.mPlayers[0].mBuildTarget.ordinal()) {
+				mHighlight.draw(gl, x, y, 90 * mRotation);
+			}
+			
+			mBuildTargetPainters[i].draw(gl, x, y, 90 * mRotation);
+			x += dx;
+			y += dy;
 		}
 	}
 	
@@ -186,7 +244,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Game mGame;
 	private int mWidth;
 	private int mHeight;
+	
+	private float mGameWidth;
+	private float mGameHeight;
+	
 	private Map<Player, Painter[]> mPlayerEntityPainters;
 	private Painter mBackgroundPainter;
 	private boolean mVBOSupport;
+	
+	private Painter mHighlight;
+	private Painter[] mBuildTargetPainters;
+	
+	private int mRotation;
+	private float mButtonSize;
 }

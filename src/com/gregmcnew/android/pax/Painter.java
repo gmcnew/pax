@@ -17,6 +17,10 @@ public class Painter {
 		return new Painter(gl, vboSupport, bitmap, bitmap.getWidth(), bitmap.getHeight());
 	}
 	
+	public static Painter CreateSize(GL10 gl, boolean vboSupport, Bitmap bitmap, float width, float height) {
+		return new Painter(gl, vboSupport, bitmap, width, height);
+	}
+	
 	public static Painter CreateMinSize(GL10 gl, boolean vboSupport, Bitmap bitmap, float minSize) {
 		float originalWidth = bitmap.getWidth();
 		float originalHeight = bitmap.getHeight();
@@ -117,6 +121,9 @@ public class Painter {
         // Make sure we're not using any transformations left over from the
 		// the last draw().
 		gl.glLoadIdentity();
+		
+		// Rotate about the Z-axis.
+		gl.glRotatef(mCameraRotationDegrees, 0f, 0f, 1f);
         
 		gl.glFrontFace(GL10.GL_CW);
 
@@ -155,6 +162,10 @@ public class Painter {
 		// 'vertices'.
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
 	}
+	
+	public void setCameraRotationDegrees(float degrees) {
+		mCameraRotationDegrees = degrees;
+	}
 
     private CharBuffer  indexBuffer;
 	private FloatBuffer vertexBuffer;
@@ -179,4 +190,6 @@ public class Painter {
 	private int mTextureBufferObjectID;
 	private int mTextureID;
 	private boolean mVBOSupport;
+	
+	private float mCameraRotationDegrees;
 }

@@ -214,9 +214,9 @@ public class Player {
 			else { // If the ship being spawned IS a factory...
 				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
 				
-				float orbitRadius = 320 / 3; // The radius that the factory will orbit the center at.
+				float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4; // The radius that the factory will orbit the center at.
 				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
-				float theta = spacing*(float)(playerNo);// The angle in radians at which this particular factory will be spawned.
+				float theta = spacing*(float)(playerNo) - (float) (Math.PI / 2);// The angle in radians at which this particular factory will be spawned.
 				
 				float factoryX = (float) (orbitRadius * Math.cos(theta));
 				float factoryY = (float) (orbitRadius * Math.sin(theta));
