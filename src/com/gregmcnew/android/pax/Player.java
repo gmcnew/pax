@@ -49,13 +49,13 @@ public class Player {
 		return mEntities[Entity.FACTORY].isEmpty();
 	}
 	
-	public void produce() {
+	public void produce(long dt) {
 		money += production;
 	}
 	
 	// This function requires a valid collision space (for retargeting),
 	// so it can't add or move units. See moveEntities for that sort of thing.
-	public void updateEntities() {
+	public void updateEntities(long dt) {
 		
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
@@ -101,7 +101,7 @@ public class Player {
 		}
 	}
 	
-	public void moveEntities() {
+	public void moveEntities(long dt) {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
 				entity.move();

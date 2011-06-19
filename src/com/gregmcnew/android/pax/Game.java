@@ -25,22 +25,27 @@ public class Game {
 		return mState;
 	}
 	
-	private long firstUpdateTime = 0;
-	private long numUpdates = 0;
+	private long mFirstUpdateTime = 0;
+	private long mLastUpdateTime;
+	private long mNumUpdates = 0;
 	
 	public void update() {
 		if (mRestart) {
 			reset();
 		}
 		
-		if (firstUpdateTime == 0) {
-			firstUpdateTime = System.currentTimeMillis();
+		if (mFirstUpdateTime == 0) {
+			mFirstUpdateTime = System.currentTimeMillis();
 		}
 		
-		numUpdates++;
-		if (numUpdates % 25 == 0) {
-			long dt = System.currentTimeMillis() - firstUpdateTime;
-			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", numUpdates, dt / numUpdates));
+		long lastUpdateTime = mLastUpdateTime;
+		mLastUpdateTime = System.currentTimeMillis();
+		long dt = mLastUpdateTime - lastUpdateTime;
+		long totalTime = mLastUpdateTime - mFirstUpdateTime;
+		
+		mNumUpdates++;
+		if (mNumUpdates % 25 == 0) {
+			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, totalTime / mNumUpdates));
 		}
 		
 		if (mState != State.IN_PROGRESS) {
@@ -49,14 +54,14 @@ public class Game {
 		
 		// Allow all players to produce and build.
 		for (Player player : mPlayers) {
-			player.produce();
-			player.updateEntities();
+			player.produce(dt);
+			player.updateEntities(dt);
 			
 			// Collision spaces should be marked as invalid when entities are being added or moved.
 			player.invalidateCollisionSpaces();
 			
 			player.build();
-			player.moveEntities();
+			player.moveEntities(dt);
 			
 			player.rebuildCollisionSpaces();
 		}
