@@ -108,11 +108,11 @@ public class Painter {
 	}
 	
 	public void draw(GL10 gl, Entity entity) {
-		draw(gl, entity.body.center.x, entity.body.center.y, entity.radius, (float) Math.toDegrees(entity.heading));
+		draw(gl, entity.body.center.x, entity.body.center.y, (float) Math.toDegrees(entity.heading));
 	}
 	
 	// A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
-	public void draw(GL10 gl, float moveX, float moveY, float __, float rotateDegrees) {
+	public void draw(GL10 gl, float moveX, float moveY, float rotateDegrees) {
 		
         // Make sure we're not using any transformations left over from the
 		// the last draw().
@@ -147,11 +147,6 @@ public class Painter {
 		}
 		
 		gl.glTranslatef(moveX, moveY, 0f);
-		/*
-		if (radius > 0) {
-			gl.glScalef(radius, radius, 0f);
-		}
-		*/
 		
 		// Rotate about the Z-axis.
 		gl.glRotatef(rotateDegrees, 0f, 0f, 1f);

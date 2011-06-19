@@ -162,7 +162,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		mGame.update();
 		
         if (mBackgroundPainter != null) {
-        	mBackgroundPainter.draw(gl, 0, 0, Math.max(mWidth, mHeight) / 2, 0f);
+        	mBackgroundPainter.draw(gl, 0, 0, 0f);
         }
         else {
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
