@@ -6,6 +6,7 @@ public abstract class Ship extends Entity {
 	public int updatesSinceShot = Integer.MAX_VALUE;
 	public int shotInterval = 0; // Says how many intervals must pass before shooting again while burst shooting.
 	
+	@SuppressWarnings("hiding")
 	public static final int[] TYPES = { Entity.FIGHTER, Entity.BOMBER, Entity.FRIGATE, Entity.FACTORY };
 	
 	protected Ship(int type, int[] targetPriorities, float[] targetSearchLimits, int health, float diameter, float turnSpeed, float[] accelerationLimits, float maxVelocity) {
