@@ -161,8 +161,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();
 		
-		// Create the button highlight image.
-		float highlightWidth = Math.min(mGameWidth, mGameHeight) / 4;
 		mButtonSize = Math.max(mGameWidth, mGameHeight) / 15;
         
         // Initialize the background image.
