@@ -21,6 +21,9 @@ public class Frigate extends Ship {
 	@Override
 	public boolean canShoot() {
 		if(shotsLeft > 0) return false;
-		return Math.random() > 0.95f;
+		mShootCounter = (mShootCounter + 1) % 20;
+		return mShootCounter == 0;
 	}
+	
+	private int mShootCounter = 0;
 }

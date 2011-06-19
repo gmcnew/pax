@@ -26,6 +26,8 @@ public abstract class Entity {
 	public float heading; // in radians
 	public PointF velocity;
 	
+	private int mRetargetCounter;
+	
 	protected int id;
 
 	public static final int FIGHTER = 0;
@@ -59,7 +61,7 @@ public abstract class Entity {
 		id = NO_ENTITY;
 		
 		body = new CircleF(new Point2(), radius);
-		heading = (float) (Math.random() * Math.PI * 2);
+		heading = 0f;
 		velocity = new PointF();
 	}
 	
@@ -70,8 +72,11 @@ public abstract class Entity {
 	}
 	
 	public boolean wantsNewTarget() {
-		// TODO: Be smarter about whether an entity wants a new target.
-		return targetPriorities != null && Math.random() > 0.90f;
+		
+		// As long as I don't have a target, ask for one 10% of the time.
+		mRetargetCounter = (mRetargetCounter + 1) % 10;
+		
+		return targetPriorities != null && target == null && mRetargetCounter == 0;
 	}
 	
 	public void updatePosition(){
