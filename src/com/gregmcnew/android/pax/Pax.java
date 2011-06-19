@@ -76,13 +76,17 @@ public class Pax extends Activity {
     @Override
     public void onResume() {
     	super.onResume();
-    	mView.onResume();
+    	if (!SELF_BENCHMARK) {
+    		mView.onResume();
+    	}
     }
     
     @Override
     public void onPause() {
     	super.onPause();
-    	mView.onPause();
+    	if (!SELF_BENCHMARK) {
+    		mView.onPause();
+    	}
     }
     
     @Override
