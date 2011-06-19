@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 public class Pax extends Activity {
@@ -123,9 +124,9 @@ public class Pax extends Activity {
     }
     
     public void updateState(Game.State state) {
-		if (mLastState == Game.State.IN_PROGRESS) {
-    		if (state != mLastState) {
-    			mLastState = state;
+		if (state != mLastState) {
+			mLastState = state;
+			if (state != Game.State.IN_PROGRESS) {
     			String resultString = null;
     			switch (state) {
     				case TIE:
@@ -140,6 +141,7 @@ public class Pax extends Activity {
     				default:
     					resultString = "The game is over!";
     			}
+    			Log.v(TAG, resultString);
     			Toast.makeText(this, resultString, Toast.LENGTH_LONG).show();
     			if (SELF_BENCHMARK) {
     				finish();
