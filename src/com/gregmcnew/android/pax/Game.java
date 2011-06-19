@@ -31,10 +31,6 @@ public class Game {
 	public void update() {
 		if (mRestart) {
 			reset();
-			mRestart = false;
-		}
-		if (mState != State.IN_PROGRESS) {
-			return;
 		}
 		
 		if (firstUpdateTime == 0) {
@@ -45,6 +41,10 @@ public class Game {
 		if (numUpdates % 25 == 0) {
 			long dt = System.currentTimeMillis() - firstUpdateTime;
 			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", numUpdates, dt / numUpdates));
+		}
+		
+		if (mState != State.IN_PROGRESS) {
+			return;
 		}
 		
 		// Allow all players to produce and build.
@@ -105,6 +105,7 @@ public class Game {
 			player.reset();
 		}
 		mState = State.IN_PROGRESS;
+		mRestart = false;
 	}
 	
 	private void retarget(Player player, Entity entity) {
