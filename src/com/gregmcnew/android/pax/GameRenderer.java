@@ -200,6 +200,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			textureBuffer.put(texture);
 			textureBuffer.position(0);
 			
+			// Generate texture IDs.
+			int[] textureIDs = new int[1];
+			gl.glGenTextures(1, textureIDs, 0);
+			mTextureID = textureIDs[0];
+			
 			if (SUPPORTS_GL11) {
 				GL11 gl11 = (GL11) gl;
 				
@@ -209,11 +214,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				mVertexBufferObjectID = bufferIDs[0];
 				mElementBufferObjectID = bufferIDs[1];
 				mTextureBufferObjectID = bufferIDs[2];
-				
-				// Generate texture IDs.
-				int[] textureIDs = new int[1];
-				gl.glGenTextures(1, textureIDs, 0);
-				mTextureID = textureIDs[0];
 
 				// Upload the vertex data
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
@@ -262,14 +262,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	        
 			gl.glFrontFace(GL10.GL_CW);
 
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
+
 			// Point to our vertex and texture buffers.
 			if (SUPPORTS_GL11) {
 				
 				gl.glEnableClientState(GL10.GL_TEXTURE_2D);
 				gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 				gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-				
-				gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 
 				GL11 gl11 = (GL11) gl;
 				
