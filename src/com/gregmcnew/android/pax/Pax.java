@@ -14,7 +14,7 @@ public class Pax extends Activity {
     
     public static final boolean SELF_BENCHMARK = false;
     public static final boolean BACKGROUND_IMAGE = false;
-    public static final boolean MUSIC = true;
+    public static final boolean MUSIC = false;
 	
 	public static final int UPDATE_INTERVAL_MS = 40;
     
