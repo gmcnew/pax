@@ -90,7 +90,7 @@ public class Pax extends Activity implements OnClickListener, OnKeyListener, OnT
 		    		*/
     				
     				if (mFrames % 25 == 0 && mGame.getState() != Game.State.IN_PROGRESS) {
-    					mGame.reset();
+    					mGame.restart();
     				}
     			}
     			

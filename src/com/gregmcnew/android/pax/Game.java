@@ -14,11 +14,9 @@ public class Game {
 		reset();
 	}
 	
-	public void reset() {
-		for (Player player : mPlayers) {
-			player.reset();
-		}
-		mState = State.IN_PROGRESS;
+	// Restart the game on the next update().
+	public void restart() {
+		mRestart = true;
 	}
 	
 	public Game.State getState() {
@@ -26,6 +24,10 @@ public class Game {
 	}
 	
 	public void update() {
+		if (mRestart) {
+			reset();
+			mRestart = false;
+		}
 		if (mState != State.IN_PROGRESS) {
 			return;
 		}
@@ -83,6 +85,13 @@ public class Game {
 	
 	// Private methods
 	
+	private void reset() {
+		for (Player player : mPlayers) {
+			player.reset();
+		}
+		mState = State.IN_PROGRESS;
+	}
+	
 	private void retarget(Player player, Entity entity) {
 		entity.target = null;
 		for (int i = 0; i < entity.targetPriorities.length && entity.target == null; i++) {
@@ -109,5 +118,7 @@ public class Game {
 	public Player[] mPlayers;
 	
 	private Game.State mState;
+	
+	private boolean mRestart;
 
 }
