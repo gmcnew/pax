@@ -87,13 +87,33 @@ public class Quadtree {
 		if (isLeaf) {
 			for (int i = mMinIndex; i < mMaxIndex; i++) {
 				Point2 point = mPoints[i];
-				float distanceSquared = point.distanceToSquared(center);
-				if (distanceSquared < radiusSquared) {
-					// Shorten the search distance, since there may be more
-					// points to check. No need to recalculate 'radius', since
-					// we won't use it.
-					radiusSquared = distanceSquared;
-					closest = point;
+				
+				// First, make sure our the point collides with the square that
+				// contains the circle. If it doesn't, we can save ourselves
+				// some multiplications.
+				float absDx = point.x - center.x;
+				float absDy = point.y - center.y;
+				if (absDx < 0) {
+					absDx = -absDx;
+				}
+				if (absDy < 0) {
+					absDy = -absDy;
+				}
+				if (absDx <= radius && absDy <= radius) {
+					float distanceSquared = (absDx * absDx) + (absDy + absDy);
+					if (distanceSquared < radiusSquared) {
+						
+						// Shorten the search distance, since there may be more
+						// points to check.
+						
+						// We'll leave 'radius' alone. We could recalculate it
+						// with Math.sqrt(), but that would almost certainly be
+						// slower than leaving it alone and allowing unnecessary
+						// checks to occur for other points in this leaf.
+						
+						radiusSquared = distanceSquared;
+						closest = point;
+					}
 				}
 			}
 		}
