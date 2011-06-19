@@ -214,72 +214,93 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		
 		// Draw UI elements along a short edge of the screen.
 		
-		float dx = mGameWidth / 4;
-		float dy = mGameHeight / 4;
-		float x = (dx - mGameWidth) / 2;
-		float y = (dy - mGameHeight) / 2;
-		for (int i = 0; i < 4; i++) {
+		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 			
-			float buildProgress = mGame.mPlayers[0].money / Player.BuildCosts[i];
-			if (buildProgress > 1) {
-				buildProgress = 1;
+			float dx = mGameWidth / 4;
+			float dy = mGameHeight / 4;
+			float x = (dx - mGameWidth) / 2;
+			float y = (dy - mGameHeight) / 2;
+			
+			float buildIndicatorRotation = 90 * mRotation;
+			
+			if (player == 1) {
+				dx = -dx;
+				dy = -dy;
+				x = -x;
+				y = -y;
+				
+				buildIndicatorRotation += 180;
 			}
 			
-			// Oh no...
+			for (int i = 0; i < 4; i++) {
 			
-			float buttonMinX;
-			float buttonMaxX;
-			float buttonMinY;
-			float buttonMaxY;
-			
-			float progressMaxX;
-			float progressMaxY;
-			
-			float halfButtonSize = mButtonSize / 2;
-			if (mRotation % 2 == 0) {
-				// Draw buttons along the bottom of the screen
-				dy = 0;
-				y = halfButtonSize - (mGameHeight / 2);
+				float buildProgress = mGame.mPlayers[player].money / Player.BuildCosts[i];
+				if (buildProgress > 1) {
+					buildProgress = 1;
+				}
 				
-				buttonMinY = y - mButtonSize / 2;
-				buttonMaxY = y + mButtonSize / 2;
-				buttonMinX = x - dx / 2;
-				buttonMaxX = x + dx / 2;
+				// Oh no...
 				
-				progressMaxX = buttonMinX + mButtonSize / 3;//dx * buildProgress;
-				progressMaxY = buttonMinY + mButtonSize * buildProgress;
-			}
-			else {
-				// Draw buttons along the right side of the screen.
-				dx = 0;
-				x = (mGameWidth / 2) - halfButtonSize;
+				float buttonMinX;
+				float buttonMaxX;
+				float buttonMinY;
+				float buttonMaxY;
 				
-				buttonMinY = y - dy / 2;
-				buttonMaxY = y + dy / 2;
-				buttonMinX = x + mButtonSize / 2;
-				buttonMaxX = x - mButtonSize / 2;
+				float progressMaxX;
+				float progressMaxY;
 				
-				progressMaxX = buttonMinX - (mButtonSize * buildProgress);
-				progressMaxY = buttonMinY + mButtonSize / 3;//dy * buildProgress;
-			}
-			
-			if (i == mGame.mPlayers[0].mBuildTarget.ordinal()) {
+				float halfButtonSize = mButtonSize / 2;
+				if (mRotation % 2 == 0) {
+					// Draw buttons along the bottom of the screen
+					dy = 0;
+					y = halfButtonSize - (mGameHeight / 2);
+					if (player != 0) {
+						y = -y;
+					}
+					
+					buttonMinY = y - (player == 0 ? 1 : -1) * mButtonSize / 2;
+					buttonMaxY = y + (player == 0 ? 1 : -1) * mButtonSize / 2;
+					buttonMinX = x - dx / 2;
+					buttonMaxX = x + dx / 2;
 
-				// Draw a 'selected' box behind the entire button.
-				mHighlight.drawFillBounds(gl, buttonMinX, buttonMaxX, buttonMinY, buttonMaxY, 0);
+					progressMaxX = buttonMinX + (player == 0 ? 1 : -1) * mButtonSize / 3;//dx * buildProgress;
+					progressMaxY = buttonMinY + (player == 0 ? 1 : -1) * mButtonSize * buildProgress;
+				}
+				else {
+					// Draw buttons along the right side of the screen.
+					dx = 0;
+					x = (mGameWidth / 2) - halfButtonSize;
+					if (player != 0) {
+						x = -x;
+					}
+					
+					buttonMinY = y - dy / 2;
+					buttonMaxY = y + dy / 2;
+					buttonMinX = x + mButtonSize / 2;
+					buttonMaxX = x - mButtonSize / 2;
+					
+					progressMaxX = buttonMinX - (mButtonSize * buildProgress);
+					progressMaxY = buttonMinY + mButtonSize / 3;//dy * buildProgress;
+				}
 				
-				// Draw a 'progress' box behind part of the button.
-				mHighlight.drawFillBounds(gl,
-						buttonMinX,
-						progressMaxX,
-						buttonMinY,
-						progressMaxY,
-						0);
+				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {
+	
+					// Draw a 'selected' box behind the entire button.
+					mHighlight.drawFillBounds(gl, buttonMinX, buttonMaxX, buttonMinY, buttonMaxY, 0);
+					
+					// Draw a 'progress' box behind part of the button.
+					mHighlight.drawFillBounds(gl,
+							buttonMinX,
+							progressMaxX,
+							buttonMinY,
+							progressMaxY,
+							0);
+				}
+				
+				mBuildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation);
+				x += dx;
+				y += dy;
 			}
-			
-			mBuildTargetPainters[i].draw(gl, x, y, 90 * mRotation);
-			x += dx;
-			y += dy;
 		}
 	}
 	
