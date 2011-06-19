@@ -76,6 +76,10 @@ public abstract class Entity {
 		// As long as I don't have a target, ask for one 10% of the time.
 		mRetargetCounter = (mRetargetCounter + 1) % 10;
 		
+		if (target != null && target.health <= 0) {
+			target = null;
+		}
+		
 		return targetPriorities != null && target == null && mRetargetCounter == 0;
 	}
 	
