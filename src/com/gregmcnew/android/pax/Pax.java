@@ -14,6 +14,7 @@ public class Pax extends Activity {
     
     public static final boolean SELF_BENCHMARK = false;
     public static final boolean BACKGROUND_IMAGE = false;
+    public static final boolean MUSIC = true;
 	
 	public static final int UPDATE_INTERVAL_MS = 40;
     
@@ -49,7 +50,9 @@ public class Pax extends Activity {
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
             
-            mPlayer = MediaPlayer.create(this, R.raw.music);
+            if (MUSIC) {
+            	mMusic = MediaPlayer.create(this, R.raw.music);
+            }
         }
     	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
@@ -58,8 +61,10 @@ public class Pax extends Activity {
     @Override
     public void onResume() {
     	super.onResume();
-    	mPlayer.start();
     	if (!SELF_BENCHMARK) {
+    		if (MUSIC) {
+    	    	mMusic.start();
+    		}
     		mView.onResume();
     	}
     }
@@ -67,8 +72,10 @@ public class Pax extends Activity {
     @Override
     public void onPause() {
     	super.onPause();
-    	mPlayer.pause();
     	if (!SELF_BENCHMARK) {
+        	if (MUSIC) {
+        		mMusic.pause();
+        	}
     		mView.onPause();
     	}
     }
@@ -147,7 +154,7 @@ public class Pax extends Activity {
     private Game mGame;
     private GameView mView;
     private Game.State mLastState;
-    private MediaPlayer mPlayer;
+    private MediaPlayer mMusic;
     private Handler mHandler;
     public static Pax thisContext;
 }
