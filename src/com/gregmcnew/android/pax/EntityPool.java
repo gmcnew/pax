@@ -1,15 +1,16 @@
 package com.gregmcnew.android.pax;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 public class EntityPool implements Iterable<Entity> {
 
 	public EntityPool(int type) {
-		mList = new ArrayList<Entity>();
+		mSize = INITIAL_SIZE;
+		mList = new Entity[mSize];
+		mNextIndex = 0;
 		mRecycledIDs = new HashSet<Integer>();
 		
 		// TODO: Allow a quadtree to grow to more than 1024 points if necessary.
@@ -17,16 +18,25 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public int add(Entity e) {
-		int id;
-		if (mRecycledIDs.isEmpty()) {
-			id = mList.size();
-			mList.add(e);
-		}
-		else {
+		
+		int id = Entity.NO_ENTITY;
+		
+		if (!mRecycledIDs.isEmpty()) {
 			id = mRecycledIDs.iterator().next();
 			mRecycledIDs.remove(id);
-			mList.set(id, e);
 		}
+		else {
+			// Grow if necessary. This shouldn't happen much.
+			if (mNextIndex >= mSize) {
+				mSize *= 2;
+				mList = Arrays.copyOf(mList, mSize);
+			}
+			
+			id = mNextIndex;
+			mNextIndex++;
+		}
+		
+		mList[id] = e;
 		
 		e.id = id;
 		e.body.center.id = id;
@@ -35,11 +45,11 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public Entity get(int id) {
-		return mList.get(id);
+		return mList[id];
 	}
 	
 	public int size() {
-		return mList.size() - mRecycledIDs.size();
+		return mNextIndex - mRecycledIDs.size();
 	}
 	
 	public boolean isEmpty() {
@@ -47,13 +57,13 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public void clear() {
-		mList.clear();
+		mNextIndex = 0;
 		mRecycledIDs.clear();
 		mBodies.reset(0, 0);
 	}
 
 	public Iterator<Entity> iterator() {
-		return new EntityPoolIterator(this, mList);
+		return new EntityPoolIterator(this, mList, mNextIndex);
 	}
 	
 	public Entity collide(Point2 center, float radius) {
@@ -82,7 +92,7 @@ public class EntityPool implements Iterable<Entity> {
 	
 	public void remove(int id) {
 		assert(id != Entity.NO_ENTITY);
-		remove(mList.get(id));
+		remove(mList[id]);
 	}
 	
 	public void remove(Entity entity) {
@@ -90,7 +100,7 @@ public class EntityPool implements Iterable<Entity> {
 		assert(entity.id != Entity.NO_ENTITY);
 		assert(entity.id == entity.body.center.id);
 		
-		mList.set(entity.id, null);
+		mList[entity.id] = null;
 		mRecycledIDs.add(entity.id);
 		mBodies.remove(entity.body.center);
 		
@@ -99,8 +109,13 @@ public class EntityPool implements Iterable<Entity> {
 	}
 
 	// Use a set to eliminate duplicates and ensure that an ID can't be recycled twice.
-	private List<Entity> mList;
+	//private List<Entity> mList;
 	private Set<Integer> mRecycledIDs;
+	
+	private Entity[] mList;
+	private int mNextIndex;
+	private int mSize;
+	private static final int INITIAL_SIZE = 1;
 	
 	protected Quadtree mBodies;
 	

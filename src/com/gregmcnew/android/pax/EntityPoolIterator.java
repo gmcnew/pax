@@ -1,14 +1,13 @@
 package com.gregmcnew.android.pax;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class EntityPoolIterator implements Iterator<Entity> {
 
-	public EntityPoolIterator(EntityPool hal, List<Entity> list) {
+	public EntityPoolIterator(EntityPool hal, Entity[] list, int maxIndex) {
 		mHal = hal;
 		mList = list;
-		mSize = list.size();
+		mMaxIndex = maxIndex;
 		i = 0;
 	}
 	
@@ -17,21 +16,21 @@ public class EntityPoolIterator implements Iterator<Entity> {
 
 		// Skip null (recycled) entries. It's okay to advance i, since we don't
 		// want it pointing at null entries anyway.
-		while (i < mSize && mList.get(i) == null) {
+		while (i < mMaxIndex && mList[i] == null) {
 			i++;
 		}
 		
-		return i < mSize;
+		return i < mMaxIndex;
 	}
 
 	@Override
 	public Entity next() {
 		// Skip null (recycled) entries.
-		while (i < mSize && mList.get(i) == null) {
+		while (i < mMaxIndex && mList[i] == null) {
 			i++;
 		}
 		
-		return mList.get(i++);
+		return mList[i++];
 	}
 
 	@Override
@@ -40,8 +39,8 @@ public class EntityPoolIterator implements Iterator<Entity> {
 	}
 	
 	private final EntityPool mHal;
-	private final List<Entity> mList;
-	private final int mSize;
+	private final Entity[] mList;
+	private final int mMaxIndex;
 	private int i;
 
 }
