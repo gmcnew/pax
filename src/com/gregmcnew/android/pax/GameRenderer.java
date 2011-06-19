@@ -62,6 +62,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	// Enable the use of vertex and texture arrays.
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		
+		// Enable texture transparency.
+		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
 		// Print information about the OpenGL driver.
 		{
