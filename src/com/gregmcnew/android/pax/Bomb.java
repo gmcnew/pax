@@ -2,7 +2,7 @@ package com.gregmcnew.android.pax;
 
 public class Bomb extends Projectile {
 
-	public static final int HEALTH = 40;
+	public static final int DAMAGE = 200;
 	public static final float DIAMETER = 3;
 	public static final float INITIAL_VELOCITY = 500;
 	public static final float TURN_SPEED = 0;
@@ -11,7 +11,7 @@ public class Bomb extends Projectile {
 	public static final int MAX_LIFE_MS = 1000;
 
 	protected Bomb(Ship parent) {
-		super(Entity.BOMB, null, null, MAX_LIFE_MS, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.BOMB, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.targetHeading;
