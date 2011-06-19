@@ -139,7 +139,13 @@ public class Player {
 	
 	public void build() {
 		if (mBuildTarget != BuildTarget.NONE) {
-			int cost = BuildCosts[mBuildTarget.ordinal()]; 
+			int cost = BuildCosts[mBuildTarget.ordinal()];
+			
+			// We don't want to build more than one ship per frame, even if we
+			// can afford it, because this results in the ships being stacked on
+			// top of each other. Ship AI is deterministic, so they'll always
+			// stay on top of each other, acting like a super-ship but looking
+			// like a single ship.
 			if (money >= cost) {
 				build(mBuildTarget);
 				money -= cost;
