@@ -9,6 +9,7 @@ public class Player {
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 	
+	private static final float PRODUCTION_STEP = 0.25f * 5; // warp speed!
 	
 	// Public methods
 	
@@ -39,8 +40,7 @@ public class Player {
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
 		money = 0;
-		production = 0.75f;
-		production *= 5; // warp speed!
+		production = PRODUCTION_STEP * 3;
 		
 		addShip(Entity.FACTORY);
 	}
@@ -181,7 +181,7 @@ public class Player {
 				addShip(Entity.FRIGATE);
 				break;
 			case UPGRADE:
-				production += 0.25f;
+				production += PRODUCTION_STEP;
 				break;
 		}
 	}
