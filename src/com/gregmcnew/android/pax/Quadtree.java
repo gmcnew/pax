@@ -53,18 +53,26 @@ public class Quadtree {
 			// ranges of the Y-values.
 			int pivotIndex = partition(!mDimension, mPoints, mMinIndex, mMaxIndex);
 			
-			if (low == null) {
-				low = new Quadtree(!mDimension, mEntrySize, mPoints);
+			// If partitioning fails (e.g., perhaps all points are equal in the
+			// given dimension), just treat this node as a leaf.
+			if (pivotIndex <= mMinIndex || pivotIndex >= mMaxIndex) {
+				isLeaf = true;
 			}
+			else {
+				if (low == null) {
+					low = new Quadtree(!mDimension, mEntrySize, mPoints);
+				}
+				
+				if (high == null) {
+					high = new Quadtree(!mDimension, mEntrySize, mPoints);
+				}
 			
-			if (high == null) {
-				high = new Quadtree(!mDimension, mEntrySize, mPoints);
+				low.reset(mMinIndex, pivotIndex);
+				high.reset(pivotIndex, mMaxIndex);
 			}
-			
-			low.reset(mMinIndex, pivotIndex);
-			high.reset(pivotIndex, mMaxIndex);
 		}
-		else {
+		
+		if (isLeaf) {
 			low = null;
 			high = null;
 		}
