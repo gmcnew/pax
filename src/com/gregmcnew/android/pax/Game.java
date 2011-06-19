@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import android.util.Log;
+
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE }
@@ -23,6 +25,9 @@ public class Game {
 		return mState;
 	}
 	
+	private long firstUpdateTime = 0;
+	private long numUpdates = 0;
+	
 	public void update() {
 		if (mRestart) {
 			reset();
@@ -30,6 +35,16 @@ public class Game {
 		}
 		if (mState != State.IN_PROGRESS) {
 			return;
+		}
+		
+		if (firstUpdateTime == 0) {
+			firstUpdateTime = System.currentTimeMillis();
+		}
+		
+		numUpdates++;
+		if (numUpdates % 25 == 0) {
+			long dt = System.currentTimeMillis() - firstUpdateTime;
+			Log.v("Game.update", String.format("average update interval: %d", dt / numUpdates));
 		}
 		
 		// Allow all players to produce and build.
