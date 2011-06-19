@@ -276,11 +276,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					
 					buttonMinY = y - dy / 2;
 					buttonMaxY = y + dy / 2;
-					buttonMinX = x + mButtonSize / 2;
-					buttonMaxX = x - mButtonSize / 2;
+					buttonMinX = x + (player == 0 ? 1 : -1) * mButtonSize / 2;
+					buttonMaxX = x - (player == 0 ? 1 : -1) * mButtonSize / 2;
 					
-					progressMaxX = buttonMinX - (mButtonSize * buildProgress);
-					progressMaxY = buttonMinY + mButtonSize / 3;//dy * buildProgress;
+					progressMaxX = buttonMinX - (player == 0 ? 1 : -1) * (mButtonSize * buildProgress);
+					progressMaxY = buttonMinY + (player == 0 ? 1 : -1) * mButtonSize / 3;//dy * buildProgress;
 				}
 				
 				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {
