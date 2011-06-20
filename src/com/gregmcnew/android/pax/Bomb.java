@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 public class Bomb extends Projectile {
 
 	public static final int DAMAGE = 200;
-	public static final float DIAMETER = 3;
+	public static final float DIAMETER = 4;
 	public static final float INITIAL_VELOCITY = 500;
 	public static final float TURN_SPEED = 0;
 	public static final float[] ACCELERATIONLIMS = {-15, 0};
