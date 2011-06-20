@@ -3,13 +3,13 @@ package com.gregmcnew.android.pax;
 public class Missile extends Projectile {
 
 	public static final int DAMAGE = 40;
-	public static final float DIAMETER = 3;
+	public static final float DIAMETER = 5;
 	public static final float INITIAL_VELOCITY = 100;
 	public static final float TURN_SPEED = 0.15f;
 	public static final float[] ACCELERATIONLIMS = {100f, 45f};
 	public static final float MAXVELOCITY = 400;
 	
-	public static final float[] EXTRA_POINT_OFFSETS = { 5, -5 };
+	public static final float[] EXTRA_POINT_OFFSETS = { 3, -3 };
 	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
 	
 	// TODO: Set missile target priorities and search limits.
