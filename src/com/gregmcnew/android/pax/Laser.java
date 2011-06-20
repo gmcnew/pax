@@ -9,12 +9,17 @@ public class Laser extends Projectile {
 	public static final float[] ACCELERATIONLIMS = {0, 0};
 	public static final float MAXVELOCITY = 1000;
 	public static final int MAX_LIFE_MS = 1000;
+	
+	public static final float[] EXTRA_POINT_OFFSETS = { 10, 5, -5, -10 };
+	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
 
 	protected Laser(Ship parent) {
 		super(Entity.LASER, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
 		body.center.set(parent.body.center);
 		heading = parent.heading;
 		targetHeading = heading;
+		
+		setExtraPoints(NUM_EXTRA_POINTS, EXTRA_POINT_OFFSETS);
 		
 		velocity.x = (float) Math.cos(heading) * INITIAL_VELOCITY;
 		velocity.y = (float) Math.sin(heading) * INITIAL_VELOCITY;
