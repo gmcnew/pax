@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import java.util.Random;
+
 import android.graphics.PointF;
 
 /**Abstract class. Represents any entity in the game's id, health, velocity, etc.**/
@@ -34,6 +36,8 @@ public abstract class Entity {
 	protected float[] mExtraPointOffsets = { };
 	
 	private int mRetargetCounter;
+	
+	private static Random mRandom = new Random();
 	
 	protected int id;
 
@@ -70,6 +74,8 @@ public abstract class Entity {
 		body = new CircleF(new Point2(), radius);
 		heading = 0f;
 		velocity = new PointF();
+		
+		mRetargetCounter = mRandom.nextInt(100);
 	}
 	
 	/**Sets the ship to max speed on its current heading.**/
@@ -148,8 +154,8 @@ public abstract class Entity {
 			if (leadSpeed != 0) {
 				double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
 				
-				// How much time would it take for us to reach the target
-				// at the given speed?
+				// How long would it take to reach the target at the given
+				// speed?
 				double timeToTarget = distanceToTarget / leadSpeed;
 				
 				// Aim for where the target is going to be.
