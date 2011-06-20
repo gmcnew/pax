@@ -19,8 +19,6 @@ public class Frigate extends Ship {
 		reloadTimeMs = 6000;
 		shotTimeMs = 20;
 		clipSize = 8;
-
-		// When a frigate is created, make it wait reloadTimeMs before it has any shots.  
-		// shotsLeft = clipSize;
+		shotsLeft = clipSize;
 	}
 }
