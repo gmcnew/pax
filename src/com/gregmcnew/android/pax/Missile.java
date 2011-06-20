@@ -9,6 +9,9 @@ public class Missile extends Projectile {
 	public static final float[] ACCELERATIONLIMS = {100f, 45f};
 	public static final float MAXVELOCITY = 400;
 	
+	public static final float[] EXTRA_POINT_OFFSETS = { 5, -5 };
+	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
+	
 	// TODO: Set missile target priorities and search limits.
 	public static final int[] TARGET_PRIORITIES = {Entity.FIGHTER, Entity.BOMBER, Entity.FRIGATE, Entity.FACTORY };
 	public static final float[] TARGET_SEARCH_LIMITS = {500, 500, 500, 500 };
