@@ -1,7 +1,6 @@
 package com.gregmcnew.android.pax;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.Display;
@@ -23,15 +22,9 @@ public class GameView extends GLSurfaceView {
 		updateRotation();
 	}
 	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		updateRotation();
-	}
-	
-	private void updateRotation() {
+	public void updateRotation() {
 		Display display = mContext.getWindowManager().getDefaultDisplay();
-		mRotation = display.getRotation();
+		mRotation = display.getOrientation();
 		mRenderer.updateRotation(mRotation);
 	}
 	

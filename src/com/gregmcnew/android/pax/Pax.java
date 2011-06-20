@@ -91,6 +91,7 @@ public class Pax extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
+        mView.updateRotation();
     }
     
     private Random mRandom;
