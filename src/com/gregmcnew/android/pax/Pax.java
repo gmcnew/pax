@@ -57,7 +57,7 @@ public class Pax extends Activity {
             mView.setFocusableInTouchMode(true);
             
             if (MUSIC) {
-            	//mMusic = MediaPlayer.create(this, R.raw.music);
+            	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
         
