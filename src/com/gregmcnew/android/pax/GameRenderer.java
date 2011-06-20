@@ -1,4 +1,5 @@
 package com.gregmcnew.android.pax;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,19 +25,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	
     
     private static final int[] RESOURCES_TO_LOAD = {
-    		R.drawable.bomb,
-    		R.drawable.laser,
-    		R.drawable.missile,
-    		
-    		R.drawable.bomber_p1,
-    		R.drawable.factory_p1,
-    		R.drawable.fighter_p1,
-    		R.drawable.frigate_p1,
-    		
-    		R.drawable.bomber_p2,
-    		R.drawable.factory_p2,
-    		R.drawable.fighter_p2,
-    		R.drawable.frigate_p2,
 
     		R.drawable.ohblue,
     		R.drawable.ohred,
@@ -94,7 +82,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		Resources resources = mContext.getResources();
 		Map<Integer, Bitmap> bitmaps = new HashMap<Integer, Bitmap>();
 		for (int resourceID : RESOURCES_TO_LOAD) {
-			bitmaps.put(resourceID, BitmapFactory.decodeResource(resources, resourceID));
+			InputStream is = resources.openRawResource(resourceID);
+			Bitmap bitmap = BitmapFactory.decodeStream(is);
+			bitmaps.put(resourceID, bitmap);
 		}
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
@@ -107,6 +97,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Factory.DIAMETER);
+					painters[Entity.LASER]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue),   Laser.DIAMETER);
+					painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue),    Bomb.DIAMETER);
+					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Missile.DIAMETER);
 					break;
 				case 1:
 				default:
@@ -114,12 +107,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Factory.DIAMETER);
+					painters[Entity.LASER]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred),   Laser.DIAMETER);
+					painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred),    Bomb.DIAMETER);
+					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Missile.DIAMETER);
 					break;
 			}
-			
-			painters[Entity.LASER]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.laser),   Laser.DIAMETER);
-			painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb),    Bomb.DIAMETER);
-			painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.missile), Missile.DIAMETER);
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
@@ -167,7 +159,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		
 		Resources res = mContext.getResources();
 		if (Pax.BACKGROUND_IMAGE) {
-			mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.background), Math.max(mGameWidth, mGameHeight));
+			//mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.background), Math.max(mGameWidth, mGameHeight));
         }
 		
 		mBuildTargetPainters = new Painter[4];
