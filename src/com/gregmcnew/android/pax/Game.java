@@ -42,7 +42,7 @@ public class Game {
 		mLastUpdateTime = System.currentTimeMillis();
 		long dt = mLastUpdateTime - lastUpdateTime;
 		long totalTime = mLastUpdateTime - mFirstUpdateTime;
-		int updateLogInterval = 25;
+		int updateLogInterval = Pax.LOG_FRAMERATE_INTERVAL_UPDATES;
 		mNumUpdates++;
 		
 		if (Pax.SIMPLE_BALANCE_TEST) {
