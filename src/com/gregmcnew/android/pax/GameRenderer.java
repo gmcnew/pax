@@ -79,12 +79,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + gl.glGetString(GL10.GL_RENDERER));
 		}
 
-		Resources resources = mContext.getResources();
 		Map<Integer, Bitmap> bitmaps = new HashMap<Integer, Bitmap>();
 		for (int resourceID : RESOURCES_TO_LOAD) {
-			InputStream is = resources.openRawResource(resourceID);
-			Bitmap bitmap = BitmapFactory.decodeStream(is);
-			bitmaps.put(resourceID, bitmap);
+			bitmaps.put(resourceID, loadBitmap(resourceID));
 		}
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
@@ -156,17 +153,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		mButtonSize = Math.max(mGameWidth, mGameHeight) / 15;
         
         // Initialize the background image.
-		
-		Resources res = mContext.getResources();
 		if (Pax.BACKGROUND_IMAGE) {
-			//mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.background), Math.max(mGameWidth, mGameHeight));
+			//mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.background), Math.max(mGameWidth, mGameHeight));
         }
 		
 		mBuildTargetPainters = new Painter[4];
-		mBuildTargetPainters[0] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.fighter_outline), mButtonSize);
-		mBuildTargetPainters[1] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.bomber_outline), mButtonSize);
-		mBuildTargetPainters[2] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.frigate_outline), mButtonSize);
-		mBuildTargetPainters[3] = Painter.CreateMinSize(gl, mVBOSupport, BitmapFactory.decodeResource(res, R.drawable.upgrade_outline), mButtonSize);
+		mBuildTargetPainters[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline), mButtonSize);
+		mBuildTargetPainters[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline), mButtonSize);
+		mBuildTargetPainters[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline), mButtonSize);
+		mBuildTargetPainters[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline), mButtonSize);
 	}
 	
 	// Draw factories at the bottom, with frigates above them, bombers above
@@ -293,6 +288,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				y += dy;
 			}
 		}
+	}
+	
+	private Bitmap loadBitmap(int resourceID) {
+		Resources resources = mContext.getResources();
+		InputStream is = resources.openRawResource(resourceID);
+		return BitmapFactory.decodeStream(is);
 	}
 	
 	private Context mContext; 
