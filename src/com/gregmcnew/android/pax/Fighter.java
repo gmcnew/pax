@@ -13,15 +13,10 @@ public class Fighter extends Ship {
 
 	protected Fighter() {
 		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-		shotInterval = SHOT_INTERVAL;
-	}
 
-	@Override
-	public boolean canShoot() {
-		if(shotsLeft > 0) return false;
-		mShootCounter = (mShootCounter + 1) % 20;
-		return mShootCounter == 0;
+		reloadTimeMs = 6000;
+		shotTimeMs = 33;
+		clipSize = 5;
+		shotsLeft = clipSize;
 	}
-	
-	private int mShootCounter = 0;
 }

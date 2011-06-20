@@ -11,11 +11,6 @@ public class Factory extends Ship {
 	protected Factory() {
 		super(Entity.FACTORY, null, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 	}
-
-	@Override
-	public boolean canShoot() {
-		return false;
-	}
 	
 	@Override
 	public void updateVelocity(){

@@ -11,14 +11,9 @@ public class Bomber extends Ship {
 
 	protected Bomber() {
 		super(Entity.BOMBER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-	}
 
-	@Override
-	public boolean canShoot() {
-		if(shotsLeft > 0) return false;
-		mShootCounter = (mShootCounter + 1) % 20;
-		return mShootCounter == 0;
+		reloadTimeMs = 2000;
+		clipSize = 1;
+		shotsLeft = 1;
 	}
-	
-	private int mShootCounter = 0;
 }
