@@ -19,6 +19,12 @@ public class Projectile extends Entity {
 		// actually should have hit the other ship first).
 		for (int victimShipType : Ship.TYPES) {
 			Ship victimShip = (Ship) victim.mEntities[victimShipType].collide(body.center, body.radius);
+
+			// Check other collision points if necessary.
+			for (int i = 0; i < mExtraPoints.length && victimShip == null; i++) {
+				victimShip = (Ship) victim.mEntities[victimShipType].collide(mExtraPoints[i], body.radius);
+			}
+			
 			if (victimShip != null) {
 				
 				int damage = health;
