@@ -42,9 +42,15 @@ public class Game {
 		mLastUpdateTime = System.currentTimeMillis();
 		long dt = mLastUpdateTime - lastUpdateTime;
 		long totalTime = mLastUpdateTime - mFirstUpdateTime;
-		
+		int updateLogInterval = 25;
 		mNumUpdates++;
-		if (mNumUpdates % 25 == 0) {
+		
+		if (Pax.SIMPLE_BALANCE_TEST) {
+			dt = Pax.UPDATE_INTERVAL_MS;
+			updateLogInterval = 500;
+		}
+		
+		if (mNumUpdates % updateLogInterval == 0) {
 			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, totalTime / mNumUpdates));
 		}
 		

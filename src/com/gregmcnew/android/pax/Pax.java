@@ -14,10 +14,15 @@ import android.widget.Toast;
 public class Pax extends Activity {
     
     public static final boolean SELF_BENCHMARK = false;
+    public static final boolean SIMPLE_BALANCE_TEST = false;
     public static final boolean BACKGROUND_IMAGE = false;
     public static final boolean MUSIC = false;
 	
 	public static final int UPDATE_INTERVAL_MS = 40;
+	
+	private int mRedWins;
+	private int mBlueWins;
+	private int mTies;
     
     /** Called when the activity is first created. */
     @Override
@@ -52,11 +57,13 @@ public class Pax extends Activity {
             mView.setFocusableInTouchMode(true);
             
             if (MUSIC) {
-            	mMusic = MediaPlayer.create(this, R.raw.music);
+            	//mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
         
     	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
+    	
+    	mRedWins = mBlueWins = mTies = 0;
     }
     
     @Override
@@ -105,6 +112,31 @@ public class Pax extends Activity {
     			}
     			
         		updateState(Game.State.TIE);
+    		}
+    		else if (SIMPLE_BALANCE_TEST) {
+    			for (int i = 0; i < 100; i++) {
+    				mGame.mPlayers[0].mBuildTarget = Player.BuildTarget.FIGHTER;
+    				mGame.mPlayers[1].mBuildTarget = Player.BuildTarget.FRIGATE;
+    				Game.State state = Game.State.IN_PROGRESS;
+    				while (state == Game.State.IN_PROGRESS) {
+        				mGame.update();
+            			state = mGame.getState();
+    				}
+    				
+	    			switch (state) {
+	    				case RED_WINS:
+	    					mRedWins++;
+	    					break;
+	    				case BLUE_WINS:
+	    					mBlueWins++;
+	    					break;
+	    				case TIE:
+	    					mTies++;
+	    					break;
+	    			}
+	    			Log.i(TAG, String.format("red %d, blue %d, ties %d", mRedWins, mBlueWins, mTies));
+	    			mGame.restart();
+    			}
     		}
     		else {
         		mView.invalidate();
