@@ -33,6 +33,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.bomber_outline,
     		R.drawable.frigate_outline,
     		R.drawable.upgrade_outline,
+    		
+    		R.drawable.fighter_outline_red,
+    		R.drawable.bomber_outline_red,
+    		R.drawable.frigate_outline_red,
+    		R.drawable.upgrade_outline_red,
+    		
     		R.drawable.white20,
     		
     		R.drawable.laser,
@@ -156,11 +162,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			//mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.background), Math.max(mGameWidth, mGameHeight));
         }
 		
-		mBuildTargetPainters = new Painter[4];
-		mBuildTargetPainters[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline), mButtonSize);
-		mBuildTargetPainters[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline), mButtonSize);
-		mBuildTargetPainters[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline), mButtonSize);
-		mBuildTargetPainters[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline), mButtonSize);
+		mBuildTargetPaintersBlue = new Painter[4];
+		mBuildTargetPaintersBlue[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline), mButtonSize);
+		mBuildTargetPaintersBlue[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline), mButtonSize);
+		mBuildTargetPaintersBlue[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline), mButtonSize);
+		mBuildTargetPaintersBlue[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline), mButtonSize);
+		
+		mBuildTargetPaintersRed = new Painter[4];
+		mBuildTargetPaintersRed[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline_red), mButtonSize);
+		mBuildTargetPaintersRed[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline_red), mButtonSize);
+		mBuildTargetPaintersRed[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline_red), mButtonSize);
+		mBuildTargetPaintersRed[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline_red), mButtonSize);
 	}
 	
 	// Draw factories at the bottom, with frigates above them, bombers above
@@ -206,7 +218,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			float y = (dy - mGameHeight) / 2;
 			
 			float buildIndicatorRotation = 90 * mRotation;
-			
+
+			Painter[] buildTargetPainters = (player == 0) ? mBuildTargetPaintersBlue : mBuildTargetPaintersRed;
 			if ((player == 1) ^ (mRotation >= 2)) {
 				dx = -dx;
 				dy = -dy;
@@ -282,7 +295,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 							0);
 				}
 				
-				mBuildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation);
+				buildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation);
 				x += dx;
 				y += dy;
 			}
@@ -306,7 +319,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private boolean mVBOSupport;
 	
 	private Painter mHighlight;
-	private Painter[] mBuildTargetPainters;
+	private Painter[] mBuildTargetPaintersBlue;
+	private Painter[] mBuildTargetPaintersRed;
 	
 	private int mRotation;
 	private float mButtonSize;
