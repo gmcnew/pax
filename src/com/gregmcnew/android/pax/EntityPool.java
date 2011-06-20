@@ -43,6 +43,9 @@ public class EntityPool implements Iterable<Entity> {
 		
 		e.id = id;
 		e.body.center.id = id;
+		for (Point2 extraPoint : e.mExtraPoints) {
+			extraPoint.id = id;
+		}
 		
 		return id;
 	}
@@ -89,6 +92,10 @@ public class EntityPool implements Iterable<Entity> {
 		for (Entity e : this) {
 			mBodies.mPoints[i] = e.body.center;
 			i++;
+			for (Point2 extraPoint : e.mExtraPoints) {
+				mBodies.mPoints[i] = extraPoint;
+				i++;
+			}
 		}
 		mBodies.reset(0, i);
 	}
@@ -106,6 +113,9 @@ public class EntityPool implements Iterable<Entity> {
 		mList[entity.id] = null;
 		mRecycledIDs.add(entity.id);
 		mBodies.remove(entity.body.center);
+		for (Point2 extraPoint : entity.mExtraPoints) {
+			mBodies.remove(extraPoint);
+		}
 		
 		entity.id = Entity.NO_ENTITY;
 		entity.body.center.id = Entity.NO_ENTITY;

@@ -26,6 +26,13 @@ public abstract class Entity {
 	public float heading; // in radians
 	public PointF velocity;
 	
+	// An entity can have extra collision circles, each specified as a
+	// (Point2, float) pair. The Point2 is the center of a collision circle with
+	// the same radius as 'body'. The float is the number of ship radii by which
+	// the point is ahead (i.e., toward 'heading') of the ship's center.
+	protected Point2[] mExtraPoints = { };
+	protected float[] mExtraPointOffsets = { };
+	
 	private int mRetargetCounter;
 	
 	protected int id;
@@ -87,6 +94,18 @@ public abstract class Entity {
 		float dx_t = velocity.x * Pax.UPDATE_INTERVAL_MS / 1000;
 		float dy_t = velocity.y * Pax.UPDATE_INTERVAL_MS / 1000;
 		body.center.offset(dx_t, dy_t);
+		
+		// If an entity has extra collision points, move them, too.
+		if (mExtraPoints.length > 0) {
+			float headingX = (float) Math.cos(heading);
+			float headingY = (float) Math.sin(heading);
+			for (int i = 0; i < mExtraPoints.length; i++) {
+				Point2 point = mExtraPoints[i];
+				float offset = radius * mExtraPointOffsets[i];
+				point.set(body.center);
+				point.offset(headingX * offset, headingY * offset);
+			}
+		}
 	}
 	
 	public void updateHeading(){
@@ -160,5 +179,18 @@ public abstract class Entity {
 		updatePosition();
 		updateHeading();
 		updateVelocity();
+	}
+	
+	
+	// Protected methods
+	
+	public void setExtraPoints(int numPoints, float[] offsets) {
+		mExtraPoints = new Point2[offsets.length];
+		mExtraPointOffsets = offsets;
+		
+		for (int i = 0; i < mExtraPoints.length; i++) {
+			mExtraPoints[i] = new Point2();
+			mExtraPoints[i].set(body.center);
+		}
 	}
 }
