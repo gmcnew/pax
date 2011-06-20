@@ -80,14 +80,25 @@ public abstract class Entity {
 	
 	public boolean wantsNewTarget() {
 		
-		// As long as I don't have a target, ask for one 10% of the time.
-		mRetargetCounter = (mRetargetCounter + 1) % 10;
+		boolean retarget = false;
 		
-		if (target != null && target.health <= 0) {
-			target = null;
+		if (targetPriorities != null) {
+			
+			mRetargetCounter = (mRetargetCounter + 1) % 100;
+			
+			retarget = false
+				// Retarget once in a while no matter what else is going on.
+				|| (mRetargetCounter == 0)
+				
+				// Forget about dead targets.
+				|| 	(target != null && target.health <= 0)
+				
+				// Retarget fairly often while I don't have a target.
+				|| 	(target == null && mRetargetCounter % 10 == 0)
+				;
 		}
 		
-		return targetPriorities != null && target == null && mRetargetCounter == 0;
+		return retarget;
 	}
 	
 	public void updatePosition(){
