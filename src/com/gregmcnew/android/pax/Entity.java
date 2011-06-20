@@ -125,7 +125,13 @@ public abstract class Entity {
 			dx = target.body.center.x - body.center.x;
 			dy = target.body.center.y - body.center.y;
 			
-			if (type == FIGHTER) {
+			float leadSpeed = 0f;
+			
+			if (type == MISSILE) {
+				// Lead the target using our speed.
+				leadSpeed = Missile.INITIAL_VELOCITY;
+			}
+			else if (type == FIGHTER) {
 				
 				Ship fighter = (Ship) this;
 				if (fighter.shotsLeft == 0 && fighter.reloadTimer < fighter.reloadTimeMs / 2) {
@@ -134,16 +140,21 @@ public abstract class Entity {
 					dy = -dy;
 				}
 				else {
-					double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
-					
-					// How much time would it take for a laser to reach the target,
-					// assuming lasers always travel at their initial velocity?
-					double laserTimeToTarget = distanceToTarget / Laser.INITIAL_VELOCITY;
-					
-					// Aim for where the target is going to be.
-					dx += target.velocity.x * laserTimeToTarget;
-					dy += target.velocity.y * laserTimeToTarget;
+					// Lead the target using the laser's speed.
+					leadSpeed = Laser.INITIAL_VELOCITY;
 				}
+			}
+			
+			if (leadSpeed != 0) {
+				double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+				
+				// How much time would it take for us to reach the target
+				// at the given speed?
+				double timeToTarget = distanceToTarget / leadSpeed;
+				
+				// Aim for where the target is going to be.
+				dx += target.velocity.x * timeToTarget;
+				dy += target.velocity.y * timeToTarget;
 			}
 		} else {
 			dx = 200 - body.center.x;
