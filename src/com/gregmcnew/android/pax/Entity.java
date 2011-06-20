@@ -116,15 +116,23 @@ public abstract class Entity {
 			
 			if (type == FIGHTER) {
 				
-				double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
-				
-				// How much time would it take for a laser to reach the target,
-				// assuming lasers always travel at their initial velocity?
-				double laserTimeToTarget = distanceToTarget / Laser.INITIAL_VELOCITY;
-				
-				// Aim for where the target is going to be.
-				dx += target.velocity.x * laserTimeToTarget;
-				dy += target.velocity.y * laserTimeToTarget;
+				Ship fighter = (Ship) this;
+				if (fighter.shotsLeft == 0 && fighter.reloadTimer < fighter.reloadTimeMs / 2) {
+					// Run away, run away!
+					dx = -dx;
+					dy = -dy;
+				}
+				else {
+					double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+					
+					// How much time would it take for a laser to reach the target,
+					// assuming lasers always travel at their initial velocity?
+					double laserTimeToTarget = distanceToTarget / Laser.INITIAL_VELOCITY;
+					
+					// Aim for where the target is going to be.
+					dx += target.velocity.x * laserTimeToTarget;
+					dy += target.velocity.y * laserTimeToTarget;
+				}
 			}
 		} else {
 			dx = 200 - body.center.x;
