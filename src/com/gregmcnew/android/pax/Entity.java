@@ -162,9 +162,10 @@ public abstract class Entity {
 				dx += target.velocity.x * timeToTarget;
 				dy += target.velocity.y * timeToTarget;
 			}
-		} else {
-			dx = 200 - body.center.x;
-			dy = 400 - body.center.y;
+		}
+		else {
+			dx = -body.center.x;
+			dy = -body.center.y;
 		}
 		targetHeading = (float) Math.atan2((double) dy, (double) dx);
 		if (targetHeading <= 0){
