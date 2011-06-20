@@ -21,7 +21,7 @@
     <linearGradient
        id="linearGradient3763">
       <stop
-         style="stop-color:#ffffff;stop-opacity:0;"
+         style="stop-color:#00ff00;stop-opacity:0;"
          offset="0"
          id="stop3765" />
       <stop
@@ -29,7 +29,7 @@
          offset="0.5"
          style="stop-color:#ffffff;stop-opacity:1;" />
       <stop
-         style="stop-color:#ffffff;stop-opacity:0;"
+         style="stop-color:#00ff00;stop-opacity:0;"
          offset="1"
          id="stop3767" />
     </linearGradient>
