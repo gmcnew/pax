@@ -37,6 +37,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		
     		R.drawable.laser,
     		R.drawable.bomb,
+    		R.drawable.missile,
     };
 
     
@@ -97,7 +98,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Factory.DIAMETER);
-					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Missile.DIAMETER);
 					break;
 				case 1:
 				default:
@@ -105,12 +105,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Factory.DIAMETER);
-					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Missile.DIAMETER);
 					break;
 			}
 			
-			painters[Entity.LASER] = Painter.CreateSize   (gl, mVBOSupport, bitmaps.get(R.drawable.laser), Laser.LENGTH, Laser.DIAMETER);
-			painters[Entity.BOMB]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), Bomb.DIAMETER);
+			painters[Entity.LASER]   = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.laser), Laser.LENGTH, Laser.DIAMETER);
+			painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), Bomb.DIAMETER);
+			painters[Entity.MISSILE] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.missile), Missile.LENGTH, Missile.DIAMETER);
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
