@@ -34,6 +34,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.frigate_outline,
     		R.drawable.upgrade_outline,
     		R.drawable.white20,
+    		
+    		R.drawable.laser,
     };
 
     
@@ -94,7 +96,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Factory.DIAMETER);
-					painters[Entity.LASER]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue),   Laser.DIAMETER);
 					painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue),    Bomb.DIAMETER);
 					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Missile.DIAMETER);
 					break;
@@ -104,11 +105,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Bomber.DIAMETER);
 					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Frigate.DIAMETER);
 					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Factory.DIAMETER);
-					painters[Entity.LASER]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred),   Laser.DIAMETER);
 					painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred),    Bomb.DIAMETER);
 					painters[Entity.MISSILE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Missile.DIAMETER);
 					break;
 			}
+			
+			painters[Entity.LASER] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.laser), Laser.LENGTH, Laser.DIAMETER);
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}

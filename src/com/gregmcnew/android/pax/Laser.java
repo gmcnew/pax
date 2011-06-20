@@ -10,7 +10,9 @@ public class Laser extends Projectile {
 	public static final float MAXVELOCITY = 1000;
 	public static final int MAX_LIFE_MS = 1000;
 	
-	public static final float[] EXTRA_POINT_OFFSETS = { 10, 5, -5, -10 };
+	public static final int LENGTH = 20;
+	
+	public static final float[] EXTRA_POINT_OFFSETS = { LENGTH / 2, LENGTH / 4, -LENGTH / 4, -LENGTH / 2 };
 	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
 
 	protected Laser(Ship parent) {
