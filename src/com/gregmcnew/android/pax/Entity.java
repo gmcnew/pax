@@ -94,6 +94,19 @@ public abstract class Entity {
 		if (target != null) {
 			dx = target.body.center.x - body.center.x;
 			dy = target.body.center.y - body.center.y;
+			
+			if (type == FIGHTER) {
+				
+				double distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+				
+				// How much time would it take for a laser to reach the target,
+				// assuming lasers always travel at their initial velocity?
+				double laserTimeToTarget = distanceToTarget / Laser.INITIAL_VELOCITY;
+				
+				// Aim for where the target is going to be.
+				dx += target.velocity.x * laserTimeToTarget;
+				dy += target.velocity.y * laserTimeToTarget;
+			}
 		} else {
 			dx = 200 - body.center.x;
 			dy = 400 - body.center.y;
