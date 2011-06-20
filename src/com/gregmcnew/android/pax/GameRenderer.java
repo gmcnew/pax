@@ -134,9 +134,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
         
-        mWidth = width;
-        mHeight = height;
-        
         // Make sure the largest screen dimension is equal to GAME_VIEW_SIZE
         // game units.
         float maxDimension = Math.max(width, height);
@@ -300,8 +297,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	
 	private Context mContext; 
 	private Game mGame;
-	private int mWidth;
-	private int mHeight;
 	
 	private float mGameWidth;
 	private float mGameHeight;
