@@ -4,7 +4,7 @@ public class Frigate extends Ship {
 	
 	public static final int HEALTH = 1400;
 	public static final float DIAMETER = 45;
-	public static final float TURN_SPEED = 0.015f;
+	public static final float TURN_SPEED = 0.375f; // in radians per second
 	public static final float[] ACCELERATIONLIMS = {10f, 5f};
 	public static final float MAXSPEED = 30f;
 	public static final int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };

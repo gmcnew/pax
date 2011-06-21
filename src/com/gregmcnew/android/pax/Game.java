@@ -25,33 +25,26 @@ public class Game {
 		return mState;
 	}
 	
-	private long mFirstUpdateTime = 0;
-	private long mLastUpdateTime;
-	private long mNumUpdates = 0;
+	private long mTimeElapsed;
+	private long mNumUpdates;
 	
-	public void update() {
+	public void update(long dt) {
 		if (mRestart) {
 			reset();
 		}
 		
-		if (mFirstUpdateTime == 0) {
-			mFirstUpdateTime = System.currentTimeMillis();
-		}
-		
-		long lastUpdateTime = mLastUpdateTime;
-		mLastUpdateTime = System.currentTimeMillis();
-		long dt = mLastUpdateTime - lastUpdateTime;
-		long totalTime = mLastUpdateTime - mFirstUpdateTime;
-		int updateLogInterval = Pax.LOG_FRAMERATE_INTERVAL_UPDATES;
+		mTimeElapsed += dt;
 		mNumUpdates++;
+		
+		int updateLogInterval = Pax.LOG_FRAMERATE_INTERVAL_UPDATES;
 		
 		if (Pax.SIMPLE_BALANCE_TEST) {
 			dt = Pax.UPDATE_INTERVAL_MS;
 			updateLogInterval = 500;
 		}
 		
-		if (mNumUpdates % updateLogInterval == 0) {
-			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, totalTime / mNumUpdates));
+		if (updateLogInterval != -1 && mNumUpdates % updateLogInterval == 0) {
+			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
 		}
 		
 		if (mState != State.IN_PROGRESS) {
@@ -117,6 +110,9 @@ public class Game {
 		}
 		mState = State.IN_PROGRESS;
 		mRestart = false;
+		
+		mTimeElapsed = 0;
+		mNumUpdates = 0;
 	}
 	
 	private void retarget(Player player, Entity entity) {

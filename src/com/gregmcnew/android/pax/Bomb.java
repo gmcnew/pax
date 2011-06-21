@@ -22,11 +22,11 @@ public class Bomb extends Projectile {
 	}
 	
 	@Override
-	public void updateHeading(){
+	public void updateHeading(long dt){
 	}
 	
 	@Override
-	public void updateVelocity(){
+	public void updateVelocity(long dt) {
 		float cosH = (float)Math.cos(heading);
 		float sinH = (float)Math.sin(heading);
 		float velH = velocity.y * sinH + velocity.x * cosH; //Speed in the direction of heading.

@@ -213,7 +213,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			};
 	
 	private void drawParticles(GL10 gl) {
-
         for (int emitterType : Emitter.TYPES) {
     		Painter painter = mParticlePainters[emitterType];
         	for (int i = 0; i < Game.NUM_PLAYERS; i++) {
@@ -228,23 +227,25 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		mGame.update();
+		
+		long dt = 0;
+		long time = System.currentTimeMillis();
+		if (mLastTime != -1) {
+			dt = time - mLastTime;
+		}
+		mLastTime = time;
 		
 		if (Pax.FPS_METER) {
-			long time = System.currentTimeMillis();
-			if (mLastTime != -1) {
-				long dt = time - mLastTime;
-				
-				mFpsTotalTime += dt - mFpsSamples[mFpsNextSample];
-				mFpsSamples[mFpsNextSample] = dt;
-				
-				mFpsNextSample = (mFpsNextSample + 1) % NUM_FPS_SAMPLES;
-				if (mFpsNextSample > mFpsNumSamples) {
-					mFpsNumSamples = mFpsNextSample;
-				}
+			mFpsTotalTime += dt - mFpsSamples[mFpsNextSample];
+			mFpsSamples[mFpsNextSample] = dt;
+			
+			mFpsNextSample = (mFpsNextSample + 1) % NUM_FPS_SAMPLES;
+			if (mFpsNextSample > mFpsNumSamples) {
+				mFpsNumSamples = mFpsNextSample;
 			}
-			mLastTime = time;
 		}
+		
+		mGame.update(dt);
 		
         if (mBackgroundPainter != null) {
         	mBackgroundPainter.draw(gl, 0, 0, 0f, 1f);

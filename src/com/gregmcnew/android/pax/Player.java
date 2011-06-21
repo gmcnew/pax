@@ -7,8 +7,10 @@ public class Player {
 
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
-	
-	private static final float PRODUCTION_STEP = 0.25f * 5; // warp speed!
+
+	// Production is measured in money per second.
+	private static final float PRODUCTION_STEP = 20;
+	private static final float INITIAL_PRODUCTION = PRODUCTION_STEP * 3;
 	
 	// Public methods
 	
@@ -44,7 +46,7 @@ public class Player {
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
 		money = 0;
-		production = PRODUCTION_STEP * 3;
+		production = INITIAL_PRODUCTION;
 		
 		addShip(Entity.FACTORY);
 	}
@@ -54,7 +56,7 @@ public class Player {
 	}
 	
 	public void produce(long dt) {
-		money += production;
+		money += (production * dt) / 1000;
 	}
 	
 	// This function requires a valid collision space (for retargeting),
@@ -87,7 +89,7 @@ public class Player {
 						removeEntity(projectile);
 					}
 					else {
-						projectile.lifeMs -= Pax.UPDATE_INTERVAL_MS;
+						projectile.lifeMs -= dt;
 					}
 				}
 			}
@@ -106,7 +108,7 @@ public class Player {
 					}
 				}
 				
-				entity.move();
+				entity.move(dt);
 			}
 		}
 

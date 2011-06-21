@@ -5,7 +5,7 @@ public class Missile extends Projectile {
 	public static final int DAMAGE = 40;
 	public static final float DIAMETER = 5;
 	public static final float INITIAL_VELOCITY = 100;
-	public static final float TURN_SPEED = 0.15f;
+	public static final float TURN_SPEED = 3.75f; // in radians per second
 	public static final float[] ACCELERATIONLIMS = {100f, 45f};
 	public static final float MAXVELOCITY = 400;
 	

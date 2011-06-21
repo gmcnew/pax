@@ -28,10 +28,10 @@ public class Laser extends Projectile {
 	}
 	
 	@Override
-	public void updateHeading(){
+	public void updateHeading(long dt) {
 	}
 	
 	@Override
-	public void updateVelocity(){
+	public void updateVelocity(long dt) {
 	}
 }
