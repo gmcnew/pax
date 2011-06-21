@@ -18,7 +18,7 @@ public class Pax extends Activity {
     public static final boolean BACKGROUND_IMAGE = false;
     public static final boolean MUSIC = true;
 	
-    public static final boolean PARTICLES = true;
+    public static final boolean PARTICLES = false;
     public static final boolean FPS_METER = true;
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = 25;
 	public static final int UPDATE_INTERVAL_MS = 40;

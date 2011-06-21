@@ -254,7 +254,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         	gl.glClearColor(BG_RGB[0], BG_RGB[1], BG_RGB[2], 1.0f);
         }
         
-        drawParticles(gl);
+        if (Pax.PARTICLES) {
+        	drawParticles(gl);
+        }
 		
 		for (int entityType : ENTITY_LAYERS) {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
