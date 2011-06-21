@@ -20,7 +20,7 @@ public class Pax extends Activity {
     public static final boolean PARTICLES = true;
     public static final boolean FPS_METER = true;
     
-    public static final int LOG_FRAMERATE_INTERVAL_UPDATES = 25;
+    public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
 	
 	public static final Random sRandom = new Random();

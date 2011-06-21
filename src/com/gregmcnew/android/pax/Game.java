@@ -43,7 +43,7 @@ public class Game {
 			updateLogInterval = 500;
 		}
 		
-		if (updateLogInterval != -1 && mNumUpdates % updateLogInterval == 0) {
+		if (updateLogInterval >= 0 && mNumUpdates % updateLogInterval == 0) {
 			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
 		}
 		
