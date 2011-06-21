@@ -115,23 +115,23 @@ public class Painter {
 	}
 	
 	public void draw(GL10 gl, Entity entity) {
-		draw(gl, entity.body.center.x, entity.body.center.y, (float) Math.toDegrees(entity.heading));
+		draw(gl, entity.body.center.x, entity.body.center.y, (float) Math.toDegrees(entity.heading), 1f);
 	}
 	
-	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees) {
+	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
 		float centerX = (maxX + minX) / 2;
 		float centerY = (maxY + minY) / 2;
 		float scaleX = (maxX - minX) / mWidth;
 		float scaleY = (maxY - minY) / mHeight;
-		draw(gl, centerX, centerY, scaleX, scaleY, rotateDegrees);
+		draw(gl, centerX, centerY, scaleX, scaleY, rotateDegrees, alpha);
 	}
 	
 	// A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
-	public void draw(GL10 gl, float moveX, float moveY, float rotateDegrees) {
-		draw(gl, moveX, moveY, 1f, 1f, rotateDegrees);
+	public void draw(GL10 gl, float moveX, float moveY, float rotateDegrees, float alpha) {
+		draw(gl, moveX, moveY, 1f, 1f, rotateDegrees, alpha);
 	}
 	
-	public void draw(GL10 gl, float moveX, float moveY, float scaleX, float scaleY, float rotateDegrees) {
+	public void draw(GL10 gl, float moveX, float moveY, float scaleX, float scaleY, float rotateDegrees, float alpha) {
 		
         // Make sure we're not using any transformations left over from the
 		// the last draw().
@@ -143,6 +143,7 @@ public class Painter {
 		gl.glFrontFace(GL10.GL_CW);
 
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
+		gl.glColor4f(1f, 1f, 1f, alpha);
 
 		// Point to our vertex and texture buffers.
 		if (mVBOSupport) {

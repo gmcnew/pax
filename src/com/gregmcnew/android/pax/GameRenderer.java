@@ -39,11 +39,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.frigate_outline_red,
     		R.drawable.upgrade_outline_red,
     		
-    		R.drawable.white20,
+    		R.drawable.white,
     		
     		R.drawable.laser,
     		R.drawable.bomb,
     		R.drawable.missile,
+    		
+    		R.drawable.smoke,
     };
 
     
@@ -74,7 +76,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		// Enable texture transparency.
 		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
 		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
 		// Print information about the OpenGL driver.
 		{
@@ -120,8 +122,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
+		
+		mParticlePainters = new Painter[Emitter.TYPES.length];
+		mParticlePainters[Emitter.SMOKE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.smoke), 16);
+		mParticlePainters[Emitter.SPARK] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 16);
 
-		mHighlight = Painter.Create(gl, mVBOSupport, bitmaps.get(R.drawable.white20));
+		mHighlight = Painter.Create(gl, mVBOSupport, bitmaps.get(R.drawable.white));
 		
 		for (Bitmap bitmap : bitmaps.values()) {
 			bitmap.recycle();
@@ -182,17 +188,33 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			Entity.LASER, Entity.BOMB, Entity.MISSILE
 			};
 	
+	private void drawParticles(GL10 gl) {
+
+        for (int emitterType : Emitter.TYPES) {
+    		Painter painter = mParticlePainters[emitterType];
+        	for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+        		Emitter e = mGame.mPlayers[i].mEmitters[emitterType];
+        		for (Emitter.Particle p : e.mParticles) {
+        			float youth = (float) p.timeLeft / e.mAgeMs;
+        			painter.draw(gl, p.x, p.y, 2f - youth, 2f - youth, 0f, youth);
+        		}
+        	}
+        }
+	}
+	
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		mGame.update();
 		
         if (mBackgroundPainter != null) {
-        	mBackgroundPainter.draw(gl, 0, 0, 0f);
+        	mBackgroundPainter.draw(gl, 0, 0, 0f, 1f);
         }
         else {
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         	gl.glClearColor(BG_RGB[0], BG_RGB[1], BG_RGB[2], 1.0f);
         }
+        
+        drawParticles(gl);
 		
 		for (int entityType : ENTITY_LAYERS) {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
@@ -284,7 +306,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {
 	
 					// Draw a 'selected' box behind the entire button.
-					mHighlight.drawFillBounds(gl, buttonMinX, buttonMaxX, buttonMinY, buttonMaxY, 0);
+					mHighlight.drawFillBounds(gl, buttonMinX, buttonMaxX, buttonMinY, buttonMaxY, 0, 0.2f);
 					
 					// Draw a 'progress' box behind part of the button.
 					mHighlight.drawFillBounds(gl,
@@ -292,10 +314,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 							progressMaxX,
 							buttonMinY,
 							progressMaxY,
-							0);
+							0,
+							0.2f);
 				}
 				
-				buildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation);
+				buildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation, 1f);
 				x += dx;
 				y += dy;
 			}
@@ -321,6 +344,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Painter mHighlight;
 	private Painter[] mBuildTargetPaintersBlue;
 	private Painter[] mBuildTargetPaintersRed;
+	private Painter[] mParticlePainters;
 	
 	private int mRotation;
 	private float mButtonSize;

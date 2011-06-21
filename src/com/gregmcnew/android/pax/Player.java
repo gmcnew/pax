@@ -97,17 +97,23 @@ public class Player {
 	public void moveEntities(long dt) {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
-				if (type == Projectile.MISSILE) {
-					mEmitters[Emitter.SMOKE].add(entity.body.center.x, entity.body.center.y,
-							(Pax.sRandom.nextFloat() - 0.5f) * 40,
-							(Pax.sRandom.nextFloat() - 0.5f) * 40);
+				
+				if (Pax.PARTICLES) {
+					if (type == Projectile.MISSILE) {
+						mEmitters[Emitter.SMOKE].add(entity.body.center.x, entity.body.center.y,
+								(Pax.sRandom.nextFloat() - 0.5f) * 40,
+								(Pax.sRandom.nextFloat() - 0.5f) * 40);
+					}
 				}
+				
 				entity.move();
 			}
 		}
-		
-		for (int emitterType : Emitter.TYPES) {
-			mEmitters[emitterType].update(dt);
+
+		if (Pax.PARTICLES) {
+			for (int emitterType : Emitter.TYPES) {
+				mEmitters[emitterType].update(dt);
+			}
 		}
 		
 		for (Ship ship : mShooterQueue) {
