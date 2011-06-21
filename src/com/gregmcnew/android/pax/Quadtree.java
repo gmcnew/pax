@@ -11,8 +11,6 @@ public class Quadtree {
 	
 	public Quadtree(boolean dimension, float entrySize, Point2[] points) {
 		
-		mPoints = points;
-		
 		mEntrySize = entrySize;
 		
 		mDimension = dimension;
@@ -20,9 +18,16 @@ public class Quadtree {
 		mMinIndex = 0;
 		mMaxIndex = 0;
 		
-		reset(mMinIndex, mMaxIndex);
+		reset(points, mMinIndex, mMaxIndex);
 	}
+	
 	public void reset(int minIndex, int maxIndex) {
+		reset(mPoints, minIndex, maxIndex);
+	}
+	
+	public void reset(Point2[] points, int minIndex, int maxIndex) {
+		
+		mPoints = points;
 		
 		mMinIndex = minIndex;
 		mMaxIndex = maxIndex;
@@ -67,8 +72,8 @@ public class Quadtree {
 					high = new Quadtree(!mDimension, mEntrySize, mPoints);
 				}
 			
-				low.reset(mMinIndex, pivotIndex);
-				high.reset(pivotIndex, mMaxIndex);
+				low.reset(mPoints, mMinIndex, pivotIndex);
+				high.reset(mPoints, pivotIndex, mMaxIndex);
 			}
 		}
 		
@@ -207,7 +212,7 @@ public class Quadtree {
 		return removed;
 	}
 	
-	protected final Point2[] mPoints;
+	protected Point2[] mPoints;
 	
 	private boolean mDimension;
 	private boolean isLeaf;

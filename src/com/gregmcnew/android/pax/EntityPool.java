@@ -12,11 +12,13 @@ public class EntityPool implements Iterable<Entity> {
 		mNextIndex = 0;
 		mRecycledIDs = new HashSet<Integer>();
 		
-		// TODO: Allow a quadtree to grow to more than 1024 points if necessary.
-		mBodies = new Quadtree(Quadtree.X, Entity.Radii[type], new Point2[1024]);
+		// Keep track of the number of collision points among all entities.
+		mNumCollisionPoints = 0;
+		
+		mBodies = new Quadtree(Quadtree.X, Entity.Radii[type], new Point2[1]);
 	}
 	
-	public int add(Entity e) {
+	public int add(Entity entity) {
 		
 		int id = Entity.NO_ENTITY;
 		
@@ -39,13 +41,15 @@ public class EntityPool implements Iterable<Entity> {
 			mNextIndex++;
 		}
 		
-		mList[id] = e;
+		mList[id] = entity;
 		
-		e.id = id;
-		e.body.center.id = id;
-		for (Point2 extraPoint : e.mExtraPoints) {
+		entity.id = id;
+		entity.body.center.id = id;
+		for (Point2 extraPoint : entity.mExtraPoints) {
 			extraPoint.id = id;
 		}
+		
+		mNumCollisionPoints += entity.mExtraPoints.length + 1;
 		
 		return id;
 	}
@@ -86,9 +90,19 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public void rebuildCollisionSpaces() {
+		
+		// Grow the body tree's points array if necessary.
+		if (mNumCollisionPoints > mBodies.mPoints.length) {
+			int numBodies = mBodies.mPoints.length;
+			while (numBodies < mNumCollisionPoints) {
+				numBodies *= 2;
+			}
+			mBodies.mPoints = new Point2[numBodies];
+		}
+
+		int i = 0;
 
 		// Tweak all of the points in the quadtree, then reset it.
-		int i = 0;
 		for (Entity e : this) {
 			mBodies.mPoints[i] = e.body.center;
 			i++;
@@ -117,6 +131,8 @@ public class EntityPool implements Iterable<Entity> {
 			mBodies.remove(extraPoint);
 		}
 		
+		mNumCollisionPoints -= entity.mExtraPoints.length + 1;
+		
 		entity.id = Entity.NO_ENTITY;
 		entity.body.center.id = Entity.NO_ENTITY;
 	}
@@ -129,6 +145,8 @@ public class EntityPool implements Iterable<Entity> {
 	private int mNextIndex;
 	private int mSize;
 	private static final int INITIAL_SIZE = 1;
+	
+	private int mNumCollisionPoints;
 	
 	protected Quadtree mBodies;
 	
