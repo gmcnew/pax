@@ -23,6 +23,11 @@ public class Player {
 			mEntities[type] = new EntityPool(type);
 		}
 		
+		mEmitters = new Emitter[Emitter.TYPES.length];
+		for (int type : Emitter.TYPES) {
+			mEmitters[type] = new Emitter(type);
+		}
+		
 		mBuildTarget = BuildTarget.NONE;
 		
 		playerNo = playerNumber;
@@ -92,8 +97,17 @@ public class Player {
 	public void moveEntities(long dt) {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
+				if (type == Projectile.MISSILE) {
+					mEmitters[Emitter.SMOKE].add(entity.body.center.x, entity.body.center.y,
+							(Pax.sRandom.nextFloat() - 0.5f) * 40,
+							(Pax.sRandom.nextFloat() - 0.5f) * 40);
+				}
 				entity.move();
 			}
+		}
+		
+		for (int emitterType : Emitter.TYPES) {
+			mEmitters[emitterType].update(dt);
 		}
 		
 		for (Ship ship : mShooterQueue) {
@@ -245,6 +259,7 @@ public class Player {
 	}
 	
 	public EntityPool[] mEntities;
+	public Emitter[] mEmitters;
 	
 	// The retarget queue contains entities that want a new target. This queue
 	// should be handled and cleared on every call to Game.update().
