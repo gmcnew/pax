@@ -21,6 +21,15 @@ public class Pax extends Activity {
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = 25;
 	public static final int UPDATE_INTERVAL_MS = 40;
 	
+	public static final Random sRandom = new Random();
+
+    static {
+    	if (SELF_BENCHMARK) {
+    		// Make randomness deterministic in benchmark mode.
+    		sRandom.setSeed(0);
+    	}
+    }
+	
 	private int mRedWins;
 	private int mBlueWins;
 	private int mTies;
@@ -37,10 +46,6 @@ public class Pax extends Activity {
     	thisContext = this;
         
         mGame = new Game();
-        
-        
-        mRandom = new Random();
-		mRandom.setSeed(0);
 		
 		mLastState = Game.State.IN_PROGRESS;
 
@@ -94,8 +99,6 @@ public class Pax extends Activity {
         super.onConfigurationChanged(newConfig);
         mView.updateRotation();
     }
-    
-    private Random mRandom;
     
     private Runnable mUpdateViewTask = new Runnable() {
     	public void run() {
