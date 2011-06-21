@@ -16,7 +16,7 @@ public class Pax extends Activity {
     public static final boolean SELF_BENCHMARK = false;
     public static final boolean SIMPLE_BALANCE_TEST = false;
     public static final boolean BACKGROUND_IMAGE = false;
-    public static final boolean MUSIC = false;
+    public static final boolean MUSIC = true;
     public static final boolean PARTICLES = true;
     public static final boolean FPS_METER = true;
     
@@ -65,7 +65,7 @@ public class Pax extends Activity {
             mView.setFocusableInTouchMode(true);
             
             if (MUSIC) {
-            	//mMusic = MediaPlayer.create(this, R.raw.music);
+            	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
         
