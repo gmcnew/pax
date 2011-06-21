@@ -56,15 +56,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	mContext = context;
     	mGame = game;
     	mVBOSupport = SUPPORTS_GL11;
-    	
-    	mFpsSamples = new long[NUM_FPS_SAMPLES];
-    	for (int i = 0; i < NUM_FPS_SAMPLES; i++) {
-    		mFpsSamples[i] = 0;
-    	}
-    	mFpsNextSample = 0;
-    	mFpsNumSamples = 0;
-    	mFpsTotalTime = 0;
-    	mLastTime = -1;
     }
     
     public void updateRotation(int rotation) {
@@ -228,23 +219,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		
-		long dt = 0;
-		long time = System.currentTimeMillis();
-		if (mLastTime != -1) {
-			dt = time - mLastTime;
-		}
-		mLastTime = time;
-		
-		if (Pax.FPS_METER) {
-			mFpsTotalTime += dt - mFpsSamples[mFpsNextSample];
-			mFpsSamples[mFpsNextSample] = dt;
-			
-			mFpsNextSample = (mFpsNextSample + 1) % NUM_FPS_SAMPLES;
-			if (mFpsNextSample > mFpsNumSamples) {
-				mFpsNumSamples = mFpsNextSample;
-			}
-		}
-		
+		long dt = FramerateCounter.tick();
 		mGame.update(dt);
 		
         if (mBackgroundPainter != null) {
@@ -367,8 +342,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 		
-		if (Pax.FPS_METER && mFpsTotalTime > 0) {
-			int fps = (int) (1000 * mFpsNumSamples / mFpsTotalTime);
+		if (Pax.FPS_METER) {
+			int fps = FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
 			while (fps > 0) {
@@ -404,12 +379,4 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	
 	private int mRotation;
 	private float mButtonSize;
-	
-	// Frames-per-second meter variables
-	private static final int NUM_FPS_SAMPLES = 100;
-	private long[] mFpsSamples;
-	private int mFpsNextSample;
-	private int mFpsNumSamples;
-	private long mFpsTotalTime;
-	private long mLastTime;
 }
