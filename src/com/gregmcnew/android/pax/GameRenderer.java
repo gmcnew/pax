@@ -46,6 +46,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     		R.drawable.missile,
     		
     		R.drawable.smoke,
+    		
+    		R.drawable.char_0, R.drawable.char_1, R.drawable.char_2, R.drawable.char_3, R.drawable.char_4,
+    		R.drawable.char_5, R.drawable.char_6, R.drawable.char_7, R.drawable.char_8, R.drawable.char_9,
     };
 
     
@@ -53,6 +56,15 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	mContext = context;
     	mGame = game;
     	mVBOSupport = SUPPORTS_GL11;
+    	
+    	mFpsSamples = new long[NUM_FPS_SAMPLES];
+    	for (int i = 0; i < NUM_FPS_SAMPLES; i++) {
+    		mFpsSamples[i] = 0;
+    	}
+    	mFpsNextSample = 0;
+    	mFpsNumSamples = 0;
+    	mFpsTotalTime = 0;
+    	mLastTime = -1;
     }
     
     public void updateRotation(int rotation) {
@@ -126,6 +138,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		mParticlePainters = new Painter[Emitter.TYPES.length];
 		mParticlePainters[Emitter.SMOKE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.smoke), 16);
 		mParticlePainters[Emitter.SPARK] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 16);
+		
+		mDigitPainters = new Painter[10];
+		mDigitPainters[0] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_0), 25, 30);
+		mDigitPainters[1] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_1), 25, 30);
+		mDigitPainters[2] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_2), 25, 30);
+		mDigitPainters[3] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_3), 25, 30);
+		mDigitPainters[4] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_4), 25, 30);
+		mDigitPainters[5] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_5), 25, 30);
+		mDigitPainters[6] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_6), 25, 30);
+		mDigitPainters[7] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_7), 25, 30);
+		mDigitPainters[8] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_8), 25, 30);
+		mDigitPainters[9] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_9), 25, 30);
 
 		mHighlight = Painter.Create(gl, mVBOSupport, bitmaps.get(R.drawable.white));
 		
@@ -205,6 +229,22 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		mGame.update();
+		
+		if (Pax.FPS_METER) {
+			long time = System.currentTimeMillis();
+			if (mLastTime != -1) {
+				long dt = time - mLastTime;
+				
+				mFpsTotalTime += dt - mFpsSamples[mFpsNextSample];
+				mFpsSamples[mFpsNextSample] = dt;
+				
+				mFpsNextSample = (mFpsNextSample + 1) % NUM_FPS_SAMPLES;
+				if (mFpsNextSample > mFpsNumSamples) {
+					mFpsNumSamples = mFpsNextSample;
+				}
+			}
+			mLastTime = time;
+		}
 		
         if (mBackgroundPainter != null) {
         	mBackgroundPainter.draw(gl, 0, 0, 0f, 1f);
@@ -323,6 +363,18 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				y += dy;
 			}
 		}
+		
+		if (Pax.FPS_METER && mFpsTotalTime > 0) {
+			int fps = (int) (1000 * mFpsNumSamples / mFpsTotalTime);
+			float x = (mGameWidth / 2) - 100;
+			float y = (mGameHeight / 2) - 100;
+			while (fps > 0) {
+				int digit = fps % 10;
+				mDigitPainters[digit].draw(gl, x, y, 0, 1f);
+				x -= 20;
+				fps /= 10;
+			}
+		}
 	}
 	
 	private Bitmap loadBitmap(int resourceID) {
@@ -345,7 +397,16 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Painter[] mBuildTargetPaintersBlue;
 	private Painter[] mBuildTargetPaintersRed;
 	private Painter[] mParticlePainters;
+	private Painter[] mDigitPainters;
 	
 	private int mRotation;
 	private float mButtonSize;
+	
+	// Frames-per-second meter variables
+	private static final int NUM_FPS_SAMPLES = 100;
+	private long[] mFpsSamples;
+	private int mFpsNextSample;
+	private int mFpsNumSamples;
+	private long mFpsTotalTime;
+	private long mLastTime;
 }
