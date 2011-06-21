@@ -135,11 +135,32 @@ public abstract class Entity {
 			}
 			else if (type == FIGHTER) {
 				
-				Ship fighter = (Ship) this;
+				Fighter fighter = (Fighter) this;
+				
 				if (fighter.shotsLeft == 0 && fighter.reloadTimer < fighter.reloadTimeMs / 2) {
-					// Run away, run away!
+					// Run away during the first half of the reload timer.
+					fighter.mIsRunningAway = true;
+				}
+				else if (fighter.mIsRunningAway) {
+					// We have ammo (or are at least halfway reloaded), but
+					// we're still in the "run away" state because we've been
+					// too close to our target. See if we're far enough away
+					// now.
+					float minDistance = Fighter.MIN_PREFERRED_TARGET_DISTANCE;
+					if (body.center.distanceToSquared(target.body.center) > minDistance * minDistance) {
+						fighter.mIsRunningAway = false;
+					}
+				}
+				
+				if (fighter.mIsRunningAway) {
+					// Try to move away from the target.
 					dx = -dx;
 					dy = -dy;
+					
+					// Cheat toward the center, slightly -- this will help keep
+					// fighters from becoming lost offscreen.
+					dx -= body.center.x / 20;
+					dy -= body.center.y / 20;
 				}
 				else {
 					// Lead the target using the laser's speed.

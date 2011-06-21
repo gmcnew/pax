@@ -10,6 +10,8 @@ public class Fighter extends Ship {
 	public static final int[] TARGET_PRIORITIES = { Entity.BOMBER, Entity.FIGHTER, Entity.FRIGATE, Entity.FACTORY };
 	public static final int SHOT_INTERVAL = 6;
 	
+	public static final float MIN_PREFERRED_TARGET_DISTANCE = 250;
+	
 
 	protected Fighter() {
 		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
@@ -18,5 +20,13 @@ public class Fighter extends Ship {
 		shotTimeMs = 33;
 		clipSize = 5;
 		shotsLeft = clipSize;
+
+		// Run away by default. This avoids scenarios in which enemy ships are
+		// hovering over our factory and newly-spawned fighters turn in circles
+		// uselessly instead of moving far enough away to get a decent shot.
+		mIsRunningAway = true;
 	}
+	
+	protected boolean mIsRunningAway;
+	
 }

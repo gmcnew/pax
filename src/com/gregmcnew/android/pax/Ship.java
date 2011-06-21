@@ -36,12 +36,21 @@ public abstract class Ship extends Entity {
 		
 		if (target != null && shotsLeft > 0 && shotTimer > shotTimeMs) {
 			// Don't let a fighter shoot unless it's looking almost directly at
-			// its target.
-			if (type != Entity.FIGHTER || Math.abs(difference) < 0.1f) {
+			// its target point (and isn't running away).
+			if (type == Entity.FIGHTER) {
+				Fighter fighter = (Fighter) this;
+				if (!fighter.mIsRunningAway && Math.abs(difference) < 0.1f) {
+					shoot = true;
+				}
+			}
+			else {
+				shoot = true;
+			}
+			
+			if (shoot) {
 				shotsLeft--;
 				shotTimer = 0;
 				reloadTimer = 0;
-				shoot = true;
 			}
 		}
 		
