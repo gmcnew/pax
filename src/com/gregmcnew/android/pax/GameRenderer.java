@@ -151,6 +151,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		// We delay loading the background image until the first call to onSurfaceChanged().
 		// This lets us scale the background image once, based on the screen size, and forget about it afterwards.
 		mBackgroundPainter = null;
+		
+		FramerateCounter.start();
 	}
 
 	@Override
