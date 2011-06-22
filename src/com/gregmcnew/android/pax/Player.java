@@ -12,6 +12,18 @@ public class Player {
 	private static final float PRODUCTION_STEP = 20;
 	private static final float INITIAL_PRODUCTION = PRODUCTION_STEP * 3;
 	
+	// Spend rougly equal amounts of money on all ship types, but never upgrade.
+	public static final Player.BuildTarget[] AI_BUILD_TARGETS = {
+			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
+			Player.BuildTarget.BOMBER,
+			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
+			Player.BuildTarget.BOMBER,
+			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
+			Player.BuildTarget.FRIGATE,
+			};
+	private int mNextAIBuildTarget;
+	private boolean mIsAI;
+	
 	// Public methods
 	
 	public Player(int playerNumber, int players) {
@@ -34,7 +46,17 @@ public class Player {
 		
 		playerNo = playerNumber;
 		totalPlayers = players;
+		mIsAI = false;
 		reset();
+	}
+	
+	public void setAI(boolean ai) {
+		mIsAI = ai;
+		
+		if (mIsAI) {
+			mNextAIBuildTarget = Pax.sRandom.nextInt(AI_BUILD_TARGETS.length);
+			mBuildTarget = AI_BUILD_TARGETS[mNextAIBuildTarget];
+		}
 	}
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
@@ -42,6 +64,8 @@ public class Player {
 		for (int type : Entity.TYPES) {
 			mEntities[type].clear();
 		}
+		
+		setAI(mIsAI);
 		
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
@@ -182,6 +206,12 @@ public class Player {
 			case UPGRADE:
 				production += PRODUCTION_STEP;
 				break;
+		}
+		
+		if (mIsAI) {
+			mNextAIBuildTarget++;
+			mNextAIBuildTarget %= AI_BUILD_TARGETS.length;
+			mBuildTarget = AI_BUILD_TARGETS[mNextAIBuildTarget];
 		}
 	}
 	

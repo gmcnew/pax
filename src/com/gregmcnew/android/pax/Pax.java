@@ -56,10 +56,12 @@ public class Pax extends Activity {
         mHandler.postDelayed(mUpdateViewTask, 0);
 
         if (SELF_BENCHMARK) {
-        	mGame.setBuildTarget(0, Player.BuildTarget.FIGHTER);
+        	for (Player player : mGame.mPlayers) {
+        		player.setAI(true);
+        	}
         }
         else {
-        	mView = new GameView(this, mGame);
+            mView = new GameView(this, mGame);
             setContentView(mView);
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
@@ -68,8 +70,6 @@ public class Pax extends Activity {
             	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
-        
-    	mGame.setBuildTarget(1, Player.BuildTarget.BOMBER);
     	
     	mRedWins = mBlueWins = mTies = 0;
     }
