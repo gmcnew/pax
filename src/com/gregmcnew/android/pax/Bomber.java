@@ -12,7 +12,7 @@ public class Bomber extends Ship {
 	protected Bomber() {
 		super(Entity.BOMBER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 
-		reloadTimeMs = 2000;
+		reloadTimeMs = 4000;
 		clipSize = 1;
 		shotsLeft = 1;
 	}
