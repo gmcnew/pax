@@ -22,7 +22,11 @@ public class Missile extends Projectile {
 
 	protected Missile(Ship parent) {
 		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
-		heading = parent.heading + pi + (float) (Pax.sRandom.nextFloat() - .5) * pi / 6;
+		
+		// Pick a side of the ship at random.
+		boolean side = Pax.sRandom.nextBoolean();
+		
+		heading = parent.heading + (side ? pi / 2 : -pi / 2) + (float) (Pax.sRandom.nextFloat() - .5) * pi / 6;
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
 		body.center.set(parent.body.center);
