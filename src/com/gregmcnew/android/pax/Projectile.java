@@ -28,11 +28,13 @@ public class Projectile extends Entity {
 			if (victimShip != null) {
 				
 				int damage = health;
+				health = 0;
 				
-				// XXX: Make projectiles superpowered!
-				//damage *= 10;
+				if (type == MISSILE && victimShipType == BOMBER) {
+					// Frigates shouldn't be that good against bombers.
+					damage /= 4;
+				}
 				
-				health -= damage;
 				victimShip.health -= damage;
 				
 				if (victimShip.health <= 0) {
