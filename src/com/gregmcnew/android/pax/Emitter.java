@@ -19,8 +19,8 @@ public class Emitter {
 	// Also, when the framerate is below the midpoint of the throttling window,
 	// add() will refuse to add new particles.
 	
-	private static int THROTTLE_START_FPS = 40;
-	private static int THROTTLE_MIN_FPS = 25;
+	public static int THROTTLE_START_FPS = 40;
+	public static int THROTTLE_MIN_FPS = 25;
 	
 	private static int THROTTLE_MIDPOINT_FPS = (THROTTLE_START_FPS + THROTTLE_MIN_FPS) / 2;
 	

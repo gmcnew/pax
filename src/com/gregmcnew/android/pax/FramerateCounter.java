@@ -5,6 +5,12 @@ import android.os.SystemClock;
 public class FramerateCounter {
 	
 	public static int getFPS() {
+		
+		if (Pax.SELF_BENCHMARK) {
+			// Lie so that emitters don't resort to throttling behavior.
+			return Emitter.THROTTLE_START_FPS + 1;
+		}
+		
 		return sStarted ? sFps : 0;
 	}
 	
@@ -26,6 +32,10 @@ public class FramerateCounter {
 	// Returns the number of milliseconds since the previous tick (or 0 on the
 	// first tick).
 	public static long tick() {
+		
+		if (Pax.SELF_BENCHMARK) {
+			return Pax.UPDATE_INTERVAL_MS;
+		}
 		
 		long dt = 0;
 		
