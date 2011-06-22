@@ -17,7 +17,10 @@ public class Projectile extends Entity {
 		// TODO: Fix the case in which the projectile intersects with two ships
 		// (of different types) and kills the first one it finds (when it
 		// actually should have hit the other ship first).
-		for (int victimShipType : Ship.TYPES) {
+		
+		// Start with the larger ship types to improve the speed of collision
+		// detection.
+		for (int victimShipType : Ship.TYPES_LARGEST_FIRST) {
 			Ship victimShip = (Ship) victim.mEntities[victimShipType].collide(body.center, body.radius);
 
 			// Check other collision points if necessary.
