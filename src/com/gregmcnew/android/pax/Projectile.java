@@ -38,6 +38,9 @@ public class Projectile extends Entity {
 					damage /= 4;
 				}
 				
+				// This needs to be called before damage is applied.
+				addHitParticle(victim, victimShip, damage);
+				
 				victimShip.health -= damage;
 				
 				if (victimShip.health <= 0) {
@@ -45,6 +48,40 @@ public class Projectile extends Entity {
 				}
 				
 				break; // don't examine other ship types
+			}
+		}
+	}
+	
+	// This should be called before damage is applied.
+	private void addHitParticle(Player victim, Ship victimShip, int damage) {
+
+		int emitterType = Emitter.BOMB_HIT;
+		switch (type) {
+			case LASER:
+				emitterType = Emitter.LASER_HIT;
+				break;
+			case MISSILE:
+				emitterType = Emitter.MISSILE_HIT;
+				break;
+			case BOMB:
+				emitterType = Emitter.BOMB_HIT;
+				break;
+		}
+
+		victim.mEmitters[emitterType].add(1f,
+				body.center.x, body.center.y,
+				victimShip.velocity.x, victimShip.velocity.y);
+		
+		if (damage >= victimShip.health) {
+			
+			int particles = 1 << victimShip.type;
+			
+			Emitter explosionEmitter = victim.mEmitters[Emitter.SHIP_EXPLOSION];
+			for (int i = 0; i < particles; i++) {
+				float x = victimShip.body.center.x + (Pax.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
+				float y = victimShip.body.center.y + (Pax.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
+				
+				explosionEmitter.add(victimShip.radius, x, y, victimShip.velocity.x, victimShip.velocity.y);
 			}
 		}
 	}

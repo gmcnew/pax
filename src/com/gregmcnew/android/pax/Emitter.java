@@ -7,28 +7,49 @@ public class Emitter {
 	
 	public static final int SMOKE = 0;
 	public static final int SPARK = 1;
-	public static final int[] TYPES = { SMOKE, SPARK };
+	public static final int LASER_HIT = 2;
+	public static final int MISSILE_HIT = 3;
+	public static final int BOMB_HIT = 4;
+	public static final int SHIP_EXPLOSION = 5;
 	
-	public static final long[] AGES = { 500, 100 };
+	public static final int[] TYPES = { SMOKE, SPARK, LASER_HIT, MISSILE_HIT, BOMB_HIT, SHIP_EXPLOSION };
+	public static final long[] AGES = { 500, 100, 100, 100, 500, 1250 };
+	
+	
+	private static final int NO_THROTTLE = -1;
+	
+	
+	public final int mType;
+	public final Queue<Particle> mParticles;
+	public final long mInitialLifeMs;
 	
 	
 	// Shorten particle lifespans as framerates drop. Throttling begins at
-	// THROTTLE_START_FPS, and the lifespans of particles decrease gradually
-	// until at THROTTLE_MIN_FPS (or lower) no particles appear at all.
+	// mThrottleStartFps, and the lifespans of particles decrease gradually
+	// until at mThrottleMinFps (or lower) no particles appear at all.
 	
-	// Also, when the framerate is below the midpoint of the throttling window,
-	// add() will refuse to add new particles.
+	// Also, when the framerate is below mIgnoreAddFps, add() will refuse to add
+	// new particles.
 	
-	public static int THROTTLE_START_FPS = 40;
-	public static int THROTTLE_MIN_FPS = 25;
-	
-	private static int THROTTLE_MIDPOINT_FPS = (THROTTLE_START_FPS + THROTTLE_MIN_FPS) / 2;
-	
+	private int mThrottleStartFps;
+	private int mThrottleMinFps;
+	private int mIgnoreAddFps;
 	
 	public Emitter(int type) {
 		mType = type;
 		mInitialLifeMs = AGES[type];
 		mParticles = new ArrayBlockingQueue<Particle>(1024);
+		
+		if (Pax.SELF_BENCHMARK || type == SHIP_EXPLOSION) {
+			mThrottleStartFps = NO_THROTTLE;
+			mThrottleMinFps = NO_THROTTLE;
+			mIgnoreAddFps = NO_THROTTLE;
+		}
+		else {
+			mThrottleStartFps = 40;
+			mThrottleMinFps = 25;
+			mIgnoreAddFps = (int) (mThrottleStartFps + mThrottleMinFps) / 2;
+		}
 	}
 	
 	public void update(long dt) {
@@ -37,15 +58,15 @@ public class Emitter {
 		// By default, remove particles when they're dead.
 		long thresholdOfDeath = 0;
 		
-		if (fps < THROTTLE_MIN_FPS) {
+		if (mThrottleMinFps != NO_THROTTLE && fps < mThrottleMinFps) {
 			// Remove particles as soon as they're spawned.
 			thresholdOfDeath = mInitialLifeMs;
 		}
-		else if (fps < THROTTLE_START_FPS) {
+		else if (mThrottleStartFps != NO_THROTTLE && fps < mThrottleStartFps) {
 			// Set thresholdOfDeath to a value from [0 .. mInitialLifeMs) based
 			// on where we are in the throttling window.
-			int throttleWindow = THROTTLE_START_FPS - THROTTLE_MIN_FPS;
-			thresholdOfDeath = mInitialLifeMs * (fps - THROTTLE_MIN_FPS) / throttleWindow;
+			int throttleWindow = mThrottleStartFps - mThrottleMinFps;
+			thresholdOfDeath = mInitialLifeMs * (fps - mThrottleMinFps) / throttleWindow;
 		}
 		
 		while (!mParticles.isEmpty() && mParticles.peek().life <= thresholdOfDeath) {
@@ -60,17 +81,18 @@ public class Emitter {
 		}
 	}
 	
-	public void add(float x, float y, float velX, float velY) {
+	public void add(float scale, float x, float y, float velX, float velY) {
 		// Only add new particles if we're above the midpoint of the
 		// throttling window.
-		if (FramerateCounter.getFPS() > THROTTLE_MIDPOINT_FPS) {
-			mParticles.add(new Particle(mInitialLifeMs, x, y, velX, velY));
+		if (mIgnoreAddFps == NO_THROTTLE || FramerateCounter.getFPS() > mIgnoreAddFps) {
+			mParticles.add(new Particle(mInitialLifeMs, scale, x, y, velX, velY));
 		}
 	}
 	
 	public class Particle {
-		public Particle(long Life, float X, float Y, float VelX, float VelY) {
+		public Particle(long Life, float Scale, float X, float Y, float VelX, float VelY) {
 			life = Life;
+			scale = Scale;
 			x = X;
 			y = Y;
 			velX = VelX;
@@ -82,9 +104,6 @@ public class Emitter {
 		public long life; // in milliseconds
 		public final float velX;
 		public final float velY;
+		public final float scale;
 	}
-
-	public final int mType;
-	public final Queue<Particle> mParticles;
-	public final long mInitialLifeMs;
 }

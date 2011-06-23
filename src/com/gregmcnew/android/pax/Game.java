@@ -1,5 +1,6 @@
 package com.gregmcnew.android.pax;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 public class Game {
@@ -47,19 +48,19 @@ public class Game {
 			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
 		}
 		
-		if (mState != State.IN_PROGRESS) {
-			return;
-		}
-		
 		// Allow all players to produce and build.
 		for (Player player : mPlayers) {
 			player.produce(dt);
 			player.updateEntities(dt);
+			player.updateParticles(dt);
 			
 			// Collision spaces should be marked as invalid when entities are being added or moved.
 			player.invalidateCollisionSpaces();
+
+			if (mState == State.IN_PROGRESS) {
+				player.build();
+			}
 			
-			player.build();
 			player.moveEntities(dt);
 			
 			player.rebuildCollisionSpaces();
@@ -81,18 +82,25 @@ public class Game {
 			player.mRetargetQueue.clear();
 		}
 		
-		// See if the game is over.
-		boolean blueHasLost = mPlayers[0].hasLost();
-		boolean redHasLost = mPlayers[1].hasLost();
-		
-		if (blueHasLost && redHasLost) {
-			mState = State.TIE;
-		}
-		else if (blueHasLost) {
-			mState = State.RED_WINS;
-		}
-		else if (redHasLost) {
-			mState = State.BLUE_WINS;
+		if (mState == State.IN_PROGRESS) {
+			
+			// See if the game is over.
+			boolean blueHasLost = mPlayers[0].hasLost();
+			boolean redHasLost = mPlayers[1].hasLost();
+			
+			if (blueHasLost && redHasLost) {
+				mState = State.TIE;
+			}
+			else if (blueHasLost) {
+				mState = State.RED_WINS;
+			}
+			else if (redHasLost) {
+				mState = State.BLUE_WINS;
+			}
+			
+			if (mState != State.IN_PROGRESS) {
+				mEndedTime = SystemClock.uptimeMillis();
+			}
 		}
 	}
 	
@@ -113,6 +121,7 @@ public class Game {
 		
 		mTimeElapsed = 0;
 		mNumUpdates = 0;
+		mEndedTime = 0;
 	}
 	
 	private void retarget(Player player, Entity entity) {
@@ -139,6 +148,7 @@ public class Game {
 	}
 	
 	public Player[] mPlayers;
+	public long mEndedTime;
 	
 	private Game.State mState;
 	

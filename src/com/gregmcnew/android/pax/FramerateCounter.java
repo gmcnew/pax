@@ -5,12 +5,6 @@ import android.os.SystemClock;
 public class FramerateCounter {
 	
 	public static int getFPS() {
-		
-		if (Pax.SELF_BENCHMARK) {
-			// Lie so that emitters don't resort to throttling behavior.
-			return Emitter.THROTTLE_START_FPS + 1;
-		}
-		
 		return sStarted ? sFps : 0;
 	}
 	

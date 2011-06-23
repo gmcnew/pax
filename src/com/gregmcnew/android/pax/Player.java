@@ -90,6 +90,10 @@ public class Player {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
 				
+				if (entity.target != null && entity.target.health <= 0) {
+					entity.target = null;
+				}
+				
 				if (entity.wantsNewTarget()) {
 					mRetargetQueue.add(entity);
 				}
@@ -126,7 +130,7 @@ public class Player {
 				
 				if (Pax.PARTICLES) {
 					if (type == Projectile.MISSILE) {
-						mEmitters[Emitter.SMOKE].add(entity.body.center.x, entity.body.center.y,
+						mEmitters[Emitter.SMOKE].add(1f, entity.body.center.x, entity.body.center.y,
 								(Pax.sRandom.nextFloat() - 0.5f) * 40,
 								(Pax.sRandom.nextFloat() - 0.5f) * 40);
 					}
@@ -135,17 +139,19 @@ public class Player {
 				entity.move(dt);
 			}
 		}
-
-		if (Pax.PARTICLES) {
-			for (int emitterType : Emitter.TYPES) {
-				mEmitters[emitterType].update(dt);
-			}
-		}
 		
 		for (Ship ship : mShooterQueue) {
 			addProjectile(ship);
 		}
 		mShooterQueue.clear();
+	}
+	
+	public void updateParticles(long dt) {
+		if (Pax.PARTICLES) {
+			for (int emitterType : Emitter.TYPES) {
+				mEmitters[emitterType].update(dt);
+			}
+		}
 	}
 	
 	public void attack(Player victim) {

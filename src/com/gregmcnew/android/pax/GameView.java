@@ -2,6 +2,7 @@ package com.gregmcnew.android.pax;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -9,6 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class GameView extends GLSurfaceView {
+	
+	public static final long WAIT_BETWEEN_GAMES_MS = 1000;
 
 	public GameView(Activity activity, Game game) {
 		
@@ -65,7 +68,11 @@ public class GameView extends GLSurfaceView {
 		    	}
     		}
     		else {
-				mGame.restart();
+    			// The game is over, but we may need to wait before starting
+    			// the next one.
+    			if (mGame.mEndedTime + WAIT_BETWEEN_GAMES_MS <= SystemClock.uptimeMillis()) {
+    				mGame.restart();
+    			}
     		}
     	}
     	

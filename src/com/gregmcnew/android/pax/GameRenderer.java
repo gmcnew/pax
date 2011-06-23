@@ -127,8 +127,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     	}
 		
 		mParticlePainters = new Painter[Emitter.TYPES.length];
-		mParticlePainters[Emitter.SMOKE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.smoke), 16);
-		mParticlePainters[Emitter.SPARK] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 16);
+		mParticlePainters[Emitter.SMOKE]       = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.smoke), 16);
+		mParticlePainters[Emitter.SPARK]       = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb),  16);
+		mParticlePainters[Emitter.LASER_HIT]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 3.2f);
+		mParticlePainters[Emitter.MISSILE_HIT] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 10);
+		mParticlePainters[Emitter.BOMB_HIT]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 32);
+		mParticlePainters[Emitter.SHIP_EXPLOSION] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 1);
 		
 		mDigitPainters = new Painter[10];
 		mDigitPainters[0] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_0), 25, 30);
@@ -205,17 +209,16 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			Entity.LASER, Entity.BOMB, Entity.MISSILE
 			};
 	
-	private void drawParticles(GL10 gl) {
-        for (int emitterType : Emitter.TYPES) {
-    		Painter painter = mParticlePainters[emitterType];
-        	for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-        		Emitter emitter = mGame.mPlayers[i].mEmitters[emitterType];
-        		for (Emitter.Particle p : emitter.mParticles) {
-        			float youth = (float) p.life / emitter.mInitialLifeMs;
-        			painter.draw(gl, p.x, p.y, 2f - youth, 2f - youth, 0f, youth);
-        		}
-        	}
-        }
+	private void drawParticles(GL10 gl, int emitterType) {
+		Painter painter = mParticlePainters[emitterType];
+    	for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+    		Emitter emitter = mGame.mPlayers[i].mEmitters[emitterType];
+    		for (Emitter.Particle p : emitter.mParticles) {
+    			float youth = (float) p.life / emitter.mInitialLifeMs;
+    			float scale = (2f - youth) * p.scale;
+    			painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
+    		}
+    	}
 	}
 	
 	@Override
@@ -233,7 +236,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         }
         
         if (Pax.PARTICLES) {
-        	drawParticles(gl);
+        	drawParticles(gl, Emitter.SMOKE);
         }
 		
 		for (int entityType : ENTITY_LAYERS) {
@@ -249,10 +252,35 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				}
 			}
 		}
+        
+        if (Pax.PARTICLES) {
+        	drawParticles(gl, Emitter.SPARK);
+        	drawParticles(gl, Emitter.LASER_HIT);
+        	drawParticles(gl, Emitter.MISSILE_HIT);
+        	drawParticles(gl, Emitter.BOMB_HIT);
+        	drawParticles(gl, Emitter.SHIP_EXPLOSION);
+        }
 		
-		// Draw UI elements along a short edge of the screen.
+        if (mGame.getState() == Game.State.IN_PROGRESS) { 
+        	drawButtons(gl);
+        }
 		
-		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+		if (Pax.FPS_METER) {
+			int fps = FramerateCounter.getFPS();
+			float x = (mGameWidth / 2) - 100;
+			float y = (mGameHeight / 2) - 100;
+			while (fps > 0) {
+				int digit = fps % 10;
+				mDigitPainters[digit].draw(gl, x, y, 0, 1f);
+				x -= 20;
+				fps /= 10;
+			}
+		}
+	}
+
+	// Draw UI elements along a short edge of the screen.
+    private void drawButtons(GL10 gl) {
+    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 			
 			float dx = mGameWidth / 4;
 			float dy = mGameHeight / 4;
@@ -343,19 +371,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				y += dy;
 			}
 		}
-		
-		if (Pax.FPS_METER) {
-			int fps = FramerateCounter.getFPS();
-			float x = (mGameWidth / 2) - 100;
-			float y = (mGameHeight / 2) - 100;
-			while (fps > 0) {
-				int digit = fps % 10;
-				mDigitPainters[digit].draw(gl, x, y, 0, 1f);
-				x -= 20;
-				fps /= 10;
-			}
-		}
-	}
+    }
 	
 	private Bitmap loadBitmap(int resourceID) {
 		Resources resources = mContext.getResources();
