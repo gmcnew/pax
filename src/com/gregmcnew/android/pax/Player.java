@@ -42,8 +42,6 @@ public class Player {
 			mEmitters[type] = new Emitter(type);
 		}
 		
-		mBuildTarget = BuildTarget.NONE;
-		
 		playerNo = playerNumber;
 		totalPlayers = players;
 		mIsAI = false;
@@ -64,6 +62,8 @@ public class Player {
 		for (int type : Entity.TYPES) {
 			mEntities[type].clear();
 		}
+		
+		mBuildTarget = BuildTarget.NONE;
 		
 		setAI(mIsAI);
 		
