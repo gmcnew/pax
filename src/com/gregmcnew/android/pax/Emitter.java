@@ -1,8 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-
 public class Emitter {
 	
 	public static final int SMOKE = 0;
@@ -20,9 +17,15 @@ public class Emitter {
 	
 	
 	public final int mType;
-	public final Queue<Particle> mParticles;
 	public final long mInitialLifeMs;
 	
+	// All particles for a given emitter will be created with the same age. This
+	// makes sorting by age easy -- just put new particles at the end. Removing
+	// dead particles is easy as well.
+	public Particle[] mParticles;
+	public int mStart;
+	public int mEnd;
+	public int mCapacity;
 	
 	// Shorten particle lifespans as framerates drop. Throttling begins at
 	// mThrottleStartFps, and the lifespans of particles decrease gradually
@@ -38,7 +41,11 @@ public class Emitter {
 	public Emitter(int type) {
 		mType = type;
 		mInitialLifeMs = AGES[type];
-		mParticles = new ArrayBlockingQueue<Particle>(1024);
+		
+		mCapacity = 512;
+		mParticles = new Particle[mCapacity];
+		mStart = 0;
+		mEnd = 0;
 		
 		if (Pax.SELF_BENCHMARK || type == SHIP_EXPLOSION) {
 			mThrottleStartFps = NO_THROTTLE;
@@ -69,15 +76,17 @@ public class Emitter {
 			thresholdOfDeath = mInitialLifeMs * (fps - mThrottleMinFps) / throttleWindow;
 		}
 		
-		while (!mParticles.isEmpty() && mParticles.peek().life <= thresholdOfDeath) {
-			mParticles.remove();
-		}
-		
 		float dtS = (float) dt / 1000;
-		for (Particle p : mParticles) {
-			p.x += p.velX * dtS;
-			p.y += p.velY * dtS;
-			p.life -= dt;
+		for (int i = mStart; i != mEnd; i = (i + 1) % mCapacity) {
+			Particle p = mParticles[i];
+			if (p.life <= thresholdOfDeath) {
+				mStart = (mStart + 1) % mCapacity;
+			}
+			else {
+				p.x += p.velX * dtS;
+				p.y += p.velY * dtS;
+				p.life -= dt;
+			}
 		}
 	}
 	
@@ -85,12 +94,21 @@ public class Emitter {
 		// Only add new particles if we're above the midpoint of the
 		// throttling window.
 		if (mIgnoreAddFps == NO_THROTTLE || FramerateCounter.getFPS() > mIgnoreAddFps) {
-			mParticles.add(new Particle(mInitialLifeMs, scale, x, y, velX, velY));
+			if ((mEnd + 1) % mCapacity != mStart) {
+				if (mParticles[mEnd] == null) {
+					mParticles[mEnd] = new Particle();
+				}
+				mParticles[mEnd].reset(mInitialLifeMs, scale, x, y, velX, velY);
+				mEnd = (mEnd + 1) % mCapacity;
+			}
 		}
 	}
 	
 	public class Particle {
-		public Particle(long Life, float Scale, float X, float Y, float VelX, float VelY) {
+		public Particle() {
+		}
+		
+		public void reset(long Life, float Scale, float X, float Y, float VelX, float VelY) {
 			life = Life;
 			scale = Scale;
 			x = X;
@@ -98,12 +116,12 @@ public class Emitter {
 			velX = VelX;
 			velY = VelY;
 		}
-		
+
+		public long life; // in milliseconds
+		public float scale;
 		public float x;
 		public float y;
-		public long life; // in milliseconds
-		public final float velX;
-		public final float velY;
-		public final float scale;
+		public float velX;
+		public float velY;
 	}
 }
