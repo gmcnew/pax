@@ -88,13 +88,19 @@ public class Quadtree {
 	public Point2 collide(Point2 center, float radius) {
 		assert(mIsValid);
 		radius += mEntrySize;
-		return collide(center, radius, radius * radius);
+		return collide(center.x, center.y, radius, radius * radius);
+	}
+	
+	public Point2 collide(float centerX, float centerY, float radius) {
+		assert(mIsValid);
+		radius += mEntrySize;
+		return collide(centerX, centerY, radius, radius * radius);
 	}
 	
 	// Return the closest point in this node that's within 'radius' of 'center'.
 	// We pass radius as well as radiusSquared in order to reduce square-root
 	// calculations.
-	private Point2 collide(Point2 center, float radius, float radiusSquared) {
+	private Point2 collide(float centerX, float centerY, float radius, float radiusSquared) {
 		Point2 closest = null;
 		
 		if (isLeaf) {
@@ -104,8 +110,8 @@ public class Quadtree {
 				// First, make sure our the point collides with the square that
 				// contains the circle. If it doesn't, we can save ourselves
 				// some multiplications.
-				float absDx = point.x - center.x;
-				float absDy = point.y - center.y;
+				float absDx = point.x - centerX;
+				float absDy = point.y - centerY;
 				if (absDx < 0) {
 					absDx = -absDx;
 				}
@@ -131,21 +137,21 @@ public class Quadtree {
 			}
 		}
 		else {
-			float q = (low.mDimension == X) ? center.x : center.y;
+			float q = (low.mDimension == X) ? centerX : centerY;
 			
 			if (q + radius >= low.mMinVal && q - radius <= low.mMaxVal) {
-				closest = low.collide(center, radius, radiusSquared);
+				closest = low.collide(centerX, centerY, radius, radiusSquared);
 			}
 			if (q + radius >= high.mMinVal && q - radius <= high.mMaxVal) {
 				
 				if (closest != null) {
 					// Limit our search even further, since
 					// left.collide() already found something.
-					radiusSquared = closest.distanceToSquared(center);
+					radiusSquared = closest.distanceToSquared(centerX, centerY);
 					radius = (float) Math.sqrt(radiusSquared);
 				}
 				
-				Point2 rightClosest = high.collide(center, radius, radiusSquared);
+				Point2 rightClosest = high.collide(centerX, centerY, radius, radiusSquared);
 				if (rightClosest != null) {
 					closest = rightClosest;
 				}

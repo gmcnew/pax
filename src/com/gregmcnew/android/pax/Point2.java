@@ -18,6 +18,12 @@ public class Point2 implements Comparable<Point2> {
 		return (dx * dx) + (dy * dy);
 	}
 	
+	public float distanceToSquared(float otherX, float otherY) {
+		float dx = otherX - x;
+		float dy = otherY - y;
+		return (dx * dx) + (dy * dy);
+	}
+	
 	public boolean equals(Point2 other) {
 		return (x == other.x && y == other.y && id == other.id); 
 	}

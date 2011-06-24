@@ -130,14 +130,23 @@ public class Game {
 			
 			int targetType = entity.targetPriorities[i];
 			
+			float searchCenterX = entity.body.center.x;
+			float searchCenterY = entity.body.center.y;
+			
 			float searchLimit = 9000.1f; // XXX
 			if (entity.targetSearchLimits != null) {
 				searchLimit = entity.targetSearchLimits[i];
 			}
 			
+			// Missiles should prefer targets that are in front of them.
+			if (entity.type == Projectile.MISSILE) {
+				searchCenterX += entity.velocity.x / 2;
+				searchCenterX += entity.velocity.y / 2;
+			}
+			
 			for (Player victim : mPlayers) {
 				if (victim != player) {
-					Entity closest = victim.mEntities[targetType].collide(entity.body.center, searchLimit);
+					Entity closest = victim.mEntities[targetType].collide(searchCenterX, searchCenterY, searchLimit);
 					if (closest != null) {
 						entity.target = closest;
 						break;

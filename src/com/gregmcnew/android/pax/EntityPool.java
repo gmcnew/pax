@@ -77,8 +77,12 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public Entity collide(Point2 center, float radius) {
+		return collide(center.x, center.y, radius);
+	}
+	
+	public Entity collide(float centerX, float centerY, float radius) {
 		Entity entity = null;
-		Point2 p = mBodies.collide(center, radius);
+		Point2 p = mBodies.collide(centerX, centerY, radius);
 		if (p != null) {
 			entity = get(p.id);
 		}
