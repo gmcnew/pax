@@ -7,7 +7,7 @@ public class Missile extends Projectile {
 	public static final float INITIAL_VELOCITY = 100;
 	public static final float TURN_SPEED = 3.75f; // in radians per second
 	public static final float[] ACCELERATIONLIMS = {100f, 45f};
-	public static final float MAXVELOCITY = 400;
+	public static final float MAX_VELOCITY = 400;
 	
 	public static final int LENGTH = 10;
 	
@@ -21,7 +21,7 @@ public class Missile extends Projectile {
 	public static final int MAX_LIFE_MS = 5000;
 
 	protected Missile(Ship parent) {
-		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
 		
 		// Pick a side of the ship at random.
 		float side = (float) (parent.heading + (Pax.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));

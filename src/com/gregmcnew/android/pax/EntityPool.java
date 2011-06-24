@@ -15,7 +15,7 @@ public class EntityPool implements Iterable<Entity> {
 		// Keep track of the number of collision points among all entities.
 		mNumCollisionPoints = 0;
 		
-		mBodies = new Quadtree(Quadtree.X, Entity.Radii[type], new Point2[1]);
+		mBodies = new Quadtree(Quadtree.X, Entity.CollisionRadii[type], new Point2[1]);
 	}
 	
 	public int add(Entity entity) {

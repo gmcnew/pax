@@ -7,7 +7,7 @@ public class Laser extends Projectile {
 	public static final float INITIAL_VELOCITY = 1000;
 	public static final float TURN_SPEED = 0;
 	public static final float[] ACCELERATIONLIMS = {0, 0};
-	public static final float MAXVELOCITY = 1000;
+	public static final float MAX_VELOCITY = 1000;
 	public static final int MAX_LIFE_MS = 1000;
 	
 	public static final int LENGTH = 20;
@@ -16,7 +16,7 @@ public class Laser extends Projectile {
 	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
 
 	protected Laser(Ship parent) {
-		super(Entity.LASER, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		super(Entity.LASER, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
 		body.center.set(parent.body.center);
 		heading = parent.heading;
 		targetHeading = heading;

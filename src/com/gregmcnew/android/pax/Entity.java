@@ -45,7 +45,7 @@ public abstract class Entity {
 	public static final int MISSILE = 6;
 	public static final int[] TYPES = { FIGHTER, BOMBER, FRIGATE, FACTORY, LASER, BOMB, MISSILE };
 	
-	public static float[] Radii = {
+	public static float[] CollisionRadii = {
 		Fighter.DIAMETER / 2, Bomber.DIAMETER / 2, Frigate.DIAMETER / 2, Factory.DIAMETER / 2,
 		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
 		};
@@ -129,8 +129,8 @@ public abstract class Entity {
 			float leadSpeed = 0f;
 			
 			if (type == MISSILE) {
-				// Lead the target using our speed.
-				leadSpeed = Missile.INITIAL_VELOCITY;
+				// Lead the target using our max speed.
+				leadSpeed = Missile.MAX_VELOCITY;
 			}
 			else if (type == FIGHTER) {
 				
@@ -163,7 +163,7 @@ public abstract class Entity {
 				}
 				else {
 					// Lead the target using the laser's speed.
-					leadSpeed = Laser.INITIAL_VELOCITY;
+					leadSpeed = Laser.MAX_VELOCITY;
 				}
 			}
 			
