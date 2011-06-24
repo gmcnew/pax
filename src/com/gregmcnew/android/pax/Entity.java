@@ -15,13 +15,12 @@ public abstract class Entity {
 	public final float turnSpeed; // in radians per second
 	public final float[] accelerationLimits;
 	public final float maxSpeed;
-	public final float pi = (float)Math.PI;
 	
 	public int health;
 	
 	public Entity target;
-	public float targetHeading = pi/2; 
-	public float difference; // difference between heading and targetHeading.	
+	public float targetHeading;
+	public float headingToTargetHeading; // difference between heading and targetHeading.	
 	public CircleF body;
 	public float heading; // in radians
 	public PointF velocity;
@@ -184,29 +183,35 @@ public abstract class Entity {
 			dx = -body.center.x;
 			dy = -body.center.y;
 		}
-		targetHeading = (float) Math.atan2((double) dy, (double) dx);
-		if (targetHeading <= 0){
-			targetHeading = (float)Math.PI * 2 + targetHeading; // Normalizes to [0...2pi] instead of [-pi...pi]
-		}
-		//Gets the difference within +/- 2*pi.
-		difference = (targetHeading - heading) % (pi*2);
 		
-		//Gets difference within +/- pi.
-		if(Math.abs(difference) >= pi){
-			difference += (difference > 0) ? -2*pi : 2*pi;
+		float pi = (float) Math.PI;
+		
+		// [-pi..pi]
+		targetHeading = (float) Math.atan2((double) dy, (double) dx);
+		
+		//Gets the difference within +/- 2*pi.
+		headingToTargetHeading = targetHeading - heading;
+		
+		// Clamp to [-pi .. pi]
+		while (headingToTargetHeading < -pi) {
+			headingToTargetHeading += 2 * pi;
 		}
+		while (headingToTargetHeading > pi) {
+			headingToTargetHeading -= 2 * pi;
+		}
+		
+		float turn = headingToTargetHeading;
 		
 		float maxTurn = turnSpeed * dt / 1000;
 		
-		if(Math.abs(difference) >= maxTurn){ //If the difference is less than what the ship can turn in one update...
-			if(difference >= 0){
-				heading += maxTurn;
-			} else {
-				heading -= maxTurn;
-			}
-		} else {
-			heading += difference;
+		if (turn < -maxTurn) {
+			turn = -maxTurn;
 		}
+		else if (turn > maxTurn) {
+			turn = maxTurn;
+		}
+
+		heading += turn;
 	}
 	
 	public void updateVelocity(long dt) {
@@ -218,13 +223,16 @@ public abstract class Entity {
 		if(velP > 0){
 			velP = (velP > accelerationLimits[1]) ? velP - accelerationLimits[1] : 0;
 		} else if(velP < 0) {
-			velP = (Math.abs(velP) > accelerationLimits[1]) ? velP + accelerationLimits[1] : 0;
+			velP = (-velP > accelerationLimits[1]) ? velP + accelerationLimits[1] : 0;
 		}
-		if(Math.abs(difference) > pi/2){
+		
+		float halfPi = (float) Math.PI / 2;
+		
+		if (headingToTargetHeading < -halfPi || headingToTargetHeading > halfPi) {
 			velH -= accelerationLimits[0];
 			if(velH < .75*maxSpeed) velH = (float).75*maxSpeed;
 		} else { 
-			velH += accelerationLimits[0]*Math.cos(difference);
+			velH += accelerationLimits[0]*Math.cos(headingToTargetHeading);
 			if(velH > maxSpeed) velH = maxSpeed;
 		}
 		velocity.x = velH * cosH + velP * sinH;

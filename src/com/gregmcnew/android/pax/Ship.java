@@ -41,7 +41,12 @@ public abstract class Ship extends Entity {
 			// its target point (and isn't running away).
 			if (type == Entity.FIGHTER) {
 				Fighter fighter = (Fighter) this;
-				if (!fighter.mIsRunningAway && Math.abs(difference) < 0.1f) {
+				
+				float absHeadingToTargetHeading = (headingToTargetHeading < 0)
+					? -headingToTargetHeading
+					: headingToTargetHeading;
+				
+				if (!fighter.mIsRunningAway && absHeadingToTargetHeading < 0.1f) {
 					shoot = true;
 				}
 			}
