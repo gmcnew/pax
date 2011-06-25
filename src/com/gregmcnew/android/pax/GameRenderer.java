@@ -16,46 +16,25 @@ import android.util.Log;
 
 public class GameRenderer implements GLSurfaceView.Renderer {
 	
-	public static final boolean SUPPORTS_GL11 = false;
-	
-	private static final float[] BG_RGB = { 0.094f, 0.137f, 0.145f };
+	private static final float BG_RED   = 0.094f;
+	private static final float BG_GREEN = 0.137f;
+	private static final float BG_BLUE  = 0.145f;
 	
 	// The size of the screen's largest dimension, measured in game units. 
 	public static final float GAME_VIEW_SIZE = 1000f;
 	
-    
-    private static final int[] RESOURCES_TO_LOAD = {
-
-    		R.drawable.ohblue,
-    		R.drawable.ohred,
-    		
-    		R.drawable.fighter_outline,
-    		R.drawable.bomber_outline,
-    		R.drawable.frigate_outline,
-    		R.drawable.upgrade_outline,
-    		
-    		R.drawable.fighter_outline_red,
-    		R.drawable.bomber_outline_red,
-    		R.drawable.frigate_outline_red,
-    		R.drawable.upgrade_outline_red,
-    		
-    		R.drawable.white,
-    		
-    		R.drawable.laser,
-    		R.drawable.bomb,
-    		R.drawable.missile,
-    		
-    		R.drawable.smoke,
-    		
-    		R.drawable.char_0, R.drawable.char_1, R.drawable.char_2, R.drawable.char_3, R.drawable.char_4,
-    		R.drawable.char_5, R.drawable.char_6, R.drawable.char_7, R.drawable.char_8, R.drawable.char_9,
-    };
-
+	// Draw factories at the bottom, with frigates above them, bombers above
+	// frigates, and fighters above everything.
+	private static final int ENTITY_LAYERS[] = {
+			Entity.FACTORY, Entity.FRIGATE, Entity.BOMBER, Entity.FIGHTER,
+			Entity.LASER, Entity.BOMB, Entity.MISSILE
+			};
     
     public GameRenderer(Context context, Game game) {
     	mContext = context;
     	mGame = game;
-    	mVBOSupport = SUPPORTS_GL11;
+    	
+    	mPainters = new HashMap<Integer, Painter>();
     }
     
     public void updateRotation(int rotation) {
@@ -93,11 +72,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			
 			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + gl.glGetString(GL10.GL_RENDERER));
 		}
-
-		Map<Integer, Bitmap> bitmaps = new HashMap<Integer, Bitmap>();
-		for (int resourceID : RESOURCES_TO_LOAD) {
-			bitmaps.put(resourceID, loadBitmap(resourceID));
-		}
+		
+		// TODO: Add VBO support, then read the OpenGL extensions list to
+		// determine whether the driver supports it.
+    	mVBOSupport = false;
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
@@ -105,56 +83,65 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			
 			switch (player) {
 				case 0:
-					painters[Entity.FIGHTER] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Fighter.DIAMETER);
-					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Bomber.DIAMETER);
-					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Frigate.DIAMETER);
-					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohblue), Factory.DIAMETER);
+					painters[Entity.FIGHTER] = getPainter(gl, R.drawable.ohblue);
+					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohblue);
+					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohblue);
+					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohblue);
 					break;
 				case 1:
 				default:
-					painters[Entity.FIGHTER] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Fighter.DIAMETER);
-					painters[Entity.BOMBER]  = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Bomber.DIAMETER);
-					painters[Entity.FRIGATE] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Frigate.DIAMETER);
-					painters[Entity.FACTORY] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.ohred), Factory.DIAMETER);
+					painters[Entity.FIGHTER] = getPainter(gl, R.drawable.ohred);
+					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohred);
+					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohred);
+					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohred);
 					break;
 			}
 			
-			painters[Entity.LASER]   = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.laser), Laser.LENGTH, Laser.DIAMETER);
-			painters[Entity.BOMB]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), Bomb.DIAMETER);
-			painters[Entity.MISSILE] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.missile), Missile.LENGTH, Missile.DIAMETER);
+			painters[Entity.LASER]   = getPainter(gl, R.drawable.laser);
+			painters[Entity.BOMB]    = getPainter(gl, R.drawable.bomb);
+			painters[Entity.MISSILE] = getPainter(gl, R.drawable.missile);
 
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
 		
 		mParticlePainters = new Painter[Emitter.TYPES.length];
-		mParticlePainters[Emitter.SMOKE]       = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.smoke), 16);
-		mParticlePainters[Emitter.SPARK]       = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb),  16);
-		mParticlePainters[Emitter.LASER_HIT]   = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 3.2f);
-		mParticlePainters[Emitter.MISSILE_HIT] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 10);
-		mParticlePainters[Emitter.BOMB_HIT]    = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 32);
-		mParticlePainters[Emitter.SHIP_EXPLOSION] = Painter.CreateMinSize(gl, mVBOSupport, bitmaps.get(R.drawable.bomb), 1);
+		mParticlePainters[Emitter.SMOKE]       		= getPainter(gl, R.drawable.smoke);
+		mParticlePainters[Emitter.SPARK]       		= getPainter(gl, R.drawable.bomb);
+		mParticlePainters[Emitter.LASER_HIT]   		= getPainter(gl, R.drawable.bomb);
+		mParticlePainters[Emitter.MISSILE_HIT] 		= getPainter(gl, R.drawable.bomb);
+		mParticlePainters[Emitter.BOMB_HIT]    		= getPainter(gl, R.drawable.bomb);
+		mParticlePainters[Emitter.SHIP_EXPLOSION] 	= getPainter(gl, R.drawable.bomb);
 		
 		mDigitPainters = new Painter[10];
-		mDigitPainters[0] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_0), 25, 30);
-		mDigitPainters[1] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_1), 25, 30);
-		mDigitPainters[2] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_2), 25, 30);
-		mDigitPainters[3] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_3), 25, 30);
-		mDigitPainters[4] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_4), 25, 30);
-		mDigitPainters[5] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_5), 25, 30);
-		mDigitPainters[6] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_6), 25, 30);
-		mDigitPainters[7] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_7), 25, 30);
-		mDigitPainters[8] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_8), 25, 30);
-		mDigitPainters[9] = Painter.CreateSize(gl, mVBOSupport, bitmaps.get(R.drawable.char_9), 25, 30);
+		mDigitPainters[0] = getPainter(gl, R.drawable.char_0);
+		mDigitPainters[1] = getPainter(gl, R.drawable.char_1);
+		mDigitPainters[2] = getPainter(gl, R.drawable.char_2);
+		mDigitPainters[3] = getPainter(gl, R.drawable.char_3);
+		mDigitPainters[4] = getPainter(gl, R.drawable.char_4);
+		mDigitPainters[5] = getPainter(gl, R.drawable.char_5);
+		mDigitPainters[6] = getPainter(gl, R.drawable.char_6);
+		mDigitPainters[7] = getPainter(gl, R.drawable.char_7);
+		mDigitPainters[8] = getPainter(gl, R.drawable.char_8);
+		mDigitPainters[9] = getPainter(gl, R.drawable.char_9);
 
-		mHighlight = Painter.Create(gl, mVBOSupport, bitmaps.get(R.drawable.white));
+		mHighlight = getPainter(gl, R.drawable.white);
 		
-		for (Bitmap bitmap : bitmaps.values()) {
-			bitmap.recycle();
-		}
+		mBuildTargetPaintersBlue = new Painter[4];
+		mBuildTargetPaintersBlue[0] = getPainter(gl, R.drawable.fighter_outline);
+		mBuildTargetPaintersBlue[1] = getPainter(gl, R.drawable.bomber_outline);
+		mBuildTargetPaintersBlue[2] = getPainter(gl, R.drawable.frigate_outline);
+		mBuildTargetPaintersBlue[3] = getPainter(gl, R.drawable.upgrade_outline);
 		
-		// We delay loading the background image until the first call to onSurfaceChanged().
-		// This lets us scale the background image once, based on the screen size, and forget about it afterwards.
-		mBackgroundPainter = null;
+		mBuildTargetPaintersRed = new Painter[4];
+		mBuildTargetPaintersRed[0] = getPainter(gl, R.drawable.fighter_outline_red);
+		mBuildTargetPaintersRed[1] = getPainter(gl, R.drawable.bomber_outline_red);
+		mBuildTargetPaintersRed[2] = getPainter(gl, R.drawable.frigate_outline_red);
+		mBuildTargetPaintersRed[3] = getPainter(gl, R.drawable.upgrade_outline_red);
+
+        // Initialize the background image.
+		if (Pax.BACKGROUND_IMAGE) {
+			mBackgroundPainter = getPainter(gl, R.drawable.background);
+        }
 		
 		FramerateCounter.start();
 	}
@@ -183,43 +170,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glLoadIdentity();
 		
 		mButtonSize = Math.max(mGameWidth, mGameHeight) / 15;
-        
-        // Initialize the background image.
-		if (Pax.BACKGROUND_IMAGE) {
-			//mBackgroundPainter = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.background), Math.max(mGameWidth, mGameHeight));
-        }
-		
-		mBuildTargetPaintersBlue = new Painter[4];
-		mBuildTargetPaintersBlue[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline), mButtonSize);
-		mBuildTargetPaintersBlue[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline), mButtonSize);
-		mBuildTargetPaintersBlue[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline), mButtonSize);
-		mBuildTargetPaintersBlue[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline), mButtonSize);
-		
-		mBuildTargetPaintersRed = new Painter[4];
-		mBuildTargetPaintersRed[0] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.fighter_outline_red), mButtonSize);
-		mBuildTargetPaintersRed[1] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.bomber_outline_red), mButtonSize);
-		mBuildTargetPaintersRed[2] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.frigate_outline_red), mButtonSize);
-		mBuildTargetPaintersRed[3] = Painter.CreateMinSize(gl, mVBOSupport, loadBitmap(R.drawable.upgrade_outline_red), mButtonSize);
-	}
-	
-	// Draw factories at the bottom, with frigates above them, bombers above
-	// frigates, and fighters above everything.
-	private static final int ENTITY_LAYERS[] = {
-			Entity.FACTORY, Entity.FRIGATE, Entity.BOMBER, Entity.FIGHTER,
-			Entity.LASER, Entity.BOMB, Entity.MISSILE
-			};
-	
-	private void drawParticles(GL10 gl, int emitterType) {
-		Painter painter = mParticlePainters[emitterType];
-    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
-    		Emitter emitter = mGame.mPlayers[player].mEmitters[emitterType];
-    		for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
-    			Emitter.Particle p = emitter.mParticles[i];
-    			float youth = (float) p.life / emitter.mInitialLifeMs;
-    			float scale = (2f - youth) * p.scale;
-    			painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
-    		}
-    	}
 	}
 	
 	@Override
@@ -229,16 +179,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		mGame.update(dt);
 		
         if (mBackgroundPainter != null) {
-        	mBackgroundPainter.draw(gl, 0, 0, 0f, 1f);
+        	mBackgroundPainter.draw(gl, 0, 0, mGameWidth, mGameHeight, 0, 1f);
         }
         else {
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        	gl.glClearColor(BG_RGB[0], BG_RGB[1], BG_RGB[2], 1.0f);
+        	gl.glClearColor(BG_RED, BG_GREEN, BG_BLUE, 1.0f);
         }
         
-        if (Pax.PARTICLES) {
-        	drawParticles(gl, Emitter.SMOKE);
-        }
+        drawParticles(gl, Emitter.SMOKE);
 		
 		for (int entityType : ENTITY_LAYERS) {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
@@ -254,13 +202,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			}
 		}
         
-        if (Pax.PARTICLES) {
-        	drawParticles(gl, Emitter.SPARK);
-        	drawParticles(gl, Emitter.LASER_HIT);
-        	drawParticles(gl, Emitter.MISSILE_HIT);
-        	drawParticles(gl, Emitter.BOMB_HIT);
-        	drawParticles(gl, Emitter.SHIP_EXPLOSION);
-        }
+    	drawParticles(gl, Emitter.SPARK);
+    	drawParticles(gl, Emitter.LASER_HIT);
+    	drawParticles(gl, Emitter.MISSILE_HIT);
+    	drawParticles(gl, Emitter.BOMB_HIT);
+    	drawParticles(gl, Emitter.SHIP_EXPLOSION);
 		
         if (mGame.getState() == Game.State.IN_PROGRESS) { 
         	drawButtons(gl);
@@ -270,12 +216,40 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			int fps = FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
+			int digitWidth = 25;
+			int digitHeight = 30;
 			while (fps > 0) {
 				int digit = fps % 10;
-				mDigitPainters[digit].draw(gl, x, y, 0, 1f);
-				x -= 20;
+				mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, 1f);
+				x -= digitWidth;
 				fps /= 10;
 			}
+		}
+	}
+    
+    // Returns a Painter for a resource (creating a new one if necessary).
+    private Painter getPainter(GL10 gl, int resourceID) {
+    	if (!mPainters.containsKey(resourceID)) {
+    		Bitmap bitmap = loadBitmap(resourceID);
+    		mPainters.put(resourceID, new Painter(gl, mVBOSupport, loadBitmap(resourceID)));
+    		bitmap.recycle();
+    	}
+    	
+    	return mPainters.get(resourceID);
+    }
+	
+	private void drawParticles(GL10 gl, int emitterType) {
+		if (Pax.PARTICLES) {
+			Painter painter = mParticlePainters[emitterType];
+	    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+	    		Emitter emitter = mGame.mPlayers[player].mEmitters[emitterType];
+	    		for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
+	    			Emitter.Particle p = emitter.mParticles[i];
+	    			float youth = (float) p.life / emitter.mInitialLifeMs;
+	    			float scale = (2f - youth) * p.scale;
+	    			painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
+	    		}
+	    	}
 		}
 	}
 
@@ -367,7 +341,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 							0.2f);
 				}
 				
-				buildTargetPainters[i].draw(gl, x, y, buildIndicatorRotation, 1f);
+				buildTargetPainters[i].draw(gl, x, y, mButtonSize, mButtonSize, buildIndicatorRotation, 1f);
 				x += dx;
 				y += dy;
 			}
@@ -386,9 +360,11 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private float mGameWidth;
 	private float mGameHeight;
 	
+	private boolean mVBOSupport;
+
+    private Map<Integer, Painter> mPainters;
 	private Map<Player, Painter[]> mPlayerEntityPainters;
 	private Painter mBackgroundPainter;
-	private boolean mVBOSupport;
 	
 	private Painter mHighlight;
 	private Painter[] mBuildTargetPaintersBlue;

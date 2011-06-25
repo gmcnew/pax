@@ -9,7 +9,7 @@ public class Factory extends Ship {
 	public static final float MAXSPEED = 6f;
 
 	protected Factory() {
-		super(Entity.FACTORY, null, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.FACTORY, null, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 	}
 	
 	@Override

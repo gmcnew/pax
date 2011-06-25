@@ -10,7 +10,7 @@ public class Bomber extends Ship {
 	public static final int[] TARGET_PRIORITIES = { Entity.FRIGATE, Entity.FACTORY, Entity.BOMBER, Entity.FIGHTER };
 
 	protected Bomber() {
-		super(Entity.BOMBER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.BOMBER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 
 		reloadTimeMs = 4000;
 		clipSize = 1;

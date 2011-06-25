@@ -14,7 +14,7 @@ public class Fighter extends Ship {
 	
 
 	protected Fighter() {
-		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 
 		reloadTimeMs = 6000;
 		shotTimeMs = 33;

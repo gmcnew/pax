@@ -14,7 +14,7 @@ public class Frigate extends Ship {
 	// reducing the accuracy of frigate missiles when homing in on bombers.
 
 	protected Frigate() {
-		super(Entity.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		super(Entity.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
 
 		reloadTimeMs = 6000;
 		shotTimeMs = 20;

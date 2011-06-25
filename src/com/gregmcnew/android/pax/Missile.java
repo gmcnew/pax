@@ -14,14 +14,13 @@ public class Missile extends Projectile {
 	public static final float[] EXTRA_POINT_OFFSETS = { LENGTH / 2, -LENGTH / 2 };
 	public static final int NUM_EXTRA_POINTS = EXTRA_POINT_OFFSETS.length;
 	
-	// TODO: Set missile target priorities and search limits.
 	public static final int[] TARGET_PRIORITIES = {Entity.FIGHTER, Entity.BOMBER, Entity.FRIGATE, Entity.FACTORY };
 	public static final float[] TARGET_SEARCH_LIMITS = {500, 500, 500, 500 };
 	
 	public static final int MAX_LIFE_MS = 5000;
 
 	protected Missile(Ship parent) {
-		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
+		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, LENGTH, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
 		
 		// Pick a side of the ship at random.
 		float side = (float) (parent.heading + (Pax.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));

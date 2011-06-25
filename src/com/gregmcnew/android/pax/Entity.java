@@ -12,6 +12,7 @@ public abstract class Entity {
 	public final float[] targetSearchLimits;
 	public final float radius;
 	public final float diameter;
+	public final float length; // equal to diameter for circular targets
 	public final float turnSpeed; // in radians per second
 	public final float[] accelerationLimits;
 	public final float maxSpeed;
@@ -50,12 +51,13 @@ public abstract class Entity {
 		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
 		};
 	
-	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
+	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float Length, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
 		targetSearchLimits = TargetSearchLimits;
 		radius = Diameter / 2;
 		diameter = Diameter;
+		length = Length;
 		turnSpeed = TurnSpeed;
 		accelerationLimits = AccelerationLimits;
 		maxSpeed = MaxSpeed;

@@ -13,60 +13,30 @@ import android.opengl.GLUtils;
 
 public class Painter {
 	
-	public static Painter Create(GL10 gl, boolean vboSupport, Bitmap bitmap) {
-		return new Painter(gl, vboSupport, bitmap, bitmap.getWidth(), bitmap.getHeight());
-	}
-	
-	public static Painter CreateSize(GL10 gl, boolean vboSupport, Bitmap bitmap, float width, float height) {
-		return new Painter(gl, vboSupport, bitmap, width, height);
-	}
-	
-	public static Painter CreateMinSize(GL10 gl, boolean vboSupport, Bitmap bitmap, float minSize) {
-		float originalWidth = bitmap.getWidth();
-		float originalHeight = bitmap.getHeight();
-		
-		float minDimension = Math.min(originalWidth, originalHeight);
-		float width = minSize * originalWidth / minDimension;
-		float height = minSize * originalHeight / minDimension;
-		
-		return new Painter(gl, vboSupport, bitmap, width, height);
-	}
-	
-	private Painter(GL10 gl, boolean vboSupport, Bitmap bitmap, float width, float height) {
+	public Painter(GL10 gl, boolean vboSupport, Bitmap bitmap) {
 		
 		mVBOSupport = vboSupport;
-		
-		mWidth = width;
-		mHeight = height;
-		
-		float halfWidth = width / 2;
-		vertices[0] = vertices[2] = -halfWidth; // bottom-left, top-left;
-		vertices[4] = vertices[6] =  halfWidth; // bottom-right, top-right;
-
-		float halfHeight = height / 2;
-		vertices[1] = vertices[5] = -halfHeight; // bottom-left, bottom-right
-		vertices[3] = vertices[7] =  halfHeight; // top-left, top-right
 		
 		ByteBuffer byteBuffer;
 		byteBuffer = ByteBuffer.allocateDirect(vertices.length * Float.SIZE);
 		byteBuffer.order(ByteOrder.nativeOrder());
-		vertexBuffer = byteBuffer.asFloatBuffer();
-		vertexBuffer.put(vertices);
-		vertexBuffer.position(0);
+		mVertexBuffer = byteBuffer.asFloatBuffer();
+		mVertexBuffer.put(vertices);
+		mVertexBuffer.position(0);
 
 		byteBuffer = ByteBuffer.allocateDirect(vertices.length * 2);
 		byteBuffer.order(ByteOrder.nativeOrder());
-		indexBuffer = byteBuffer.asCharBuffer();
+		mIndexBuffer = byteBuffer.asCharBuffer();
 		for (int i = 0; i < vertices.length; i++) {
-			indexBuffer.put((char) i);
+			mIndexBuffer.put((char) i);
 		}
-		indexBuffer.position(0);
+		mIndexBuffer.position(0);
 		
 		byteBuffer = ByteBuffer.allocateDirect(texture.length * Float.SIZE);
 		byteBuffer.order(ByteOrder.nativeOrder());
-		textureBuffer = byteBuffer.asFloatBuffer();
-		textureBuffer.put(texture);
-		textureBuffer.position(0);
+		mTextureBuffer = byteBuffer.asFloatBuffer();
+		mTextureBuffer.put(texture);
+		mTextureBuffer.position(0);
 		
 		// Generate texture IDs.
 		int[] textureIDs = new int[1];
@@ -85,18 +55,18 @@ public class Painter {
 
 			// Upload the vertex data
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-			vertexBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, vertexBuffer.capacity(), vertexBuffer, GL11.GL_STATIC_DRAW);
+			mVertexBuffer.position(0);
+			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mVertexBuffer.capacity(), mVertexBuffer, GL11.GL_STATIC_DRAW);
 
 			// Upload the index data
 			gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-			indexBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, indexBuffer.capacity() * 2, indexBuffer, GL11.GL_STATIC_DRAW);
+			mIndexBuffer.position(0);
+			gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer.capacity() * 2, mIndexBuffer, GL11.GL_STATIC_DRAW);
             
 			// Upload the texture vertices
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
-			textureBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, textureBuffer.capacity(), textureBuffer, GL11.GL_STATIC_DRAW);
+			mTextureBuffer.position(0);
+			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mTextureBuffer.capacity(), mTextureBuffer, GL11.GL_STATIC_DRAW);
 		}
 		
 		// Set texture filtering parameters.
@@ -115,20 +85,15 @@ public class Painter {
 	}
 	
 	public void draw(GL10 gl, Entity entity) {
-		draw(gl, entity.body.center.x, entity.body.center.y, (float) Math.toDegrees(entity.heading), 1f);
+		draw(gl, entity.body.center.x, entity.body.center.y, entity.length, entity.diameter, (float) Math.toDegrees(entity.heading), 1f);
 	}
 	
 	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
 		float centerX = (maxX + minX) / 2;
 		float centerY = (maxY + minY) / 2;
-		float scaleX = (maxX - minX) / mWidth;
-		float scaleY = (maxY - minY) / mHeight;
+		float scaleX = maxX - minX;
+		float scaleY = maxY - minY;
 		draw(gl, centerX, centerY, scaleX, scaleY, rotateDegrees, alpha);
-	}
-	
-	// A bitmap's vertices go from -1 to 1 in the bitmap's largest dimension.
-	public void draw(GL10 gl, float moveX, float moveY, float rotateDegrees, float alpha) {
-		draw(gl, moveX, moveY, 1f, 1f, rotateDegrees, alpha);
 	}
 	
 	public void draw(GL10 gl, float moveX, float moveY, float scaleX, float scaleY, float rotateDegrees, float alpha) {
@@ -165,8 +130,8 @@ public class Painter {
 			gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
 		}
 		else {
-			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
+			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, mVertexBuffer);
+			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
 		}
 		
 		gl.glTranslatef(moveX, moveY, 0f);
@@ -183,16 +148,12 @@ public class Painter {
 	public void setCameraRotationDegrees(float degrees) {
 		mCameraRotationDegrees = degrees;
 	}
-
-    private CharBuffer  indexBuffer;
-	private FloatBuffer vertexBuffer;
-	private FloatBuffer textureBuffer;
 	
 	private float vertices[] = {
-			-1.0f, -1.0f, // bottom-left    2     4
-			-1.0f,  1.0f, // top-left
-			 1.0f, -1.0f, // bottom-right
-			 1.0f,  1.0f, // top-right      1     3
+			-0.5f, -0.5f, // bottom-left    2     4
+			-0.5f,  0.5f, // top-left
+			 0.5f, -0.5f, // bottom-right
+			 0.5f,  0.5f, // top-right      1     3
 	};
 	
 	private float texture[] = {
@@ -202,14 +163,15 @@ public class Painter {
 			1.0f, 0.0f  // bottom right (vertex 3)
 	};
 	
-	private float mWidth;
-	private float mHeight;
-	
 	private int mVertexBufferObjectID;
 	private int mElementBufferObjectID;
 	private int mTextureBufferObjectID;
 	private int mTextureID;
 	private boolean mVBOSupport;
+
+    private CharBuffer  mIndexBuffer;
+	private FloatBuffer mVertexBuffer;
+	private FloatBuffer mTextureBuffer;
 	
 	private float mCameraRotationDegrees;
 }
