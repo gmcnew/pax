@@ -44,8 +44,6 @@ public class Pax extends Activity {
         if (SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
-    	
-    	thisContext = this;
         
         mGame = new Game();
 		
@@ -197,5 +195,4 @@ public class Pax extends Activity {
     private Game.State mLastState;
     private MediaPlayer mMusic;
     private Handler mHandler;
-    public static Pax thisContext;
 }
