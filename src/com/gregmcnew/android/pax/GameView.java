@@ -44,25 +44,32 @@ public class GameView extends GLSurfaceView {
 			    	// Ignore the "NONE" build target.
 			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
 			    	
-			    	int selection;
+			    	int selection = 0;
 			    	int player = -1;
 			    	int xGridPos = (int) (x * 4 / getWidth());
 			    	int yGridPos = (int) (y * 4 / getHeight());
+			    	
 			    	if (mRotation % 2 == 0) {
-			    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
-			    		selection = (int) (x * numBuildTargets / getWidth());
+			    		// Ignore clicks in the center of the screen.
+			    		if (yGridPos == 0 || yGridPos == 3) {
+				    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
+				    		selection = (int) (x * numBuildTargets / getWidth());
+			    		}
 			    	}
 			    	else {
-			    		player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
-		    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
-			    	}
-			    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
-			    	
-			    	if ((player == 1) ^ (mRotation >= 2)) {
-			    		selection = (numBuildTargets - 1) - selection;
+			    		// Ignore clicks in the center of the screen.
+			    		if (xGridPos == 0 || xGridPos == 3) {
+			    			player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
+			    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
+			    		}
 			    	}
 			    	
 			    	if (player != -1) {
+				    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
+				    	
+				    	if ((player == 1) ^ (mRotation >= 2)) {
+				    		selection = (numBuildTargets - 1) - selection;
+				    	}
 				    	mGame.setBuildTarget(player, Player.BuildTarget.values()[selection]);
 			    	}
 		    	}
