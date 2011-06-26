@@ -40,7 +40,7 @@ public class Painter {
 		
 		// Generate texture IDs.
 		int[] textureIDs = new int[1];
-		gl.glGenTextures(1, textureIDs, 0);
+		gl.glGenTextures(textureIDs.length, textureIDs, 0);
 		mTextureID = textureIDs[0];
 		
 		if (mVBOSupport) {
@@ -48,7 +48,7 @@ public class Painter {
 			
 			// Generate buffer IDs.
 			int[] bufferIDs = new int[3];
-			gl11.glGenBuffers(2, bufferIDs, 0);
+			gl11.glGenBuffers(bufferIDs.length, bufferIDs, 0);
 			mVertexBufferObjectID = bufferIDs[0];
 			mElementBufferObjectID = bufferIDs[1];
 			mTextureBufferObjectID = bufferIDs[2];
