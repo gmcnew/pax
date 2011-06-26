@@ -231,7 +231,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private Painter getPainter(GL10 gl, int resourceID) {
     	if (!mPainters.containsKey(resourceID)) {
     		Bitmap bitmap = loadBitmap(resourceID);
-    		mPainters.put(resourceID, new Painter(gl, mVBOSupport, loadBitmap(resourceID)));
+    		mPainters.put(resourceID, new Painter(gl, mVBOSupport, bitmap));
     		bitmap.recycle();
     	}
     	
