@@ -60,22 +60,27 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
+		String version = gl.glGetString(GL10.GL_VERSION);
+		String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
+		String renderer = gl.glGetString(GL10.GL_RENDERER);
+		
 		// Print information about the OpenGL driver.
 		{
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL version: " + gl.glGetString(GL10.GL_VERSION));
+			Log.v("GameViewGL.onSurfaceCreated", "OpenGL version: " + version);
 			
 			Log.v("GameViewGL.onSurfaceCreated", "OpenGL extensions:");
-			String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
 			for (String extension : extensions.split(" ")) {
 				Log.v("GameViewGL.onSurfaceCreated", "  " + extension);
 			}
 			
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + gl.glGetString(GL10.GL_RENDERER));
+			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + renderer);
 		}
-		
-		// TODO: Add VBO support, then read the OpenGL extensions list to
-		// determine whether the driver supports it.
-    	mVBOSupport = false;
+        
+		// The device supports VBOs if (1) its version isn't 1.0 (since VBOs are
+		// standard in 1.1 and above) or (2) its extensions list includes
+		// "vertex_buffer_object".
+		mVBOSupport = (!version.contains("1.0")) || extensions.contains("vertex_buffer_object");
+		Log.v(Pax.TAG, mVBOSupport ? "device supports VBOs" : "device doesn't support VBOs");
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
