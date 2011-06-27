@@ -6,7 +6,7 @@ public class Bomb extends Projectile {
 	public static final float DIAMETER = 8;
 	public static final float INITIAL_VELOCITY = 500;
 	public static final float TURN_SPEED = 0;
-	public static final float[] ACCELERATIONLIMS = {-15, 0};
+	public static final float[] ACCELERATIONLIMS = {-375, 0};
 	public static final float MAXVELOCITY = 500;
 	public static final int MAX_LIFE_MS = 1000;
 
@@ -30,7 +30,10 @@ public class Bomb extends Projectile {
 		float cosH = (float)Math.cos(heading);
 		float sinH = (float)Math.sin(heading);
 		float velH = velocity.y * sinH + velocity.x * cosH; //Speed in the direction of heading.
-		velH += ACCELERATIONLIMS[0];
+		velH += ACCELERATIONLIMS[0] * dt / 1000;
+		if (velH < 0) {
+			velH = 0;
+		}
 		velocity.x = velH * cosH;
 		velocity.y = velH * sinH;
 	}

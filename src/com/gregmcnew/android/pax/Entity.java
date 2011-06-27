@@ -222,19 +222,25 @@ public abstract class Entity {
 		float sinH = (float)Math.sin(heading);
 		float velH = velocity.y * sinH + velocity.x * cosH; //Speed in the direction of heading.
 		float velP = velocity.x * sinH - velocity.y * cosH; //Speed in the direction 90deg CW of heading.
-		if(velP > 0){
-			velP = (velP > accelerationLimits[1]) ? velP - accelerationLimits[1] : 0;
-		} else if(velP < 0) {
-			velP = (-velP > accelerationLimits[1]) ? velP + accelerationLimits[1] : 0;
+		
+		// TODO: "/ 40"? Specify acceleration limits correctly.
+		float dvP = accelerationLimits[1] * dt / 40;
+		float dvH = accelerationLimits[0] * dt / 40;
+		
+		float newVelP = (velP > 0 ? velP : -velP);
+		newVelP -= dvP;
+		if (newVelP < 0) {
+			newVelP = 0;
 		}
+		velP = (velP > 0 ? newVelP : -newVelP);
 		
 		float halfPi = (float) Math.PI / 2;
 		
 		if (headingToTargetHeading < -halfPi || headingToTargetHeading > halfPi) {
-			velH -= accelerationLimits[0];
+			velH -= dvH;
 			if(velH < .75*maxSpeed) velH = (float).75*maxSpeed;
 		} else { 
-			velH += accelerationLimits[0]*Math.cos(headingToTargetHeading);
+			velH += dvH * Math.cos(headingToTargetHeading);
 			if(velH > maxSpeed) velH = maxSpeed;
 		}
 		velocity.x = velH * cosH + velP * sinH;
