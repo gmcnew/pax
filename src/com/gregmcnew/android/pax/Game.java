@@ -48,12 +48,20 @@ public class Game {
 			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
 		}
 		
+		for (Player player : mPlayers) {
+			player.removeDeadEntities();
+		}
+		
 		// Allow all players to produce and build.
 		for (Player player : mPlayers) {
 			player.produce(dt);
 			player.updateEntities(dt);
-			player.updateParticles(dt);
-			
+		}
+		
+		// Move and create entities. (This should be done after updateEntities()
+		// is called for all players. This ensures that a player's entities
+		// don't adjust their headings to aim at their target's old location.)
+		for (Player player : mPlayers) {
 			// Collision spaces should be marked as invalid when entities are being added or moved.
 			player.invalidateCollisionSpaces();
 

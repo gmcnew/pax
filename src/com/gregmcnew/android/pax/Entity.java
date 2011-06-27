@@ -247,12 +247,6 @@ public abstract class Entity {
 		velocity.y = velH * sinH - velP * cosH;
 	}
 	
-	public void move(long dt){
-		updatePosition(dt);
-		updateHeading(dt);
-		updateVelocity(dt);
-	}
-	
 	
 	// Protected methods
 	

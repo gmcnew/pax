@@ -83,12 +83,40 @@ public class Player {
 		money += (production * dt) / 1000;
 	}
 	
+	public void removeDeadEntities() {
+		
+		for (int type : Entity.TYPES) {
+			for (Entity entity : mEntities[type]) {
+				
+				if (type == Entity.FIGHTER || type == Entity.BOMBER || type == Entity.FRIGATE || type == Entity.FACTORY) {
+				
+					Ship ship = (Ship) entity;
+					if (ship.health <= 0) {
+						removeEntity(ship);
+					}
+				}
+				else { // it's a projectile
+					Projectile projectile = (Projectile) entity;
+					
+					if (projectile.health <= 0 || projectile.lifeMs <= 0) {
+						removeEntity(projectile);
+					}
+				}
+			}
+		}
+	}
+	
 	// This function requires a valid collision space (for retargeting),
 	// so it can't add or move units. See moveEntities for that sort of thing.
+	// Dead entities should already have been removed by a call to
+	// removeDeadEntities().
 	public void updateEntities(long dt) {
 		
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
+				
+				entity.updateHeading(dt);
+				entity.updateVelocity(dt);
 				
 				if (entity.target != null && entity.target.health <= 0) {
 					entity.target = null;
@@ -101,25 +129,21 @@ public class Player {
 				if (type == Entity.FIGHTER || type == Entity.BOMBER || type == Entity.FRIGATE || type == Entity.FACTORY) {
 				
 					Ship ship = (Ship) entity;
-					if (ship.health <= 0) {
-						removeEntity(ship);
-					}
-					else {
-						if (ship.shoot(dt)) {
-							mShooterQueue.add(ship);
-						}
+					if (ship.shoot(dt)) {
+						mShooterQueue.add(ship);
 					}
 				}
 				else { // it's a projectile
 					Projectile projectile = (Projectile) entity;
 					
-					if (projectile.health <= 0 || projectile.lifeMs <= 0) {
-						removeEntity(projectile);
-					}
-					else {
-						projectile.lifeMs -= dt;
-					}
+					projectile.lifeMs -= dt;
 				}
+			}
+		}
+		
+		if (Pax.PARTICLES) {
+			for (int emitterType : Emitter.TYPES) {
+				mEmitters[emitterType].update(dt);
 			}
 		}
 	}
@@ -136,7 +160,7 @@ public class Player {
 					}
 				}
 				
-				entity.move(dt);
+				entity.updatePosition(dt);
 			}
 		}
 		
@@ -144,14 +168,6 @@ public class Player {
 			addProjectile(ship);
 		}
 		mShooterQueue.clear();
-	}
-	
-	public void updateParticles(long dt) {
-		if (Pax.PARTICLES) {
-			for (int emitterType : Emitter.TYPES) {
-				mEmitters[emitterType].update(dt);
-			}
-		}
 	}
 	
 	public void attack(Player victim) {
