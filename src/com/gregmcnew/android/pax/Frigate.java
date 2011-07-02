@@ -21,7 +21,7 @@ public class Frigate extends Ship {
 	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
-		reloadTimeMs = 6000;
+		reloadTimeMs = 5300;
 		shotTimeMs = 20;
 		clipSize = 8;
 		shotsLeft = clipSize;
