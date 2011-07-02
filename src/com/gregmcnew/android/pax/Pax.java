@@ -17,6 +17,7 @@ public class Pax extends Activity {
     public static final boolean SIMPLE_BALANCE_TEST = false;
     public static final boolean BACKGROUND_IMAGE = false;
     public static final boolean MUSIC = true;
+    public static final boolean FIGHTER_SPAM_TEST = false;
     public static final boolean PARTICLES = true;
     public static final boolean FPS_METER = true;
     

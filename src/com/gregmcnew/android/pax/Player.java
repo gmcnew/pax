@@ -12,7 +12,7 @@ public class Player {
 	private static final float PRODUCTION_STEP = 20;
 	private static final float INITIAL_PRODUCTION = PRODUCTION_STEP * 3;
 	
-	// Spend rougly equal amounts of money on all ship types, but never upgrade.
+	// Spend roughly equal amounts of money on all ship types, but never upgrade.
 	public static final Player.BuildTarget[] AI_BUILD_TARGETS = {
 			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
 			Player.BuildTarget.BOMBER,
@@ -71,6 +71,11 @@ public class Player {
 		mShooterQueue.clear();
 		money = 0;
 		production = INITIAL_PRODUCTION;
+		
+		if (Pax.FIGHTER_SPAM_TEST) {
+			production = PRODUCTION_STEP * 100;
+			mBuildTarget = BuildTarget.FIGHTER;
+		}
 		
 		addShip(Entity.FACTORY);
 	}
