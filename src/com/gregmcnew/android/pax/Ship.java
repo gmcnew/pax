@@ -61,9 +61,19 @@ public abstract class Ship extends Entity {
 			}
 			
 			if (shoot) {
+				// Start the reload timer as soon as the clip becomes partially
+				// empty.
+				if (shotsLeft == clipSize) {
+					reloadTimer = 0;
+				}
 				shotsLeft--;
-				shotTimer = 0;
-				reloadTimer = 0;
+				
+				if (shotTimeMs == 0) {
+					shotTimer = 0;
+				}
+				else {
+					shotTimer %= shotTimeMs;
+				}
 			}
 		}
 		
