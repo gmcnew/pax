@@ -27,10 +27,15 @@ public class Laser extends Projectile {
 		heading = parent.heading;
 		targetHeading = heading;
 		
+		float headingX = (float) Math.cos(heading);
+		float headingY = (float) Math.sin(heading);
+		
+		body.center.offset(headingX * length / 2, headingY * length / 2);
+		
 		setExtraPoints(NUM_EXTRA_POINTS, EXTRA_POINT_OFFSETS);
 		
-		velocity.x = (float) Math.cos(heading) * INITIAL_VELOCITY;
-		velocity.y = (float) Math.sin(heading) * INITIAL_VELOCITY;
+		velocity.x = headingX * INITIAL_VELOCITY;
+		velocity.y = headingY * INITIAL_VELOCITY;
 	}
 	
 	@Override
