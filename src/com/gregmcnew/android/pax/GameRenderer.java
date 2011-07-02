@@ -85,6 +85,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		// "vertex_buffer_object".
 		mVBOSupport = (!version.contains("1.0")) || extensions.contains("vertex_buffer_object");
 		Log.v(Pax.TAG, mVBOSupport ? "device supports VBOs" : "device doesn't support VBOs");
+
+		mShipUnhealth = new Painter[Game.NUM_PLAYERS];
+		mShipHealth = new Painter[Game.NUM_PLAYERS];
+		mShipOutlinePainter = getPainter(gl, R.drawable.ship_outline);
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
@@ -96,6 +100,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohblue);
 					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohblue);
 					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohblue);
+					mShipUnhealth[player]    = getPainter(gl, R.drawable.blue_unhealth);
+					mShipHealth[player]      = getPainter(gl, R.drawable.blue_health);
 					break;
 				case 1:
 				default:
@@ -103,6 +109,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohred);
 					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohred);
 					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohred);
+					mShipUnhealth[player]    = getPainter(gl, R.drawable.red_unhealth);
+					mShipHealth[player]      = getPainter(gl, R.drawable.red_health);
 					break;
 			}
 			
@@ -206,7 +214,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 				for (Entity entity : player.mEntities[entityType]) {
 					
 					painters[entityType].setCameraRotationDegrees(90 * mRotation);
-					painters[entityType].draw(gl, entity);
+					
+					if (entityType == Entity.FACTORY) {
+						
+						// The "unhealth" image is drawn first, followed by the
+						// "health" image, scaled according to the entity's
+						// health. Finally, the ship's outline is drawn on top.
+						
+						float scale = entity.diameter * 1.05f * entity.health / Factory.HEALTH;
+						mShipUnhealth[i].draw(gl, entity);
+						mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
+						mShipOutlinePainter.draw(gl, entity);
+					}
+					else {
+						painters[entityType].draw(gl, entity);
+					}
 				}
 			}
 		}
@@ -380,6 +402,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Painter[] mBuildTargetPaintersRed;
 	private Painter[] mParticlePainters;
 	private Painter[] mDigitPainters;
+	
+	private Painter[] mShipUnhealth;
+	private Painter[] mShipHealth;
+	private Painter mShipOutlinePainter;
 	
 	private int mRotation;
 	private float mButtonSize;
