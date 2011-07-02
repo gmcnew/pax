@@ -2,7 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -12,6 +11,13 @@ import android.graphics.Bitmap;
 import android.opengl.GLUtils;
 
 public class Painter {
+	
+	private static Painter sLastPainter = null;
+	private static float sCameraRotationDegrees = 0;
+	
+	public static void setCameraRotationDegrees(float degrees) {
+		sCameraRotationDegrees = degrees;
+	}
 	
 	public Painter(GL10 gl, boolean vboSupport, Bitmap bitmap) {
 		
@@ -23,14 +29,6 @@ public class Painter {
 		mVertexBuffer = byteBuffer.asShortBuffer();
 		mVertexBuffer.put(vertices);
 		mVertexBuffer.position(0);
-
-		byteBuffer = ByteBuffer.allocateDirect(vertices.length * 2);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mIndexBuffer = byteBuffer.asCharBuffer();
-		for (int i = 0; i < vertices.length; i++) {
-			mIndexBuffer.put((char) i);
-		}
-		mIndexBuffer.position(0);
 		
 		byteBuffer = ByteBuffer.allocateDirect(texture.length * Short.SIZE);
 		byteBuffer.order(ByteOrder.nativeOrder());
@@ -47,31 +45,21 @@ public class Painter {
 			GL11 gl11 = (GL11) gl;
 			
 			// Generate buffer IDs.
-			int[] bufferIDs = new int[3];
+			int[] bufferIDs = new int[2];
 			gl11.glGenBuffers(bufferIDs.length, bufferIDs, 0);
 			mVertexBufferObjectID = bufferIDs[0];
-			mElementBufferObjectID = bufferIDs[1];
-			mTextureBufferObjectID = bufferIDs[2];
+			mTextureBufferObjectID = bufferIDs[1];
 
 			// Upload the vertex data
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
 			mVertexBuffer.position(0);
 			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mVertexBuffer.capacity(), mVertexBuffer, GL11.GL_STATIC_DRAW);
-
-			// Upload the index data
-			gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-			mIndexBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer.capacity() * 2, mIndexBuffer, GL11.GL_STATIC_DRAW);
             
 			// Upload the texture vertices
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
 			mTextureBuffer.position(0);
 			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mTextureBuffer.capacity(), mTextureBuffer, GL11.GL_STATIC_DRAW);
 		}
-		
-		// Set texture filtering parameters.
-		//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-		//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 		
 		// Send the bitmap to the video device.
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
@@ -90,62 +78,57 @@ public class Painter {
 	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
 		float centerX = (maxX + minX) / 2;
 		float centerY = (maxY + minY) / 2;
-		float scaleX = maxX - minX;
-		float scaleY = maxY - minY;
-		draw(gl, centerX, centerY, scaleX, scaleY, rotateDegrees, alpha);
+		float sizeX = maxX - minX;
+		float sizeY = maxY - minY;
+		draw(gl, centerX, centerY, sizeX, sizeY, rotateDegrees, alpha);
 	}
 	
-	public void draw(GL10 gl, float moveX, float moveY, float scaleX, float scaleY, float rotateDegrees, float alpha) {
+	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {
 		
         // Make sure we're not using any transformations left over from the
 		// the last draw().
 		gl.glLoadIdentity();
 		
 		// Rotate about the Z-axis.
-		gl.glRotatef(mCameraRotationDegrees, 0f, 0f, 1f);
-        
-		gl.glFrontFace(GL10.GL_CW);
+		gl.glRotatef(sCameraRotationDegrees, 0f, 0f, 1f);
 
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 		gl.glColor4f(1f, 1f, 1f, alpha);
 
-		// Point to our vertex and texture buffers.
-		if (mVBOSupport) {
+		// We don't need to rebind everything if we were the last painter to
+		// draw.
+		if (sLastPainter != this) {
+			sLastPainter = this;
 			
-			gl.glEnableClientState(GL10.GL_TEXTURE_2D);
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-			GL11 gl11 = (GL11) gl;
+			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 			
-			// Point to our buffers
-            
-			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-			gl11.glVertexPointer(2, GL10.GL_SHORT, 0, 0);
-			
-			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
-			gl11.glTexCoordPointer(2, GL10.GL_SHORT, 0, 0);
-
-			gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
-		}
-		else {
-			gl.glVertexPointer(2, GL10.GL_SHORT, 0, mVertexBuffer);
-			gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
+			// Point to our vertex and texture buffers.
+			if (mVBOSupport) {
+				GL11 gl11 = (GL11) gl;
+				
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
+				gl11.glVertexPointer(2, GL10.GL_SHORT, 0, 0);
+				
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
+				gl11.glTexCoordPointer(2, GL10.GL_SHORT, 0, 0);
+			}
+			else {
+				gl.glVertexPointer(2, GL10.GL_SHORT, 0, mVertexBuffer);
+				gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
+			}
 		}
 		
 		gl.glTranslatef(moveX, moveY, 0f);
 		
 		// Rotate about the Z-axis.
 		gl.glRotatef(rotateDegrees, 0f, 0f, 1f);
-		gl.glScalef(scaleX / 2, scaleY / 2, 0f);
+		
+		// The vertices buffer describes a 2x2 square, not a 1x1 square, so each
+		// scale value needs to be half of the size.
+		gl.glScalef(sizeX / 2, sizeY / 2, 0f);
 
 		// We use 2D vertices, so every vertex is represented by 2 values in
 		// 'vertices'.
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
-	}
-	
-	public void setCameraRotationDegrees(float degrees) {
-		mCameraRotationDegrees = degrees;
 	}
 	
 	private short vertices[] = {
@@ -159,18 +142,14 @@ public class Painter {
 			 0,  1, // top left     (vertex 2)
 			 0,  0, // bottom left  (vertex 1)
 			 1,  1, // top right    (vertex 4)
-			 1,  0  // bottom right (vertex 3)
+			 1,  0, // bottom right (vertex 3)
 	};
 	
 	private int mVertexBufferObjectID;
-	private int mElementBufferObjectID;
 	private int mTextureBufferObjectID;
 	private int mTextureID;
 	private boolean mVBOSupport;
-
-    private CharBuffer  mIndexBuffer;
+	
 	private ShortBuffer mVertexBuffer;
 	private ShortBuffer mTextureBuffer;
-	
-	private float mCameraRotationDegrees;
 }

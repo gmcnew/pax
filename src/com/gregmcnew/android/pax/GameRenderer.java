@@ -39,7 +39,17 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     
     public void updateRotation(int rotation) {
     	mRotation = rotation;
+    	Painter.setCameraRotationDegrees(90 * mRotation);
     	Log.v(Pax.TAG, String.format("rotation is now %d", rotation));
+    	
+    	mGameWidth  = (mRotation % 2 == 0) ? mScreenWidth  : mScreenHeight;
+    	mGameHeight = (mRotation % 2 == 0) ? mScreenHeight : mScreenWidth;
+    	
+        // Make sure the largest screen dimension is equal to GAME_VIEW_SIZE
+        // game units.
+        float maxDimension = Math.max(mScreenWidth, mScreenHeight);
+        mGameWidth  *= GAME_VIEW_SIZE / maxDimension;
+        mGameHeight *= GAME_VIEW_SIZE / maxDimension;
     }
     
 	@Override
@@ -171,15 +181,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
         
-        // Make sure the largest screen dimension is equal to GAME_VIEW_SIZE
-        // game units.
-        float maxDimension = Math.max(width, height);
+        mScreenWidth = width;
+        mScreenHeight = height;
+        updateRotation(mRotation);
         
-        mGameWidth = GAME_VIEW_SIZE * width / maxDimension;
-        mGameHeight = GAME_VIEW_SIZE * height / maxDimension;
-        
-        float halfX = mGameWidth / 2;
-        float halfY = mGameHeight / 2;
+        float halfX = ((mRotation % 2 == 0) ? mGameWidth  : mGameHeight) / 2;
+        float halfY = ((mRotation % 2 == 0) ? mGameHeight : mGameWidth ) / 2;
         
         GLU.gluOrtho2D(gl, -halfX, halfX, -halfY, halfY);
  
@@ -213,8 +220,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			
 				for (Entity entity : player.mEntities[entityType]) {
 					
-					painters[entityType].setCameraRotationDegrees(90 * mRotation);
-					
 					if (entityType == Entity.FACTORY) {
 						
 						// The "unhealth" image is drawn first, followed by the
@@ -247,6 +252,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			int fps = FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
+			
 			int digitWidth = 25;
 			int digitHeight = 30;
 			while (fps > 0) {
@@ -288,23 +294,21 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private void drawButtons(GL10 gl) {
     	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 			
-			float dx = mGameWidth / 4;
-			float dy = mGameHeight / 4;
-			float x = (dx - mGameWidth) / 2;
-			float y = (dy - mGameHeight) / 2;
+			float buildIndicatorRotation = (player == 0) ? 0 : 180;
 			
-			float buildIndicatorRotation = 90 * mRotation;
-
 			Painter[] buildTargetPainters = (player == 0) ? mBuildTargetPaintersBlue : mBuildTargetPaintersRed;
+			
+			float flip = ((player == 1) ^ (mRotation >= 2)) ? -1 : 1;
+
+			// Draw buttons along the bottom of the screen
+			float dx = mGameWidth / 4;
+			float dy = 0;
+			float x = flip * (dx - mGameWidth) / 2;
+			float y = flip * (mButtonSize - mGameHeight) / 2;
+			
 			if ((player == 1) ^ (mRotation >= 2)) {
 				dx = -dx;
 				dy = -dy;
-				x = -x;
-				y = -y;
-			}
-			
-			if (player == 1) {
-				buildIndicatorRotation += 180;
 			}
 			
 			for (int i = 0; i < 4; i++) {
@@ -314,48 +318,14 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 					buildProgress = 1;
 				}
 				
-				// Oh no...
-				
-				float buttonMinX;
-				float buttonMaxX;
-				float buttonMinY;
-				float buttonMaxY;
-				
-				float progressMaxX;
-				float progressMaxY;
-				
-				float flip = ((player == 1) ^ (mRotation >= 2)) ? -1 : 1;
-				
-				float halfButtonSize = mButtonSize / 2;
-				if (mRotation % 2 == 0) {
-					// Draw buttons along the bottom of the screen
-					dy = 0;
-					y = flip * (halfButtonSize - (mGameHeight / 2));
-					
-					buttonMinY = y - flip * mButtonSize / 2;
-					buttonMaxY = y + flip * mButtonSize / 2;
-					buttonMinX = x - dx / 2;
-					buttonMaxX = x + dx / 2;
+				float buttonMinY = y - flip * mButtonSize / 2;
+				float buttonMaxY = y + flip * mButtonSize / 2;
+				float buttonMinX = x - dx / 2;
+				float buttonMaxX = x + dx / 2;
 
-					progressMaxX = buttonMinX + flip * mButtonSize / 3;//dx * buildProgress;
-					progressMaxY = buttonMinY + flip * mButtonSize * buildProgress;
-				}
-				else {
-					// Draw buttons along the right side of the screen.
-					dx = 0;
-					x = (mGameWidth / 2) - halfButtonSize;
-					if (player != 0) {
-						x = -x;
-					}
-					
-					buttonMinY = y - dy / 2;
-					buttonMaxY = y + dy / 2;
-					buttonMinX = x + flip * mButtonSize / 2;
-					buttonMaxX = x - flip * mButtonSize / 2;
-					
-					progressMaxX = buttonMinX - flip * (mButtonSize * buildProgress);
-					progressMaxY = buttonMinY + flip * mButtonSize / 3;//dy * buildProgress;
-				}
+				// The width of the progress bar is 1/3 of its maximum height.
+				float progressMaxX = buttonMinX + flip * mButtonSize / 3;
+				float progressMaxY = buttonMinY + flip * mButtonSize * buildProgress;
 				
 				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {
 	
@@ -372,7 +342,9 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 							0.2f);
 				}
 				
+				// Draw the build target icon.
 				buildTargetPainters[i].draw(gl, x, y, mButtonSize, mButtonSize, buildIndicatorRotation, 1f);
+				
 				x += dx;
 				y += dy;
 			}
@@ -388,6 +360,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Context mContext; 
 	private Game mGame;
 	
+	// The screen's width and height, in pixels.
+	// These values -will- change when the screen is rotated.
+	private float mScreenWidth;
+	private float mScreenHeight;
+	
+	// The width and height of the displayed game area, in game units.
+	// These values will -not- change when the screen is rotated.
 	private float mGameWidth;
 	private float mGameHeight;
 	
