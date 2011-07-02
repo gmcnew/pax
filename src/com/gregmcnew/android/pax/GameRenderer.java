@@ -251,7 +251,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			int digitHeight = 30;
 			while (fps > 0) {
 				int digit = fps % 10;
-				mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, 1f);
+				mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, 0.2f);
 				x -= digitWidth;
 				fps /= 10;
 			}
