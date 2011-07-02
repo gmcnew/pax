@@ -242,28 +242,11 @@ public class Player {
 		}
 	}
 	
-	private int addShip(int type) {
+	private Ship addShip(int type) {
 		
-		int id = Entity.NO_ENTITY;
-			
-		Ship ship = null;
-		switch (type) {
-			case Entity.FIGHTER:
-				ship = new Fighter();
-				break;
-			case Entity.BOMBER:
-				ship = new Bomber();
-				break;
-			case Entity.FRIGATE:
-				ship = new Frigate();
-				break;
-			case Entity.FACTORY:
-				ship = new Factory();
-				break;
-		}
+		Ship ship = (Ship) mEntities[type].add(type, null);
 		
 		if (ship != null) {
-			id = mEntities[type].add(ship);
 			
 			// Fix the ship's location.
 			if (type != Entity.FACTORY) { // If the ship being spawned ISN'T a factory...
@@ -289,38 +272,35 @@ public class Player {
 			}
 		}
 		
-		return id;
+		return ship;
 	}
 	
-	private int addProjectile(Ship parent) {
+	private Projectile addProjectile(Ship parent) {
 		
-		int id = Entity.NO_ENTITY;
-		
-		Projectile projectile = null;
+		int projectileType;
 		switch (parent.type) {
 			case Entity.FIGHTER:
-				projectile = new Laser(parent);
+				projectileType = Entity.LASER;
 				break;
 			case Entity.BOMBER:
-				projectile = new Bomb(parent);
+				projectileType = Entity.BOMB;
 				break;
+			default:
 			case Entity.FRIGATE:
-				projectile = new Missile(parent);
+				projectileType = Entity.MISSILE;
 				break;
 		}
 		
-		if (projectile != null) {
-			id = mEntities[projectile.type].add(projectile);
-		}
+		Projectile projectile = (Projectile) mEntities[projectileType].add(projectileType, parent);
 		
-		return id;
+		return projectile;
 	}
 	
 	private void removeEntity(Entity entity) {
 		// Clear our target reference for garbage collection reasons.
 		entity.target = null;
 		
-		mEntities[entity.type].remove(entity.id);
+		mEntities[entity.type].remove(entity);
 	}
 	
 	public EntityPool[] mEntities;

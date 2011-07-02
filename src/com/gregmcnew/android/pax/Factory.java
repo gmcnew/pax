@@ -10,6 +10,7 @@ public class Factory extends Ship {
 
 	protected Factory() {
 		super(Entity.FACTORY, null, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
+		reset(null);
 	}
 	
 	@Override

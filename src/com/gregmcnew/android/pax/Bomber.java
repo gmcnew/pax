@@ -11,7 +11,12 @@ public class Bomber extends Ship {
 
 	protected Bomber() {
 		super(Entity.BOMBER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-
+		reset(null);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
 		reloadTimeMs = 4000;
 		clipSize = 1;
 		shotsLeft = 1;

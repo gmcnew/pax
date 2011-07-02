@@ -12,10 +12,14 @@ public class Fighter extends Ship {
 	
 	public static final float MIN_PREFERRED_TARGET_DISTANCE = 250;
 	
-
 	protected Fighter() {
 		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-
+		reset(null);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
 		reloadTimeMs = 6000;
 		shotTimeMs = 33;
 		clipSize = 5;

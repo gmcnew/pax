@@ -3,6 +3,7 @@ package com.gregmcnew.android.pax;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Stack;
 
 public class EntityPool implements Iterable<Entity> {
 
@@ -11,6 +12,7 @@ public class EntityPool implements Iterable<Entity> {
 		mList = new Entity[mSize];
 		mNextIndex = 0;
 		mRecycledIDs = new HashSet<Integer>();
+		mRecycledEntities = new Stack<Entity>();
 		
 		// Keep track of the number of collision points among all entities.
 		mNumCollisionPoints = 0;
@@ -18,40 +20,72 @@ public class EntityPool implements Iterable<Entity> {
 		mBodies = new Quadtree(Quadtree.X, Entity.CollisionRadii[type], new Point2[1]);
 	}
 	
-	public int add(Entity entity) {
+	public Entity add(int entityType, Ship parent) {
 		
-		int id = Entity.NO_ENTITY;
-		
+		Entity entity = null;
 		if (!mRecycledIDs.isEmpty()) {
-			id = mRecycledIDs.iterator().next();
+			int id = mRecycledIDs.iterator().next();
 			mRecycledIDs.remove(id);
+			
+			entity = mRecycledEntities.pop();
+			entity.reset(parent);
+			
+			entity.id = id;
 		}
 		else {
-			// Grow if necessary. This shouldn't happen much.
-			if (mNextIndex >= mSize) {
-				Entity[] oldList = mList;
-				mList = new Entity[mSize * 2];
-				for (int i = 0; i < mSize; i++) {
-					mList[i] = oldList[i];
-				}
-				mSize *= 2;
+			switch (entityType) {
+				case Entity.FIGHTER:
+					entity = new Fighter();
+					break;
+				case Entity.BOMBER:
+					entity = new Bomber();
+					break;
+				case Entity.FRIGATE:
+					entity = new Frigate();
+					break;
+				case Entity.FACTORY:
+					entity = new Factory();
+					break;
+				case Entity.LASER:
+					entity = new Laser(parent);
+					break;
+				case Entity.BOMB:
+					entity = new Bomb(parent);
+					break;
+				case Entity.MISSILE:
+					entity = new Missile(parent);
+					break;
 			}
 			
-			id = mNextIndex;
-			mNextIndex++;
+			if (entity != null) {
+				// Grow if necessary. This shouldn't happen much.
+				if (mNextIndex >= mSize) {
+					Entity[] oldList = mList;
+					mList = new Entity[mSize * 2];
+					for (int i = 0; i < mSize; i++) {
+						mList[i] = oldList[i];
+					}
+					mSize *= 2;
+				}
+				
+				entity.id = mNextIndex;
+				mNextIndex++;
+			}
 		}
 		
-		mList[id] = entity;
-		
-		entity.id = id;
-		entity.body.center.id = id;
-		for (Point2 extraPoint : entity.mExtraPoints) {
-			extraPoint.id = id;
+		if (entity != null) {
+			
+			mList[entity.id] = entity;
+			
+			entity.body.center.id = entity.id;
+			for (Point2 extraPoint : entity.mExtraPoints) {
+				extraPoint.id = entity.id;
+			}
+			
+			mNumCollisionPoints += entity.mExtraPoints.length + 1;
 		}
 		
-		mNumCollisionPoints += entity.mExtraPoints.length + 1;
-		
-		return id;
+		return entity;
 	}
 	
 	public Entity get(int id) {
@@ -118,7 +152,7 @@ public class EntityPool implements Iterable<Entity> {
 		mBodies.reset(0, i);
 	}
 	
-	public void remove(int id) {
+	protected void remove(int id) {
 		assert(id != Entity.NO_ENTITY);
 		remove(mList[id]);
 	}
@@ -130,6 +164,7 @@ public class EntityPool implements Iterable<Entity> {
 		
 		mList[entity.id] = null;
 		mRecycledIDs.add(entity.id);
+		mRecycledEntities.add(entity);
 		mBodies.remove(entity.body.center);
 		for (Point2 extraPoint : entity.mExtraPoints) {
 			mBodies.remove(extraPoint);
@@ -144,6 +179,7 @@ public class EntityPool implements Iterable<Entity> {
 	// Use a set to eliminate duplicates and ensure that an ID can't be recycled twice.
 	//private List<Entity> mList;
 	private Set<Integer> mRecycledIDs;
+	private Stack<Entity> mRecycledEntities;
 	
 	private Entity[] mList;
 	private int mNextIndex;

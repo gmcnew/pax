@@ -15,7 +15,12 @@ public class Frigate extends Ship {
 
 	protected Frigate() {
 		super(Entity.FRIGATE, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-
+		reset(null);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
 		reloadTimeMs = 6000;
 		shotTimeMs = 20;
 		clipSize = 8;

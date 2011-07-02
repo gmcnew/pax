@@ -12,6 +12,12 @@ public class Bomb extends Projectile {
 
 	protected Bomb(Ship parent) {
 		super(Entity.BOMB, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXVELOCITY);
+		reset(parent);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
 		body.center.set(parent.body.center);
 		velocity.set(parent.velocity);
 		heading = parent.targetHeading;

@@ -51,6 +51,8 @@ public abstract class Entity {
 		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
 		};
 	
+	private final int originalHealth;
+	
 	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float Length, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
@@ -62,15 +64,24 @@ public abstract class Entity {
 		accelerationLimits = AccelerationLimits;
 		maxSpeed = MaxSpeed;
 		
-		health = Health;
+		body = new CircleF(new Point2(), radius);
+		velocity = new PointF();
+		
+		originalHealth = Health;
+		
+		id = NO_ENTITY;
+	}
+	
+	protected void reset(Ship parent) {	
+		health = originalHealth;
 		
 		target = null;
 		
-		id = NO_ENTITY;
-		
-		body = new CircleF(new Point2(), radius);
+		body.center.x = 0;
+		body.center.y = 0;
 		heading = 0f;
-		velocity = new PointF();
+		velocity.x = 0;
+		velocity.y = 0;
 		
 		mRetargetCounter = Pax.sRandom.nextInt(100);
 	}

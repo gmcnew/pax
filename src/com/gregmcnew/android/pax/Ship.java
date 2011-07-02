@@ -16,6 +16,12 @@ public abstract class Ship extends Entity {
 	
 	protected Ship(int type, int[] targetPriorities, float[] targetSearchLimits, int health, float diameter, float length, float turnSpeed, float[] accelerationLimits, float maxVelocity) {
 		super(type, targetPriorities, targetSearchLimits, health, diameter, length, turnSpeed, accelerationLimits, maxVelocity);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
+
 		reloadTimeMs = 0;
 		reloadTimer = 0;
 		

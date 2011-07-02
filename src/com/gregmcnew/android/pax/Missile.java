@@ -21,6 +21,12 @@ public class Missile extends Projectile {
 
 	protected Missile(Ship parent) {
 		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, LENGTH, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
+		reset(parent);
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
 		
 		// Pick a side of the ship at random.
 		float side = (float) (parent.heading + (Pax.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));

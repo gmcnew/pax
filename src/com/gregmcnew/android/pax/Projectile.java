@@ -4,12 +4,19 @@ public class Projectile extends Entity {
 
 	@SuppressWarnings("hiding")
 	public static final int[] TYPES = { Entity.LASER, Entity.BOMB, Entity.MISSILE };
-
+	public final int originalLifeMs;
+	
 	public int lifeMs;
 	
 	protected Projectile(int type, int[] targetPriorities, float[] targetSearchLimits, int LifeMs, int damage, float diameter, float length, float turnSpeed, float accelerationLimits[], float maxVelocity) {
 		super(type, targetPriorities, targetSearchLimits, damage, diameter, length, turnSpeed, accelerationLimits, maxVelocity);
-		lifeMs = LifeMs;
+		originalLifeMs = LifeMs;
+	}
+	
+	@Override
+	public void reset(Ship parent) {
+		super.reset(parent);
+		lifeMs = originalLifeMs;
 	}
 	
 	public void attack(Player victim) {
