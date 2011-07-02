@@ -62,30 +62,30 @@ public class Emitter {
 	public void update(long dt) {
 		int fps = FramerateCounter.getFPS();
 		
-		// By default, remove particles when they're dead.
-		long thresholdOfDeath = 0;
+		float elapsedLife = dt;
 		
 		if (mThrottleMinFps != NO_THROTTLE && fps < mThrottleMinFps) {
 			// Remove particles as soon as they're spawned.
-			thresholdOfDeath = mInitialLifeMs;
+			elapsedLife = mInitialLifeMs;
 		}
-		else if (mThrottleStartFps != NO_THROTTLE && fps < mThrottleStartFps) {
-			// Set thresholdOfDeath to a value from [0 .. mInitialLifeMs) based
-			// on where we are in the throttling window.
+		else if (mThrottleStartFps != NO_THROTTLE && fps < mThrottleStartFps && dt < mInitialLifeMs) {
+			// Set elapsedLife to a value from [dt .. mInitialLifeMs) based on
+			// where we are in the throttling window.
 			int throttleWindow = mThrottleStartFps - mThrottleMinFps;
-			thresholdOfDeath = mInitialLifeMs * (fps - mThrottleMinFps) / throttleWindow;
+			
+			elapsedLife = dt + (((mInitialLifeMs - dt) * (mThrottleStartFps - fps)) / throttleWindow);
 		}
 		
 		float dtS = (float) dt / 1000;
 		for (int i = mStart; i != mEnd; i = (i + 1) % mCapacity) {
 			Particle p = mParticles[i];
-			if (p.life <= thresholdOfDeath) {
+
+			p.x += p.velX * dtS;
+			p.y += p.velY * dtS;
+			p.life -= elapsedLife;
+			
+			if (p.life <= 0) {
 				mStart = (mStart + 1) % mCapacity;
-			}
-			else {
-				p.x += p.velX * dtS;
-				p.y += p.velY * dtS;
-				p.life -= dt;
 			}
 		}
 	}
