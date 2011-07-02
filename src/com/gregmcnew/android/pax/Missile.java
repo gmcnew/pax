@@ -18,7 +18,12 @@ public class Missile extends Projectile {
 	public static final float[] TARGET_SEARCH_LIMITS = {500, 500, 500, 500 };
 	
 	public static final int MAX_LIFE_MS = 5000;
-
+	
+	public static final int SMOKE_INTERVAL_MS = 50;
+	
+	// The elapsed time (in milliseconds) since the last smoke particle.
+	public int mSmokeBudgetMs;
+	
 	protected Missile(Ship parent) {
 		super(Entity.MISSILE, TARGET_PRIORITIES, TARGET_SEARCH_LIMITS, MAX_LIFE_MS, DAMAGE, DIAMETER, LENGTH, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
 		reset(parent);
@@ -39,5 +44,7 @@ public class Missile extends Projectile {
 		velocity.set(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
 		targetHeading = parent.targetHeading;
 		target = parent.target;
+		
+		mSmokeBudgetMs = 0;
 	}
 }

@@ -159,9 +159,14 @@ public class Player {
 				
 				if (Pax.PARTICLES) {
 					if (type == Projectile.MISSILE) {
-						mEmitters[Emitter.SMOKE].add(1f, entity.body.center.x, entity.body.center.y,
-								(Pax.sRandom.nextFloat() - 0.5f) * 40,
-								(Pax.sRandom.nextFloat() - 0.5f) * 40);
+						Missile missile = (Missile) entity;
+						missile.mSmokeBudgetMs += dt;
+						if (missile.mSmokeBudgetMs > Missile.SMOKE_INTERVAL_MS) {
+							missile.mSmokeBudgetMs -= Missile.SMOKE_INTERVAL_MS;
+							mEmitters[Emitter.SMOKE].add(16f, entity.body.center.x, entity.body.center.y,
+									(Pax.sRandom.nextFloat() - 0.5f) * 40,
+									(Pax.sRandom.nextFloat() - 0.5f) * 40);
+						}
 					}
 				}
 				
