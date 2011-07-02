@@ -45,6 +45,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		
+    	// If the surface has been recreated, all textures will need to be
+    	// reloaded. This means we should start over with new painters. 
+    	mPainters.clear();
+		
     	gl.glEnable(GL10.GL_TEXTURE_2D);
     	gl.glShadeModel(GL10.GL_SMOOTH);
     	gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
