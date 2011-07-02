@@ -4,6 +4,8 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
@@ -42,6 +44,10 @@ public class Pax extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        mShakeDetector = new ShakeDetector();
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        
         if (SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
@@ -77,6 +83,7 @@ public class Pax extends Activity {
     public void onResume() {
     	super.onResume();
     	if (!SELF_BENCHMARK) {
+            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     		if (MUSIC) {
     	    	mMusic.start();
     		}
@@ -88,10 +95,11 @@ public class Pax extends Activity {
     public void onPause() {
     	super.onPause();
     	if (!SELF_BENCHMARK) {
+    		mView.onPause();
         	if (MUSIC) {
         		mMusic.pause();
         	}
-    		mView.onPause();
+            mSensorManager.unregisterListener(mShakeDetector);
     	}
     }
     
@@ -149,6 +157,11 @@ public class Pax extends Activity {
 	    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
 	    		
 	    		updateState(mGame.getState());
+	    		
+	    		// TODO: See if this value is consistent across phones.
+	    		if (mShakeDetector.getMagnitude() > 16) {
+	    			mGame.restart();
+	    		}
     		}
     	}
     };
@@ -196,4 +209,8 @@ public class Pax extends Activity {
     private Game.State mLastState;
     private MediaPlayer mMusic;
     private Handler mHandler;
+    
+    private ShakeDetector mShakeDetector;
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
 }
