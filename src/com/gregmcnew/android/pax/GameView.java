@@ -33,14 +33,17 @@ public class GameView extends GLSurfaceView {
 	
 	@Override
     public boolean onTouchEvent(MotionEvent event) {
-    	if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_POINTER_DOWN) {
+		
+    	// We don't care which pointer was pressed.
+    	int action = event.getAction() & MotionEvent.ACTION_MASK;
+    	
+    	if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
     		Log.i("Pax:onTouch", String.format("event has %d pointers", event.getPointerCount()));
     		
     		if (mGame.getState() == Game.State.IN_PROGRESS) { 
 		    	for (int i = 0; i < event.getPointerCount(); i++) {
 			    	float x = event.getX(i);
 			    	float y = event.getY(i);
-			    	Log.i("Pax:onTouch", String.format("(%f, %f)", x, y));
 			    	// Ignore the "NONE" build target.
 			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
 			    	
