@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
-import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -18,9 +18,9 @@ public class Painter {
 		mVBOSupport = vboSupport;
 		
 		ByteBuffer byteBuffer;
-		byteBuffer = ByteBuffer.allocateDirect(vertices.length * Float.SIZE);
+		byteBuffer = ByteBuffer.allocateDirect(vertices.length * Short.SIZE);
 		byteBuffer.order(ByteOrder.nativeOrder());
-		mVertexBuffer = byteBuffer.asFloatBuffer();
+		mVertexBuffer = byteBuffer.asShortBuffer();
 		mVertexBuffer.put(vertices);
 		mVertexBuffer.position(0);
 
@@ -32,9 +32,9 @@ public class Painter {
 		}
 		mIndexBuffer.position(0);
 		
-		byteBuffer = ByteBuffer.allocateDirect(texture.length * Float.SIZE);
+		byteBuffer = ByteBuffer.allocateDirect(texture.length * Short.SIZE);
 		byteBuffer.order(ByteOrder.nativeOrder());
-		mTextureBuffer = byteBuffer.asFloatBuffer();
+		mTextureBuffer = byteBuffer.asShortBuffer();
 		mTextureBuffer.put(texture);
 		mTextureBuffer.position(0);
 		
@@ -72,7 +72,6 @@ public class Painter {
 		// Set texture filtering parameters.
 		//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
 		//gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-
 		
 		// Send the bitmap to the video device.
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
@@ -122,25 +121,25 @@ public class Painter {
 			// Point to our buffers
             
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-			gl11.glVertexPointer(2, GL10.GL_FLOAT, 0, 0);
+			gl11.glVertexPointer(2, GL10.GL_SHORT, 0, 0);
 			
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
-			gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0);
+			gl11.glTexCoordPointer(2, GL10.GL_SHORT, 0, 0);
 
 			gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, mElementBufferObjectID);
 		}
 		else {
-			gl.glVertexPointer(2, GL10.GL_FLOAT, 0, mVertexBuffer);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
+			gl.glVertexPointer(2, GL10.GL_SHORT, 0, mVertexBuffer);
+			gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
 		}
 		
 		gl.glTranslatef(moveX, moveY, 0f);
 		
 		// Rotate about the Z-axis.
 		gl.glRotatef(rotateDegrees, 0f, 0f, 1f);
-		gl.glScalef(scaleX, scaleY, 0f);
+		gl.glScalef(scaleX / 2, scaleY / 2, 0f);
 
-		// We use 2D vertices, so every vertex is represented by 2 floats in
+		// We use 2D vertices, so every vertex is represented by 2 values in
 		// 'vertices'.
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
 	}
@@ -149,18 +148,18 @@ public class Painter {
 		mCameraRotationDegrees = degrees;
 	}
 	
-	private float vertices[] = {
-			-0.5f, -0.5f, // bottom-left    2     4
-			-0.5f,  0.5f, // top-left
-			 0.5f, -0.5f, // bottom-right
-			 0.5f,  0.5f, // top-right      1     3
+	private short vertices[] = {
+			-1, -1, // bottom-left    2     4
+			-1,  1, // top-left
+			 1, -1, // bottom-right
+			 1,  1, // top-right      1     3
 	};
 	
-	private float texture[] = {
-			0.0f, 1.0f, // top left     (vertex 2)
-			0.0f, 0.0f, // bottom left  (vertex 1)
-			1.0f, 1.0f, // top right    (vertex 4)
-			1.0f, 0.0f  // bottom right (vertex 3)
+	private short texture[] = {
+			 0,  1, // top left     (vertex 2)
+			 0,  0, // bottom left  (vertex 1)
+			 1,  1, // top right    (vertex 4)
+			 1,  0  // bottom right (vertex 3)
 	};
 	
 	private int mVertexBufferObjectID;
@@ -170,8 +169,8 @@ public class Painter {
 	private boolean mVBOSupport;
 
     private CharBuffer  mIndexBuffer;
-	private FloatBuffer mVertexBuffer;
-	private FloatBuffer mTextureBuffer;
+	private ShortBuffer mVertexBuffer;
+	private ShortBuffer mTextureBuffer;
 	
 	private float mCameraRotationDegrees;
 }
