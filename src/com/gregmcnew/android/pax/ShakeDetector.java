@@ -6,7 +6,8 @@ import android.hardware.SensorEventListener;
 
 public class ShakeDetector implements SensorEventListener {
 	
-	private static final int NUM_SAMPLES = 5;
+	private static final int NUM_SAMPLES = 2;
+	private static final int SHAKE_MAGNITUDE = 20;
 	
 	public ShakeDetector() {
 		mRecentDeltas = new float[NUM_SAMPLES];
@@ -16,8 +17,9 @@ public class ShakeDetector implements SensorEventListener {
 		mLastValues = new float[3];
 	}
 	
-	public float getMagnitude() {
-		return (mNumDeltas > 0) ? (mDeltaSum / mNumDeltas) : 0;
+	public boolean isShaking() {
+		float magnitude = (mNumDeltas > 0) ? (mDeltaSum / mNumDeltas) : 0;
+		return magnitude >= SHAKE_MAGNITUDE;
 	}
 
 	@Override
@@ -32,6 +34,11 @@ public class ShakeDetector implements SensorEventListener {
 			float d = event.values[i] - mLastValues[i];
 			mLastValues[i] = event.values[i];
 			delta += (d < 0) ? -d : d;
+		}
+		
+		// Ignore the first delta, since mLastValues wasn't initialized.
+		if (mNumDeltas == 0) {
+			delta = 0;
 		}
 		
 		mDeltaSum += delta;

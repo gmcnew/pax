@@ -158,8 +158,7 @@ public class Pax extends Activity {
 	    		
 	    		updateState(mGame.getState());
 	    		
-	    		// TODO: See if this value is consistent across phones.
-	    		if (mShakeDetector.getMagnitude() > 16) {
+	    		if (mShakeDetector.isShaking()) {
 	    			mGame.restart();
 	    		}
     		}
