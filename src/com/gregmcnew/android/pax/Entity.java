@@ -262,11 +262,9 @@ public abstract class Entity {
 	// Protected methods
 	
 	public void setExtraPoints(int numPoints, float[] offsets) {
-		mExtraPoints = new Point2[offsets.length];
 		mExtraPointOffsets = offsets;
 		
 		for (int i = 0; i < mExtraPoints.length; i++) {
-			mExtraPoints[i] = new Point2();
 			mExtraPoints[i].set(body.center);
 		}
 	}

@@ -17,6 +17,12 @@ public class Laser extends Projectile {
 
 	public Laser(Ship parent) {
 		super(Entity.LASER, null, null, MAX_LIFE_MS, DAMAGE, DIAMETER, LENGTH, TURN_SPEED, ACCELERATIONLIMS, MAX_VELOCITY);
+		
+		mExtraPoints = new Point2[NUM_EXTRA_POINTS];
+		for (int i = 0; i < NUM_EXTRA_POINTS; i++) {
+			mExtraPoints[i] = new Point2();
+		}
+		
 		reset(parent);
 	}
 	
