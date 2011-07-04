@@ -86,6 +86,7 @@ public class Emitter {
 			
 			if (p.life <= 0) {
 				p.recycle();
+				mParticles[i] = null;
 				mStart = (mStart + 1) % mCapacity;
 			}
 		}
