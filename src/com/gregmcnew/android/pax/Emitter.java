@@ -85,6 +85,7 @@ public class Emitter {
 			p.life -= elapsedLife;
 			
 			if (p.life <= 0) {
+				p.recycle();
 				mStart = (mStart + 1) % mCapacity;
 			}
 		}
@@ -96,32 +97,11 @@ public class Emitter {
 		if (mIgnoreAddFps == NO_THROTTLE || FramerateCounter.getFPS() > mIgnoreAddFps) {
 			if ((mEnd + 1) % mCapacity != mStart) {
 				if (mParticles[mEnd] == null) {
-					mParticles[mEnd] = new Particle();
+					mParticles[mEnd] = Particle.create();
 				}
 				mParticles[mEnd].reset(mInitialLifeMs, scale, x, y, velX, velY);
 				mEnd = (mEnd + 1) % mCapacity;
 			}
 		}
-	}
-	
-	public class Particle {
-		public Particle() {
-		}
-		
-		public void reset(long Life, float Scale, float X, float Y, float VelX, float VelY) {
-			life = Life;
-			scale = Scale;
-			x = X;
-			y = Y;
-			velX = VelX;
-			velY = VelY;
-		}
-
-		public long life; // in milliseconds
-		public float scale;
-		public float x;
-		public float y;
-		public float velX;
-		public float velY;
 	}
 }

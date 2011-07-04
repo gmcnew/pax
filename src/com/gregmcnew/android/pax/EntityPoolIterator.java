@@ -9,13 +9,11 @@ public class EntityPoolIterator implements Iterator<Entity> {
 	
 	public static final Stack<EntityPoolIterator> sIterators = new Stack<EntityPoolIterator>();
 	
-	protected static EntityPoolIterator get() {
+	protected static EntityPoolIterator create() {
 		if (sIterators.isEmpty()) {
 			return new EntityPoolIterator();
 		}
-		else {
-			return sIterators.pop();
-		}
+		return sIterators.pop();
 	}
 	
 	

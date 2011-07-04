@@ -281,7 +281,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 	    		Emitter emitter = mGame.mPlayers[player].mEmitters[emitterType];
 	    		for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
-	    			Emitter.Particle p = emitter.mParticles[i];
+	    			Particle p = emitter.mParticles[i];
 	    			float youth = (float) p.life / emitter.mInitialLifeMs;
 	    			float scale = (2f - youth) * p.scale;
 	    			painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
