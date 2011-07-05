@@ -6,6 +6,10 @@ import java.util.Queue;
 public class Player {
 
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
+	
+	// Cache the result of BuildTarget.values(), since it returns an array.
+	public static final BuildTarget[] sBuildTargetValues = BuildTarget.values();
+	
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 
 	// Production is measured in money per second.

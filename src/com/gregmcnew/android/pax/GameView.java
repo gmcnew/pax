@@ -45,7 +45,7 @@ public class GameView extends GLSurfaceView {
 			    	float x = event.getX(i);
 			    	float y = event.getY(i);
 			    	// Ignore the "NONE" build target.
-			    	int numBuildTargets = Player.BuildTarget.values().length - 1;
+			    	int numBuildTargets = Player.sBuildTargetValues.length - 1;
 			    	
 			    	int selection = 0;
 			    	int player = -1;
@@ -73,7 +73,7 @@ public class GameView extends GLSurfaceView {
 				    	if ((player == 1) ^ (mRotation >= 2)) {
 				    		selection = (numBuildTargets - 1) - selection;
 				    	}
-				    	mGame.setBuildTarget(player, Player.BuildTarget.values()[selection]);
+				    	mGame.setBuildTarget(player, Player.sBuildTargetValues[selection]);
 			    	}
 		    	}
     		}
