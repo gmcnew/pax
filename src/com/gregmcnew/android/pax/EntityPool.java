@@ -17,7 +17,7 @@ public class EntityPool implements Iterable<Entity> {
 		// Keep track of the number of collision points among all entities.
 		mNumCollisionPoints = 0;
 		
-		mBodies = new Quadtree(Quadtree.X, Entity.CollisionRadii[type], new Point2[1]);
+		mBodies = Quadtree.create(Quadtree.X, Entity.CollisionRadii[type], new Point2[1]);
 	}
 	
 	public Entity add(int entityType, Ship parent) {
@@ -103,7 +103,7 @@ public class EntityPool implements Iterable<Entity> {
 	public void clear() {
 		mNextIndex = 0;
 		mRecycledIDs.clear();
-		mBodies.reset(0, 0);
+		mBodies.reset(mBodies.mPoints, 0, 0);
 	}
 
 	public Iterator<Entity> iterator() {
@@ -149,7 +149,7 @@ public class EntityPool implements Iterable<Entity> {
 				i++;
 			}
 		}
-		mBodies.reset(0, i);
+		mBodies.reset(mBodies.mPoints, 0, i);
 	}
 	
 	protected void remove(int id) {
@@ -189,6 +189,4 @@ public class EntityPool implements Iterable<Entity> {
 	private int mNumCollisionPoints;
 	
 	protected Quadtree mBodies;
-	
-	private static final long serialVersionUID = 9001749495484315418L;
 }

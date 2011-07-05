@@ -1,31 +1,50 @@
 package com.gregmcnew.android.pax;
 
+import java.util.Stack;
+
 import android.util.Log;
 
 public class Quadtree {
+	
+	// Static members and methods.
 
 	public static final boolean X = false;
 	public static final boolean Y = true;
 	
 	private static final int MAX_SIZE = 5;
 	
-	public Quadtree(boolean dimension, float entrySize, Point2[] points) {
+	private static Stack<Quadtree> sRecycledQuadtrees = new Stack<Quadtree>();
+	
+	public static Quadtree create(boolean dimension, float entrySize, Point2[] points) {
+		Quadtree quadtree;
+		if (sRecycledQuadtrees.isEmpty()) {
+			quadtree = new Quadtree();
+		}
+		else {
+			quadtree = sRecycledQuadtrees.pop();
+		}
+		return quadtree.reset(dimension, entrySize, points);
+	}
+	
+	
+	// Object members and methods.
+	
+	private Quadtree() {
+	}
+	
+	public void recycle() {
+		sRecycledQuadtrees.add(this);
+	}
+	
+	private Quadtree reset(boolean dimension, float entrySize, Point2[] points) {
 		
 		mEntrySize = entrySize;
-		
 		mDimension = dimension;
 		
-		mMinIndex = 0;
-		mMaxIndex = 0;
-		
-		reset(points, mMinIndex, mMaxIndex);
+		return reset(points, 0, 0);
 	}
 	
-	public void reset(int minIndex, int maxIndex) {
-		reset(mPoints, minIndex, maxIndex);
-	}
-	
-	public void reset(Point2[] points, int minIndex, int maxIndex) {
+	public Quadtree reset(Point2[] points, int minIndex, int maxIndex) {
 		
 		mPoints = points;
 		
@@ -65,24 +84,31 @@ public class Quadtree {
 			}
 			else {
 				if (low == null) {
-					low = new Quadtree(!mDimension, mEntrySize, mPoints);
+					low = Quadtree.create(!mDimension, mEntrySize, mPoints);
 				}
 				
 				if (high == null) {
-					high = new Quadtree(!mDimension, mEntrySize, mPoints);
+					high = Quadtree.create(!mDimension, mEntrySize, mPoints);
 				}
-			
 				low.reset(mPoints, mMinIndex, pivotIndex);
 				high.reset(mPoints, pivotIndex, mMaxIndex);
 			}
 		}
 		
 		if (isLeaf) {
-			low = null;
-			high = null;
+			if (low != null) {
+				low.recycle();
+				low = null;
+			}
+			if (high != null) {
+				high.recycle();
+				high = null;
+			}
 		}
 		
 		mIsValid = true;
+		
+		return this;
 	}
 	
 	public Point2 collide(Point2 center, float radius) {
@@ -239,7 +265,7 @@ public class Quadtree {
 	// of circular collision bodies. This means we need to add the circle's
 	// radius whenever collide() is called. (We're guaranteed that all entries
 	// in a given quadtree are for circles of the same size.)
-	private final float mEntrySize;
+	private float mEntrySize;
 	
 	private boolean mIsValid;
 	
