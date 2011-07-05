@@ -1,28 +1,23 @@
 package com.gregmcnew.android.pax;
 
-import java.util.Stack;
-
 public class Particle {
 	
 	// Static members and methods.
 	
-	public static Stack<Particle> sRecycledParticles = new Stack<Particle>();
+	private static final Pool<Particle> sPool = new Pool<Particle>(Particle.class);
 	
 	public static Particle create() {
-		if (sRecycledParticles.isEmpty()) {
-			return new Particle();
-		}
-		return sRecycledParticles.pop();
+		return sPool.create();
 	}
 	
 	
 	// Object members and methods.
 	
-	private Particle() {
+	protected Particle() {
 	}
 	
 	public void recycle() {
-		sRecycledParticles.push(this);
+		sPool.recycle(this);
 	}
 	
 	public void reset(long Life, float Scale, float X, float Y, float VelX, float VelY) {
