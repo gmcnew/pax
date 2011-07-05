@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import android.app.Activity;
@@ -47,6 +49,12 @@ public class Pax extends Activity {
         mShakeDetector = new ShakeDetector();
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        
+        // These strings describe game-over states.
+        mGameResultStrings = new HashMap<Game.State, String>();
+        mGameResultStrings.put(Game.State.TIE,       "Tie game!");
+        mGameResultStrings.put(Game.State.RED_WINS,  "Red wins!");
+        mGameResultStrings.put(Game.State.BLUE_WINS, "Blue wins!");
         
         if (SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
@@ -176,21 +184,8 @@ public class Pax extends Activity {
     public void updateState(Game.State state) {
 		if (state != mLastState) {
 			mLastState = state;
-			if (state != Game.State.IN_PROGRESS) {
-    			String resultString = null;
-    			switch (state) {
-    				case TIE:
-    					resultString = "Tie game!";
-    					break;
-    				case RED_WINS:
-    					resultString = "Red wins!";
-    					break;
-    				case BLUE_WINS:
-    					resultString = "Blue wins!";
-    					break;
-    				default:
-    					resultString = "The game is over!";
-    			}
+			String resultString = mGameResultStrings.get(state);
+			if (resultString != null) {
     			Log.v(TAG, resultString);
     			Toast.makeText(this, resultString, Toast.LENGTH_LONG).show();
     			if (SELF_BENCHMARK) {
@@ -208,6 +203,8 @@ public class Pax extends Activity {
     private Game.State mLastState;
     private MediaPlayer mMusic;
     private Handler mHandler;
+    
+	private Map<Game.State, String> mGameResultStrings;
     
     private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
