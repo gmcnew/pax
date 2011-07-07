@@ -294,13 +294,6 @@ public class Player {
 		return projectile;
 	}
 	
-	private void removeEntity(Entity entity) {
-		// Clear our target reference for garbage collection reasons.
-		entity.target = null;
-		
-		mEntities[entity.type].remove(entity);
-	}
-	
 	public EntityPool[] mEntities;
 	public Emitter[] mEmitters;
 	
