@@ -16,16 +16,23 @@ public class Player {
 	private static final float PRODUCTION_STEP = 20;
 	private static final float INITIAL_PRODUCTION = PRODUCTION_STEP * 3;
 	
-	// Spend roughly equal amounts of money on all ship types, but never upgrade.
-	public static final Player.BuildTarget[] AI_BUILD_TARGETS = {
-			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
-			Player.BuildTarget.BOMBER,
-			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
-			Player.BuildTarget.BOMBER,
-			Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER, Player.BuildTarget.FIGHTER,
-			Player.BuildTarget.FRIGATE,
-			};
-	private int mNextAIBuildTarget;
+	// Spend equal amounts of money on all ship types, but never upgrade.
+	private static final float[] AI_BUILD_WEIGHTS = {
+		1.0f / (float) BuildCosts[Entity.FIGHTER],
+		1.0f / (float) BuildCosts[Entity.BOMBER],
+		1.0f / (float) BuildCosts[Entity.FRIGATE],
+		0
+		};
+	
+	private static float AI_BUILD_WEIGHTS_SUM;
+	
+	static {
+		AI_BUILD_WEIGHTS_SUM = 0;
+		for (int i = 0; i < AI_BUILD_WEIGHTS.length; i++) {
+			AI_BUILD_WEIGHTS_SUM += AI_BUILD_WEIGHTS[i];
+		}
+	}
+	
 	private boolean mIsAI;
 	
 	// Public methods
@@ -56,8 +63,7 @@ public class Player {
 		mIsAI = ai;
 		
 		if (mIsAI) {
-			mNextAIBuildTarget = Pax.sRandom.nextInt(AI_BUILD_TARGETS.length);
-			mBuildTarget = AI_BUILD_TARGETS[mNextAIBuildTarget];
+			mBuildTarget = aiChooseBuildTarget();
 		}
 	}
 	
@@ -209,7 +215,6 @@ public class Player {
 	}
 	
 	public void rebuildCollisionSpaces() {
-
 		for (int type : Entity.TYPES) {
 			mEntities[type].rebuildCollisionSpaces();
 		}
@@ -235,10 +240,20 @@ public class Player {
 		}
 		
 		if (mIsAI) {
-			mNextAIBuildTarget++;
-			mNextAIBuildTarget %= AI_BUILD_TARGETS.length;
-			mBuildTarget = AI_BUILD_TARGETS[mNextAIBuildTarget];
+			mBuildTarget = aiChooseBuildTarget();
 		}
+	}
+	
+	private BuildTarget aiChooseBuildTarget() {
+		float r = Pax.sRandom.nextFloat() * AI_BUILD_WEIGHTS_SUM;
+		
+		int nextBuildTarget = 0;
+		while (nextBuildTarget < sBuildTargetValues.length && r >= 0) {
+			r -= AI_BUILD_WEIGHTS[nextBuildTarget];
+			nextBuildTarget++;
+		}
+		
+		return sBuildTargetValues[nextBuildTarget - 1];
 	}
 	
 	private Ship addShip(int type) {
