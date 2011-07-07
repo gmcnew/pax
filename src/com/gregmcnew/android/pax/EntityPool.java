@@ -1,8 +1,6 @@
 package com.gregmcnew.android.pax;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 
 public class EntityPool implements Iterable<Entity> {
@@ -11,7 +9,6 @@ public class EntityPool implements Iterable<Entity> {
 		mSize = INITIAL_SIZE;
 		mList = new Entity[mSize];
 		mNextIndex = 0;
-		mRecycledIDs = new HashSet<Integer>();
 		mRecycledEntities = new Stack<Entity>();
 		
 		// Keep track of the number of collision points among all entities.
@@ -23,14 +20,9 @@ public class EntityPool implements Iterable<Entity> {
 	public Entity add(int entityType, Ship parent) {
 		
 		Entity entity = null;
-		if (!mRecycledIDs.isEmpty()) {
-			int id = mRecycledIDs.iterator().next();
-			mRecycledIDs.remove(id);
-			
+		if (!mRecycledEntities.isEmpty()) {
 			entity = mRecycledEntities.pop();
 			entity.reset(parent);
-			
-			entity.id = id;
 		}
 		else {
 			switch (entityType) {
@@ -93,7 +85,7 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public int size() {
-		return mNextIndex - mRecycledIDs.size();
+		return mNextIndex - mRecycledEntities.size();
 	}
 	
 	public boolean isEmpty() {
@@ -101,8 +93,9 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public void clear() {
-		mNextIndex = 0;
-		mRecycledIDs.clear();
+		for (Entity e : this) {
+			remove(e);
+		}
 		mBodies.reset(mBodies.mPoints, 0, 0);
 	}
 
@@ -115,12 +108,8 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public Entity collide(float centerX, float centerY, float radius) {
-		Entity entity = null;
 		Point2 p = mBodies.collide(centerX, centerY, radius);
-		if (p != null) {
-			entity = get(p.id);
-		}
-		return entity;
+		return (p == null) ? null : get(p.id);
 	}
 	
 	public void invalidateCollisionSpaces() {
@@ -163,22 +152,15 @@ public class EntityPool implements Iterable<Entity> {
 		assert(entity.id == entity.body.center.id);
 		
 		mList[entity.id] = null;
-		mRecycledIDs.add(entity.id);
-		mRecycledEntities.add(entity);
+		mRecycledEntities.push(entity);
 		mBodies.remove(entity.body.center);
 		for (Point2 extraPoint : entity.mExtraPoints) {
 			mBodies.remove(extraPoint);
 		}
 		
 		mNumCollisionPoints -= entity.mExtraPoints.length + 1;
-		
-		entity.id = Entity.NO_ENTITY;
-		entity.body.center.id = Entity.NO_ENTITY;
 	}
-
-	// Use a set to eliminate duplicates and ensure that an ID can't be recycled twice.
-	//private List<Entity> mList;
-	private Set<Integer> mRecycledIDs;
+	
 	private Stack<Entity> mRecycledEntities;
 	
 	private Entity[] mList;

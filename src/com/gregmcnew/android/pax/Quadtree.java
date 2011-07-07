@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import java.util.Stack;
+
 import android.util.Log;
 
 public class Quadtree {
@@ -11,15 +13,16 @@ public class Quadtree {
 	
 	private static final int MAX_SIZE = 5;
 	
-	private static final Pool<Quadtree> sPool = new Pool<Quadtree>(Quadtree.class);
+	private static final Stack<Quadtree> sRecycled = new Stack<Quadtree>();
 	
 	public static Quadtree create(boolean dimension, float entrySize, Point2[] points) {
-		return sPool.create().reset(dimension, entrySize, points);
+		Quadtree quadtree = sRecycled.isEmpty() ? new Quadtree() : sRecycled.pop();
+		return quadtree.reset(dimension, entrySize, points);
 	}
 	
 	// Object members and methods.
 	
-	protected Quadtree() {
+	private Quadtree() {
 	}
 	
 	private void recycle() {
@@ -31,7 +34,7 @@ public class Quadtree {
 			high.recycle();
 			high = null;
 		}
-		sPool.recycle(this);
+		sRecycled.push(this);
 	}
 	
 	private Quadtree reset(boolean dimension, float entrySize, Point2[] points) {
