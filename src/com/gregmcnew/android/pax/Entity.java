@@ -7,6 +7,9 @@ public abstract class Entity {
 	
 	public static final int NO_ENTITY = -1;
 	
+	// 24.8 days ought to be enough for anybody.
+	public static final int INFINITE_LIFE_MS = Integer.MAX_VALUE;
+	
 	public final int type;
 	public final int[] targetPriorities;
 	public final float[] targetSearchLimits;
@@ -16,15 +19,17 @@ public abstract class Entity {
 	public final float turnSpeed; // in radians per second
 	public final float[] accelerationLimits;
 	public final float maxSpeed;
+	public final int originalLifeMs;
+	public final CircleF body;
+	public final PointF velocity;
 	
+	public int lifeMs;
 	public int health;
 	
 	public Entity target;
 	public float targetHeading;
-	public float headingToTargetHeading; // difference between heading and targetHeading.	
-	public CircleF body;
+	public float headingToTargetHeading; // difference between heading and targetHeading.
 	public float heading; // in radians
-	public PointF velocity;
 	
 	// An entity can have extra collision circles, each specified as a
 	// (Point2, float) pair. The Point2 is the center of a collision circle with
@@ -53,10 +58,11 @@ public abstract class Entity {
 	
 	private final int originalHealth;
 	
-	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int Health, float Diameter, float Length, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
+	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int LifeMs, int Health, float Diameter, float Length, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;
 		targetPriorities = TargetPriorities;
 		targetSearchLimits = TargetSearchLimits;
+		originalLifeMs = LifeMs;
 		radius = Diameter / 2;
 		diameter = Diameter;
 		length = Length;
@@ -72,7 +78,8 @@ public abstract class Entity {
 		id = NO_ENTITY;
 	}
 	
-	protected void reset(Ship parent) {	
+	protected void reset(Ship parent) {
+		lifeMs = originalLifeMs;
 		health = originalHealth;
 		
 		target = null;

@@ -100,7 +100,7 @@ public class EntityPool implements Iterable<Entity> {
 	}
 
 	public Iterator<Entity> iterator() {
-		return EntityPoolIterator.create().initialize(this, mList, mNextIndex);
+		return EntityPoolIterator.create(this, mList, mNextIndex);
 	}
 	
 	public Entity collide(Point2 center, float radius) {

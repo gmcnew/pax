@@ -96,20 +96,8 @@ public class Player {
 		
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
-				
-				if (type == Entity.FIGHTER || type == Entity.BOMBER || type == Entity.FRIGATE || type == Entity.FACTORY) {
-				
-					Ship ship = (Ship) entity;
-					if (ship.health <= 0) {
-						removeEntity(ship);
-					}
-				}
-				else { // it's a projectile
-					Projectile projectile = (Projectile) entity;
-					
-					if (projectile.health <= 0 || projectile.lifeMs <= 0) {
-						removeEntity(projectile);
-					}
+				if (entity.health <= 0) {
+					mEntities[entity.type].remove(entity);
 				}
 			}
 		}
@@ -142,10 +130,12 @@ public class Player {
 						mShooterQueue.add(ship);
 					}
 				}
-				else { // it's a projectile
-					Projectile projectile = (Projectile) entity;
-					
-					projectile.lifeMs -= dt;
+				
+				if (entity.lifeMs != Entity.INFINITE_LIFE_MS) {
+					entity.lifeMs -= dt;
+					if (entity.lifeMs <= 0) {
+						entity.health = 0;
+					}
 				}
 			}
 		}
@@ -260,9 +250,8 @@ public class Player {
 			// Fix the ship's location.
 			if (type != Entity.FACTORY) { // If the ship being spawned ISN'T a factory...
 				Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
-				float spawnX, spawnY;
-				spawnX = factory.body.center.x + (float) (55 * Math.cos(factory.heading));
-				spawnY = factory.body.center.y + (float) (55 * Math.sin(factory.heading));
+				float spawnX = factory.body.center.x + (float) (Factory.DIAMETER * 0.4 * Math.cos(factory.heading));
+				float spawnY = factory.body.center.y + (float) (Factory.DIAMETER * 0.4 * Math.sin(factory.heading));
 				ship.body.center.set(spawnX, spawnY);
 				ship.heading = factory.heading;
 			}
