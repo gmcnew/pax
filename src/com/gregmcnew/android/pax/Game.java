@@ -112,9 +112,11 @@ public class Game {
 		}
 	}
 	
-	public void setBuildTarget(int player, Player.BuildTarget buildTarget)
+	public void setBuildTargetIfHuman(int player, Player.BuildTarget buildTarget)
 	{
-		mPlayers[player].mBuildTarget = buildTarget;
+		if (!mPlayers[player].isAI()) {
+			mPlayers[player].mBuildTarget = buildTarget;
+		}
 	}
 	
 	

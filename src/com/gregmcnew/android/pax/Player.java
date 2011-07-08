@@ -37,6 +37,10 @@ public class Player {
 	
 	// Public methods
 	
+	public boolean isAI() {
+		return mIsAI;
+	}
+	
 	public Player(int playerNumber, int players) {
 		
 		mEntities = new EntityPool[Entity.TYPES.length];

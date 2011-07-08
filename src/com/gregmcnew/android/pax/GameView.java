@@ -73,7 +73,7 @@ public class GameView extends GLSurfaceView {
 				    	if ((player == 1) ^ (mRotation >= 2)) {
 				    		selection = (numBuildTargets - 1) - selection;
 				    	}
-				    	mGame.setBuildTarget(player, Player.sBuildTargetValues[selection]);
+				    	mGame.setBuildTargetIfHuman(player, Player.sBuildTargetValues[selection]);
 			    	}
 		    	}
     		}
