@@ -28,6 +28,9 @@ public class Pax extends Activity {
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
 	
+	public static final String PLAYER_ONE_AI = "playerOneAI";
+	public static final String PLAYER_TWO_AI = "playerTwoAI";
+	
 	public static final Random sRandom = new Random();
 
     static {
@@ -74,6 +77,15 @@ public class Pax extends Activity {
         	}
         }
         else {
+            Bundle bundle = getIntent().getExtras();
+            
+            if (bundle.getBoolean(PLAYER_ONE_AI)) {
+        		mGame.mPlayers[0].setAI(true);
+            }
+            if (bundle.getBoolean(PLAYER_TWO_AI)) {
+        		mGame.mPlayers[1].setAI(true);
+            }
+            
             mView = new GameView(this, mGame);
             setContentView(mView);
             mView.requestFocus();

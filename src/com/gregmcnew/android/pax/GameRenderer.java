@@ -1,5 +1,4 @@
 package com.gregmcnew.android.pax;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,14 +6,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
-import android.util.Log;
 
-public class GameRenderer implements GLSurfaceView.Renderer {
+public class GameRenderer extends Renderer {
 	
 	private static final float BG_RED   = 0.094f;
 	private static final float BG_GREEN = 0.137f;
@@ -31,16 +25,12 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			};
     
     public GameRenderer(Context context, Game game) {
-    	mContext = context;
+    	super(context);
     	mGame = game;
-    	
-    	mPainters = new HashMap<Integer, Painter>();
     }
     
     public void updateRotation(int rotation) {
-    	mRotation = rotation;
-    	Painter.setCameraRotationDegrees(90 * mRotation);
-    	Log.v(Pax.TAG, String.format("rotation is now %d", rotation));
+    	super.updateRotation(rotation);
     	
     	mGameWidth  = (mRotation % 2 == 0) ? mScreenWidth  : mScreenHeight;
     	mGameHeight = (mRotation % 2 == 0) ? mScreenHeight : mScreenWidth;
@@ -54,48 +44,8 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		super.onSurfaceCreated(gl, config);
 		
-    	// If the surface has been recreated, all textures will need to be
-    	// reloaded. This means we should start over with new painters. 
-    	mPainters.clear();
-		
-    	gl.glEnable(GL10.GL_TEXTURE_2D);
-    	gl.glShadeModel(GL10.GL_SMOOTH);
-    	gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-    	
-    	gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
-    	
-    	// Enable the use of vertex and texture arrays.
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		
-		// Enable texture transparency.
-		gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
-		gl.glEnable(GL10.GL_BLEND);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-
-		String version = gl.glGetString(GL10.GL_VERSION);
-		String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
-		String renderer = gl.glGetString(GL10.GL_RENDERER);
-		
-		// Print information about the OpenGL driver.
-		{
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL version: " + version);
-			
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL extensions:");
-			for (String extension : extensions.split(" ")) {
-				Log.v("GameViewGL.onSurfaceCreated", "  " + extension);
-			}
-			
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + renderer);
-		}
-        
-		// The device supports VBOs if (1) its version isn't 1.0 (since VBOs are
-		// standard in 1.1 and above) or (2) its extensions list includes
-		// "vertex_buffer_object".
-		mVBOSupport = (!version.contains("1.0")) || extensions.contains("vertex_buffer_object");
-		Log.v(Pax.TAG, mVBOSupport ? "device supports VBOs" : "device doesn't support VBOs");
-
 		mShipUnhealth = new Painter[Game.NUM_PLAYERS];
 		mShipHealth = new Painter[Game.NUM_PLAYERS];
 		mShipOutlinePainter = getPainter(gl, R.drawable.ship_outline);
@@ -167,7 +117,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
         // Initialize the background image.
 		if (Pax.BACKGROUND_IMAGE) {
-			mBackgroundPainter = getPainter(gl, R.drawable.background);
+			//mBackgroundPainter = getPainter(gl, R.drawable.background);
         }
 		
 		FramerateCounter.start();
@@ -175,14 +125,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-        gl.glViewport(0, 0, width, height);
-        Log.v(Pax.TAG, String.format("GameRenderer.onSurfaceChanged with width %d, height %d", width, height));
+		super.onSurfaceChanged(gl, width, height);
 		
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
-        
-        mScreenWidth = width;
-        mScreenHeight = height;
         updateRotation(mRotation);
         
         float halfX = ((mRotation % 2 == 0) ? mGameWidth  : mGameHeight) / 2;
@@ -263,17 +209,6 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 			}
 		}
 	}
-    
-    // Returns a Painter for a resource (creating a new one if necessary).
-    private Painter getPainter(GL10 gl, int resourceID) {
-    	if (!mPainters.containsKey(resourceID)) {
-    		Bitmap bitmap = loadBitmap(resourceID);
-    		mPainters.put(resourceID, new Painter(gl, mVBOSupport, bitmap));
-    		bitmap.recycle();
-    	}
-    	
-    	return mPainters.get(resourceID);
-    }
 	
 	private void drawParticles(GL10 gl, int emitterType) {
 		if (Pax.PARTICLES) {
@@ -351,28 +286,13 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 		}
     }
 	
-	private Bitmap loadBitmap(int resourceID) {
-		Resources resources = mContext.getResources();
-		InputStream is = resources.openRawResource(resourceID);
-		return BitmapFactory.decodeStream(is);
-	}
-	
-	private Context mContext; 
 	private Game mGame;
-	
-	// The screen's width and height, in pixels.
-	// These values -will- change when the screen is rotated.
-	private float mScreenWidth;
-	private float mScreenHeight;
 	
 	// The width and height of the displayed game area, in game units.
 	// These values will -not- change when the screen is rotated.
 	private float mGameWidth;
 	private float mGameHeight;
-	
-	private boolean mVBOSupport;
 
-    private Map<Integer, Painter> mPainters;
 	private Map<Player, Painter[]> mPlayerEntityPainters;
 	private Painter mBackgroundPainter;
 	
@@ -386,6 +306,5 @@ public class GameRenderer implements GLSurfaceView.Renderer {
 	private Painter[] mShipHealth;
 	private Painter mShipOutlinePainter;
 	
-	private int mRotation;
 	private float mButtonSize;
 }
