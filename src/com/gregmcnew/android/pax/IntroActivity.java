@@ -24,7 +24,7 @@ public class IntroActivity extends Activity {
 		super();
 	}
 	
-    public void onCreate(Bundle savedInstanceState) 
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         mView = new IntroView(this);
@@ -155,12 +155,9 @@ public class IntroActivity extends Activity {
 			float halfHeight = mScreenHeight / 2;
 			mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
 			
-			float buttonXPos = 0;
-			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
-			if (mRotation >= 2) {
-				buttonXPos = -buttonXPos;
-				buttonYPos = -buttonYPos;
-			}
+			float flip = (mRotation >= 2) ? -1 : 1;
+			float buttonXPos = flip * 0;
+			float buttonYPos = flip * (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
 			// Draw a glow behind each button that represents a human player.
 			float glowSize = (float) (buttonSize * 4);
@@ -182,8 +179,8 @@ public class IntroActivity extends Activity {
 			if (mActivity.mTimerIsRunning) {
 				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
 				if (msLeft > 0) {
-					float numberXPos = (mRotation % 2 == 0) ? 0 : -maxDimension / 6;
-					float numberYPos = (mRotation % 2 != 0) ? 0 : -maxDimension / 6;
+					float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
+					float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
 					
 					float alpha = ((float) (msLeft % 1000)) / 1000;
 					int secondsLeft = (int) Math.ceil(((float) msLeft) / 1000);
