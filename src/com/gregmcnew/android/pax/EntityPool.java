@@ -96,7 +96,7 @@ public class EntityPool implements Iterable<Entity> {
 		for (Entity e : this) {
 			remove(e);
 		}
-		mBodies.reset(mBodies.mPoints, 0, 0);
+		mBodies.clear();
 	}
 
 	public Iterator<Entity> iterator() {
@@ -117,28 +117,7 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public void rebuildCollisionSpaces() {
-		
-		// Grow the body tree's points array if necessary.
-		if (mNumCollisionPoints > mBodies.mPoints.length) {
-			int numBodies = mBodies.mPoints.length;
-			while (numBodies < mNumCollisionPoints) {
-				numBodies *= 2;
-			}
-			mBodies.mPoints = new Point2[numBodies];
-		}
-
-		int i = 0;
-
-		// Tweak all of the points in the quadtree, then reset it.
-		for (Entity e : this) {
-			mBodies.mPoints[i] = e.body.center;
-			i++;
-			for (Point2 extraPoint : e.mExtraPoints) {
-				mBodies.mPoints[i] = extraPoint;
-				i++;
-			}
-		}
-		mBodies.reset(mBodies.mPoints, 0, i);
+		mBodies.rebuild(this, mNumCollisionPoints);
 	}
 	
 	protected void remove(int id) {

@@ -11,7 +11,7 @@ public class Quadtree {
 	public static final boolean X = false;
 	public static final boolean Y = true;
 	
-	private static final int MAX_SIZE = 5;
+	private static final int MAX_LEAF_SIZE = 5;
 	
 	private static final Stack<Quadtree> sRecycled = new Stack<Quadtree>();
 	
@@ -20,7 +20,91 @@ public class Quadtree {
 		return quadtree.reset(dimension, entrySize, points);
 	}
 	
-	// Object members and methods.
+	
+	// Public methods
+	
+	public void clear() {
+		reset(mPoints, 0, 0);
+	}
+	
+	public void invalidate() {
+		mIsValid = false;
+	}
+	
+	public void print() {
+		print(0);
+	}
+	
+	public void rebuild(EntityPool entityPool, int numCollisionPoints) {
+		
+		// Grow our points array if necessary.
+		if (numCollisionPoints > mPoints.length) {
+			int numBodies = mPoints.length;
+			while (numBodies < numCollisionPoints) {
+				numBodies *= 2;
+			}
+			mPoints = new Point2[numBodies];
+		}
+
+		int i = 0;
+
+		// Tweak all of our points, then reset.
+		for (Entity e : entityPool) {
+			mPoints[i] = e.body.center;
+			i++;
+			for (Point2 extraPoint : e.mExtraPoints) {
+				mPoints[i] = extraPoint;
+				i++;
+			}
+		}
+		
+		reset(mPoints, 0, i);
+	}
+	
+	public Point2 collide(Point2 center, float radius) {
+		assert(mIsValid);
+		radius += mEntrySize;
+		return collide(center.x, center.y, radius, radius * radius);
+	}
+	
+	public Point2 collide(float centerX, float centerY, float radius) {
+		assert(mIsValid);
+		radius += mEntrySize;
+		return collide(centerX, centerY, radius, radius * radius);
+	}
+	
+	// Returns true if the point was removed.
+	public boolean remove(Point2 point) {
+		assert(mIsValid);
+		boolean removed = false;
+		if (isLeaf) {
+			for (int i = mMinIndex; i < mMaxIndex && !removed; i++) {
+				if (mPoints[i].equals(point)) {
+					// Replace this point with the one at the end of our range,
+					// then remove the point at the end of our range.
+					mMaxIndex--;
+					mPoints[i] = mPoints[mMaxIndex];
+					mPoints[mMaxIndex] = null;
+					removed = true;
+				}
+			}
+		}
+		else {
+			float q = (low.mDimension == X) ? point.x : point.y;
+			
+			if (q >= low.mMinVal && q <= low.mMaxVal) {
+				removed = low.remove(point);
+			}
+			else if (q >= high.mMinVal && q <= high.mMaxVal) {
+				removed = high.remove(point);
+			}
+		}
+		
+		return removed;
+	}
+	
+	
+	// Private methods
 	
 	private Quadtree() {
 	}
@@ -45,14 +129,14 @@ public class Quadtree {
 		return reset(points, 0, 0);
 	}
 	
-	public Quadtree reset(Point2[] points, int minIndex, int maxIndex) {
+	private Quadtree reset(Point2[] points, int minIndex, int maxIndex) {
 		
 		mPoints = points;
 		
 		mMinIndex = minIndex;
 		mMaxIndex = maxIndex;
 		
-		isLeaf = (mMaxIndex - mMinIndex) <= MAX_SIZE;
+		isLeaf = (mMaxIndex - mMinIndex) <= MAX_LEAF_SIZE;
 		
 		// Set mMin and mMax
 		boolean first = true;
@@ -112,18 +196,6 @@ public class Quadtree {
 		return this;
 	}
 	
-	public Point2 collide(Point2 center, float radius) {
-		assert(mIsValid);
-		radius += mEntrySize;
-		return collide(center.x, center.y, radius, radius * radius);
-	}
-	
-	public Point2 collide(float centerX, float centerY, float radius) {
-		assert(mIsValid);
-		radius += mEntrySize;
-		return collide(centerX, centerY, radius, radius * radius);
-	}
-	
 	// Return the closest point in this node that's within 'radius' of 'center'.
 	// We pass radius as well as radiusSquared in order to reduce square-root
 	// calculations.
@@ -146,7 +218,7 @@ public class Quadtree {
 					absDy = -absDy;
 				}
 				if (absDx <= radius && absDy <= radius) {
-					float distanceSquared = (absDx * absDx) + (absDy + absDy);
+					float distanceSquared = (absDx * absDx) + (absDy * absDy);
 					if (distanceSquared < radiusSquared) {
 						
 						// Shorten the search distance, since there may be more
@@ -166,9 +238,12 @@ public class Quadtree {
 		else {
 			float q = (low.mDimension == X) ? centerX : centerY;
 			
+			// Collide with the low node (if an intersection is possible).
 			if (q + radius >= low.mMinVal && q - radius <= low.mMaxVal) {
 				closest = low.collide(centerX, centerY, radius, radiusSquared);
 			}
+			
+			// Collide with the high node (if an intersection is possible).
 			if (q + radius >= high.mMinVal && q - radius <= high.mMaxVal) {
 				
 				if (closest != null) {
@@ -186,14 +261,6 @@ public class Quadtree {
 		}
 		
 		return closest;
-	}
-	
-	public void invalidate() {
-		mIsValid = false;
-	}
-	
-	public void print() {
-		print(0);
 	}
 	
 	private static String spaces = "                                          ";
@@ -215,37 +282,7 @@ public class Quadtree {
 		}
 	}
 	
-	// Returns true if the point was removed.
-	public boolean remove(Point2 point) {
-		assert(mIsValid);
-		boolean removed = false;
-		if (isLeaf) {
-			for (int i = mMinIndex; i < mMaxIndex && !removed; i++) {
-				if (mPoints[i].equals(point)) {
-					// Replace this point with the one at the end of our range,
-					// then remove the point at the end of our range.
-					mMaxIndex--;
-					mPoints[i] = mPoints[mMaxIndex];
-					mPoints[mMaxIndex] = null;
-					removed = true;
-				}
-			}
-		}
-		else {
-			float q = (low.mDimension == X) ? point.x : point.y;
-			
-			if (q >= low.mMinVal && q <= low.mMaxVal) {
-				removed = low.remove(point);
-			}
-			else if (q >= high.mMinVal && q <= high.mMaxVal) {
-				removed = high.remove(point);
-			}
-		}
-		
-		return removed;
-	}
-	
-	protected Point2[] mPoints;
+	private Point2[] mPoints;
 	
 	private boolean mDimension;
 	private boolean isLeaf;
