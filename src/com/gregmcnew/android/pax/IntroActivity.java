@@ -22,7 +22,7 @@ import android.view.MotionEvent;
 
 public class IntroActivity extends Activity {
 	
-	private static final int COUNTDOWN_SECONDS = 3;
+	private static final int COUNTDOWN_SECONDS = Pax.SELF_BENCHMARK ? 0 : 3;
 	
 	public IntroActivity() {
 		super();
