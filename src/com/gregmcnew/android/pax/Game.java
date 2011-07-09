@@ -6,7 +6,12 @@ import android.util.Log;
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE }
+	public enum Speed { NORMAL, FAST, INSANE }
+	
 	public static final int NUM_PLAYERS = 2;
+	
+	private Speed mSpeed = Speed.NORMAL;
+	private Player.AIDifficulty mAIDifficulty = Player.AIDifficulty.EASY;
 	
 	public Game()
 	{
@@ -14,12 +19,27 @@ public class Game {
 		for (int i = 0; i < NUM_PLAYERS; i++) {
 			mPlayers[i] = new Player(i, NUM_PLAYERS);
 		}
+		
 		reset();
 	}
 	
 	// Restart the game on the next update().
 	public void restart() {
 		mRestart = true;
+	}
+	
+	public void setGameSpeed(Speed speed) {
+		mSpeed = speed;
+		for (Player player : mPlayers) {
+			player.setGameSpeed(speed);
+		}
+	}
+	
+	public void setAIDifficulty(Player.AIDifficulty difficulty) {
+		mAIDifficulty = difficulty;
+		for (Player player : mPlayers) {
+			player.setAIDifficulty(difficulty);
+		}
 	}
 	
 	public Game.State getState() {
@@ -126,6 +146,10 @@ public class Game {
 		for (Player player : mPlayers) {
 			player.reset();
 		}
+		
+		setGameSpeed(mSpeed);
+		setAIDifficulty(mAIDifficulty);
+		
 		mState = State.IN_PROGRESS;
 		mRestart = false;
 		

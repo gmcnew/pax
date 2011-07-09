@@ -8,12 +8,16 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.Display;
+import android.view.Menu;
 import android.view.MotionEvent;
 
 public class IntroActivity extends Activity {
@@ -69,14 +73,51 @@ public class IntroActivity extends Activity {
     		mTimerIsRunning = true;
     		int countdownMs = COUNTDOWN_SECONDS * 1000;
     		mGameStartTime = SystemClock.uptimeMillis() + countdownMs;
-    		mTimer.schedule(new StartGameTask(), countdownMs);
+    		mTimer.schedule(new StartGameTask(), COUNTDOWN_SECONDS * 1000);
     	}
+    }
+    
+    private void stopTimer() {
+    	// Cancel the countdown.
+        if (mTimerIsRunning) {
+        	mTimerIsRunning = false;
+        	mTimer.cancel();
+        	mTimer = new Timer();
+        }
     }
     
     @Override
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
         mView.updateRotation();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
+    	
+    	// Reset settings to defaults.
+    	/*
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+    	Editor editor = settings.edit();
+        editor.clear();
+        editor.commit();
+        */
+        
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        return true;
+    }
+    
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+
+    	// Stop the countdown.
+    	stopTimer();
+    	
+        Intent i = new Intent(this, PrefsActivity.class);
+        startActivity(i);
+        
+        return true;
     }
     
     private class StartGameTask extends TimerTask {

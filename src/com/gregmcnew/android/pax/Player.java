@@ -11,10 +11,16 @@ public class Player {
 	public static final BuildTarget[] sBuildTargetValues = BuildTarget.values();
 	
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
+	
+	public enum AIDifficulty { EASY, MEDIUM, HARD }
 
-	// Production is measured in money per second.
-	private static final float PRODUCTION_STEP = 20;
-	private static final float INITIAL_PRODUCTION = PRODUCTION_STEP * 3;
+	// Production is measured in money per second and is determined by the
+	// equation: mProductionStepSize * mNumProductionSteps * mProductionMultiplier
+	private float mProductionStepSize;
+	private float mNumProductionSteps;
+	private float mProductionMultiplier;
+	private static final int INITIAL_PRODUCTION_STEP_SIZE = 20;
+	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
 	// Spend equal amounts of money on all ship types, but never upgrade.
 	private static final float[] AI_BUILD_WEIGHTS = {
@@ -30,6 +36,39 @@ public class Player {
 		AI_BUILD_WEIGHTS_SUM = 0;
 		for (int i = 0; i < AI_BUILD_WEIGHTS.length; i++) {
 			AI_BUILD_WEIGHTS_SUM += AI_BUILD_WEIGHTS[i];
+		}
+	}
+	
+	public void setGameSpeed(Game.Speed speed) {
+		switch (speed) {
+			case NORMAL:
+			default:
+				mProductionStepSize = 20;
+				break;
+			case FAST:
+				mProductionStepSize = 60;
+				break;
+			case INSANE:
+				mProductionStepSize = 120;
+				break;
+		}
+	}
+	
+	public void setAIDifficulty(AIDifficulty difficulty) {
+		mProductionMultiplier = 1.0f;
+		
+		if (mIsAI) {
+			switch (difficulty) {
+				case EASY:
+					mProductionMultiplier = 0.8f;
+					break;
+				case MEDIUM:
+					mProductionMultiplier = 1.0f;
+					break;
+				case HARD:
+					mProductionMultiplier = 1.2f;
+					break;
+			}
 		}
 	}
 	
@@ -56,6 +95,8 @@ public class Player {
 		for (int type : Emitter.TYPES) {
 			mEmitters[type] = new Emitter(type);
 		}
+		
+		mProductionMultiplier = 1.0f;
 		
 		playerNo = playerNumber;
 		totalPlayers = players;
@@ -84,12 +125,10 @@ public class Player {
 		mRetargetQueue.clear();
 		mShooterQueue.clear();
 		money = 0;
-		production = INITIAL_PRODUCTION;
 		
-		if (Pax.FIGHTER_SPAM_TEST) {
-			production = PRODUCTION_STEP * 100;
-			mBuildTarget = BuildTarget.FIGHTER;
-		}
+		mProductionStepSize = INITIAL_PRODUCTION_STEP_SIZE;
+		mNumProductionSteps = INITIAL_NUM_PRODUCTION_STEPS;
+		mProductionMultiplier = 1.0f;
 		
 		addShip(Entity.FACTORY);
 	}
@@ -99,7 +138,7 @@ public class Player {
 	}
 	
 	public void produce(long dt) {
-		money += (production * dt) / 1000;
+		money += (mProductionStepSize * mNumProductionSteps * mProductionMultiplier * dt) / 1000;
 	}
 	
 	public void removeDeadEntities() {
@@ -239,7 +278,7 @@ public class Player {
 				addShip(Entity.FRIGATE);
 				break;
 			case UPGRADE:
-				production += PRODUCTION_STEP;
+				mNumProductionSteps++;
 				break;
 		}
 		
@@ -322,7 +361,6 @@ public class Player {
 	public Queue<Ship> mShooterQueue;
 	
 	public float money;
-	public float production;
 	public BuildTarget mBuildTarget;
 	public int playerNo;
 	public int totalPlayers;

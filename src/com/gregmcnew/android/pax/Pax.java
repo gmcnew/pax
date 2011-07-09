@@ -5,13 +5,16 @@ import java.util.Map;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -95,8 +98,29 @@ public class Pax extends Activity {
             	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
+        
+        applyPreferences();
     	
     	mRedWins = mBlueWins = mTies = 0;
+    }
+    
+    private void applyPreferences() {
+        Resources res = getResources();
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+    	
+    	Map<String, Game.Speed> gameSpeeds = new HashMap<String, Game.Speed>();
+    	gameSpeeds.put(res.getString(R.string.game_speed_normal), Game.Speed.NORMAL);
+    	gameSpeeds.put(res.getString(R.string.game_speed_fast),   Game.Speed.FAST);
+    	gameSpeeds.put(res.getString(R.string.game_speed_insane), Game.Speed.INSANE);
+    	Game.Speed gameSpeed = gameSpeeds.get(settings.getString("game_speed_preference", null));
+    	mGame.setGameSpeed(gameSpeed == null ? Game.Speed.NORMAL : gameSpeed);
+    	
+    	Map<String, Player.AIDifficulty> aiDifficulties = new HashMap<String, Player.AIDifficulty>();
+    	aiDifficulties.put(res.getString(R.string.ai_difficulty_easy),   Player.AIDifficulty.EASY);
+    	aiDifficulties.put(res.getString(R.string.ai_difficulty_medium), Player.AIDifficulty.MEDIUM);
+    	aiDifficulties.put(res.getString(R.string.ai_difficulty_hard),   Player.AIDifficulty.HARD);
+    	Player.AIDifficulty aiDifficulty = aiDifficulties.get(settings.getString("ai_difficulty_preference", null));
+    	mGame.setAIDifficulty(aiDifficulty == null ? Player.AIDifficulty.EASY : aiDifficulty);
     }
     
     @Override

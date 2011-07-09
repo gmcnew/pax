@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings">
+
+        <CheckBoxPreference android:key="sound_preference"
+                			android:title="@string/sound" android:defaultValue="false" android:enabled="false"/>
+
+    	<ListPreference android:entries="@array/ai_difficulty_array"
+                        android:entryValues="@array/ai_difficulty_array"
+                        android:title="@string/ai_difficulty"
+                        android:defaultValue="@string/ai_difficulty_easy" android:key="ai_difficulty_preference"/>
+
+    	<ListPreference android:title="@string/game_speed"
+                        android:entries="@array/game_speed_array"
+                        android:entryValues="@array/game_speed_array"
+                        android:defaultValue="@string/game_speed_normal" android:key="game_speed_preference"/>
+
+	</PreferenceCategory>
+
+</PreferenceScreen>
