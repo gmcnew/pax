@@ -14,13 +14,22 @@ public class Player {
 	
 	public enum AIDifficulty { EASY, MEDIUM, HARD }
 
+	
 	// Production is measured in money per second and is determined by the
 	// equation: mProductionStepSize * mNumProductionSteps * mProductionMultiplier
-	private float mProductionStepSize;
+	
+	// mNumProductionSteps is incremented every time the player upgrades.
 	private float mNumProductionSteps;
+	
+	// mProductionStepSize changes in response to the game speed setting.
+	private float mProductionStepSize;
+	
+	// mProductionMultiplier changes in response to the AI difficulty setting.
 	private float mProductionMultiplier;
+	
 	private static final int INITIAL_PRODUCTION_STEP_SIZE = 20;
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
+	
 	
 	// Spend equal amounts of money on all ship types, but never upgrade.
 	private static final float[] AI_BUILD_WEIGHTS = {
@@ -95,8 +104,6 @@ public class Player {
 		for (int type : Emitter.TYPES) {
 			mEmitters[type] = new Emitter(type);
 		}
-		
-		mProductionMultiplier = 1.0f;
 		
 		playerNo = playerNumber;
 		totalPlayers = players;

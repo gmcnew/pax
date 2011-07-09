@@ -92,17 +92,16 @@ public class IntroActivity extends Activity {
         mView.updateRotation();
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	super.onCreateOptionsMenu(menu);
-    	
-    	// Reset settings to defaults.
-    	/*
+    public void resetPreferences() {
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
     	Editor editor = settings.edit();
         editor.clear();
         editor.commit();
-        */
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
         
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         return true;

@@ -23,8 +23,8 @@ public class FramerateCounter {
 		sStarted = true;
 	}
 	
-	// Returns the number of milliseconds since the previous tick (or 0 on the
-	// first tick).
+	// Returns the number of milliseconds since the last call to start() or
+	// tick(). (Returns 0 if start() hasn't been called.)
 	public static long tick() {
 		
 		if (Pax.SELF_BENCHMARK) {
