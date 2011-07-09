@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -16,6 +17,7 @@ import android.os.Debug;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.Toast;
 
 public class Pax extends Activity {
@@ -98,8 +100,6 @@ public class Pax extends Activity {
             	mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
-        
-        applyPreferences();
     	
     	mRedWins = mBlueWins = mTies = 0;
     }
@@ -133,6 +133,8 @@ public class Pax extends Activity {
     		}
     		mView.onResume();
     	}
+        
+        applyPreferences();
     }
     
     @Override
@@ -145,6 +147,23 @@ public class Pax extends Activity {
         	}
             mSensorManager.unregisterListener(mShakeDetector);
     	}
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
+        
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        return true;
+    }
+    
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
+        Intent i = new Intent(this, PrefsActivity.class);
+        startActivity(i);
+        
+        return true;
     }
     
     @Override
