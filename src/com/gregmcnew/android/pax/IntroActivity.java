@@ -50,7 +50,6 @@ public class IntroActivity extends Activity {
     @Override
     public void onResume() {
     	super.onResume();
-    	mView.updateRotation();
     	mView.onResume();
     }
     
