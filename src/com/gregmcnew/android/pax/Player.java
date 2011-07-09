@@ -228,13 +228,11 @@ public class Player {
 				
 				Projectile projectile = (Projectile) entity;
 				
-				if (projectile.health <= 0) {
-					// Don't try to attack anything with this projectile.
-					// It will be removed later.
-					return;
+				if (projectile.health >= 0) {
+					// This projectile may be dead (from a previous attack),
+					// in which case it will be removed later.
+					projectile.attack(victim);
 				}
-				
-				projectile.attack(victim);
 			}
 		}
 	}
