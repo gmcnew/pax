@@ -6,6 +6,12 @@ public class Point2 implements Comparable<Point2> {
 		this(0.0f, 0.0f);
 	}
 	
+	public Point2(Point2 other) {
+		x = other.x;
+		y = other.y;
+		id = other.id;
+	}
+	
 	public Point2(float X, float Y) {
 		x = X;
 		y = Y;
@@ -42,22 +48,17 @@ public class Point2 implements Comparable<Point2> {
 		y = other.y;
 	}
 	
-	public Point2 offset(float dx, float dy) {
+	public void add(float dx, float dy) {
 		x += dx;
 		y += dy;
-		return this;
 	}
 	
-	public Point2 add(Point2 other) {
-		return new Point2(x + other.x, y + other.y);
+	public void add(Point2 other) {
+		add(other.x, other.y);
 	}
 	
-	public Point2 add(float X, float Y) {
-		return new Point2(X + X, Y + Y);
-	}
-	
-	public Point2 subtract(Point2 other) {
-		return new Point2(x - other.x, y - other.y);
+	public void subtract(Point2 other) {
+		add(-other.x, -other.y);
 	}
 	
 	@Override

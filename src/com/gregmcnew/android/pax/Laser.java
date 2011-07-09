@@ -36,7 +36,7 @@ public class Laser extends Projectile {
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
 		
-		body.center.offset(headingX * length / 2, headingY * length / 2);
+		body.center.add(headingX * length / 2, headingY * length / 2);
 		
 		setExtraPoints(NUM_EXTRA_POINTS, EXTRA_POINT_OFFSETS);
 		

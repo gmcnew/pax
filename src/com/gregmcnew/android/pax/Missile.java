@@ -29,6 +29,16 @@ public class Missile extends Projectile {
 		reset(parent);
 	}
 	
+	public void smoke(Emitter emitter, long dt) {
+		mSmokeBudgetMs += dt;
+		if (mSmokeBudgetMs > Missile.SMOKE_INTERVAL_MS) {
+			mSmokeBudgetMs -= Missile.SMOKE_INTERVAL_MS;
+			emitter.add(16f, body.center.x, body.center.y,
+					(Pax.sRandom.nextFloat() - 0.5f) * 40,
+					(Pax.sRandom.nextFloat() - 0.5f) * 40);
+		}
+	}
+	
 	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
@@ -40,7 +50,7 @@ public class Missile extends Projectile {
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
 		body.center.set(parent.body.center);
-		body.center.offset(-5 * headingX, -5 * headingY);
+		body.center.add(-5 * headingX, -5 * headingY);
 		velocity.set(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
 		targetHeading = parent.targetHeading;
 		target = parent.target;

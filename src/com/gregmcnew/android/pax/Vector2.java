@@ -31,8 +31,10 @@ public class Vector2 {
 	public Vector2(Vector2 otherVector, float startHitTime, float endHitTime) {
 		float dx = otherVector.mX;
 		float dy = otherVector.mY;
-		mA = otherVector.mA.add(dx * startHitTime, dy * startHitTime);
-		mB = otherVector.mA.add(dx * endHitTime, dy * endHitTime);
+		mA = new Point2(otherVector.mA);
+		mA.add(dx * startHitTime, dy * startHitTime);
+		mB = new Point2(otherVector.mA);
+		mB.add(dx * endHitTime, dy * endHitTime);
 		mX = mB.x - mA.x;
 		mY = mB.y - mA.y;
 		mTag = otherVector.mTag;
@@ -53,7 +55,9 @@ public class Vector2 {
 	}
 	
 	public Vector2 perpendicular() {
-		return new Vector2(mA, mA.add(-mY, mX), mTag);
+		Point2 b = new Point2(mA);
+		mA.add(-mY, mX);
+		return new Vector2(mA, b, mTag);
 	}
 	
 	public Vector2 intersectCircle(Point2 center, float radius) {
@@ -95,7 +99,8 @@ public class Vector2 {
 	}
 	
 	public Point2 getHitPoint(float hitTime) {
-		return mA.add(mX * hitTime, mY * hitTime);
+		mA.add(mX * hitTime, mY * hitTime);
+		return mA;
 	}
 	
 	public final int mTag;

@@ -125,7 +125,7 @@ public abstract class Entity {
 	public void updatePosition(long dt) {
 		float dx_t = velocity.x * dt / 1000;
 		float dy_t = velocity.y * dt / 1000;
-		body.center.offset(dx_t, dy_t);
+		body.center.add(dx_t, dy_t);
 		
 		// If an entity has extra collision points, move them, too.
 		if (mExtraPoints.length > 0) {
@@ -135,7 +135,7 @@ public abstract class Entity {
 				Point2 point = mExtraPoints[i];
 				float offset = radius * mExtraPointOffsets[i];
 				point.set(body.center);
-				point.offset(headingX * offset, headingY * offset);
+				point.add(headingX * offset, headingY * offset);
 			}
 		}
 	}
