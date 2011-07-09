@@ -1,18 +1,22 @@
 package com.gregmcnew.android.pax;
 
 import java.util.Iterator;
-import java.util.Stack;
 
 public class EntityPoolIterator implements Iterator<Entity> {
 	
 	// Static members and methods
 	
-	private static final Stack<EntityPoolIterator> sIterators = new Stack<EntityPoolIterator>();
+	// (If we ever need more than 10 iterators at once, we're doing something
+	// wrong.)
+	private static final EntityPoolIterator sIterators[] = new EntityPoolIterator[10];
+	private static int sNextIterator = -1;
 	
+	// Entities are enumerated extremely frequently, so it's important that
+	// creating an EntityPoolIterator is fast. Recycling helps.
 	public static EntityPoolIterator create(EntityPool entityPool, Entity[] list, int maxIndex) {
-		EntityPoolIterator iterator = sIterators.isEmpty()
-			? new EntityPoolIterator() 
-			: sIterators.pop();
+		EntityPoolIterator iterator = sNextIterator < 0
+			? new EntityPoolIterator()
+			: sIterators[sNextIterator--];
 		return iterator.initialize(entityPool, list, maxIndex);
 	}
 	
@@ -42,11 +46,8 @@ public class EntityPoolIterator implements Iterator<Entity> {
 		boolean hasNext = (i < mMaxIndex);
 		if (!hasNext) {
 			// We assume that if an iterator has no more entries, it won't be
-			// used any more, so it can be recycled. (Note: Stack.push() is just
-			// a wrapper for Vector.addElement(). Calling Vector.addElement()
-			// directly shaves about 4% off the runtime, according to
-			// benchmarks.)
-			sIterators.addElement(this);
+			// used any more, so it can be recycled.
+			sIterators[++sNextIterator] = this;
 		}
 		
 		return hasNext;
