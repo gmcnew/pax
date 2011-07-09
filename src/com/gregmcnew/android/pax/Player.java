@@ -225,11 +225,16 @@ public class Player {
 	public void attack(Player victim) {
 		for (int type : Projectile.TYPES) {
 			for (Entity entity : mEntities[type]) {
+				
 				Projectile projectile = (Projectile) entity;
 				
+				if (projectile.health <= 0) {
+					// Don't try to attack anything with this projectile.
+					// It will be removed later.
+					return;
+				}
+				
 				projectile.attack(victim);
-
-				// The projectile will be removed elsewhere if it's dead now.
 			}
 		}
 	}
