@@ -83,12 +83,13 @@ public class Pax extends Activity {
         }
         else {
             Bundle bundle = getIntent().getExtras();
-            
-            if (bundle.getBoolean(PLAYER_ONE_AI)) {
-        		mGame.mPlayers[0].setAI(true);
-            }
-            if (bundle.getBoolean(PLAYER_TWO_AI)) {
-        		mGame.mPlayers[1].setAI(true);
+            if (bundle != null) {
+	            if (bundle.getBoolean(PLAYER_ONE_AI)) {
+	        		mGame.mPlayers[0].setAI(true);
+	            }
+	            if (bundle.getBoolean(PLAYER_TWO_AI)) {
+	        		mGame.mPlayers[1].setAI(true);
+	            }
             }
             
             mView = new GameView(this, mGame);
