@@ -4,7 +4,7 @@ import android.os.SystemClock;
 
 public class FramerateCounter {
 	
-	public static int getFPS() {
+	public static float getFPS() {
 		return sStarted ? sFps : 0;
 	}
 	
@@ -50,7 +50,7 @@ public class FramerateCounter {
 			}
 			
 			if (sFpsTotalTime > 0) {
-				sFps = (int) (1000 * sFpsNumSamples / sFpsTotalTime);
+				sFps = (float) (1000 * sFpsNumSamples) / sFpsTotalTime;
 			}
 		}
 		
@@ -66,7 +66,7 @@ public class FramerateCounter {
 	// Static variables
 	
 	private static final long[] sFpsSamples = new long[NUM_FPS_SAMPLES];
-	private static int sFps;
+	private static float sFps;
 	private static int sFpsNumSamples;
 	private static int sNextSampleIndex;
 	private static long sFpsTotalTime;

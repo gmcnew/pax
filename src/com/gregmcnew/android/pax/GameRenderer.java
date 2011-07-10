@@ -195,7 +195,7 @@ public class GameRenderer extends Renderer {
         }
 		
 		if (Pax.sShowFPS) {
-			int fps = FramerateCounter.getFPS();
+			int fps = (int) FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
 			

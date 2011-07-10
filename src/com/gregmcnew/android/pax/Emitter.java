@@ -60,7 +60,7 @@ public class Emitter {
 	}
 	
 	public void update(long dt) {
-		int fps = FramerateCounter.getFPS();
+		int fps = (int) FramerateCounter.getFPS();
 		
 		float elapsedLife = dt;
 		
