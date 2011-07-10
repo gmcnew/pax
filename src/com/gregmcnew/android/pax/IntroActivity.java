@@ -264,7 +264,14 @@ public class IntroActivity extends ActivityWithMenu {
 		    		int ySection = (int) (event.getY() * 3 / getHeight());
 		    		int section = (mRotation % 2 == 0 ? ySection : xSection);
 		    		
-		    		if (section != 1) {
+		    		if (section == 1) {
+		    			// The user clicked in the middle of the screen, even
+		    			// though that doesn't do anything. They must not know
+		    			// what they're doing -- maybe the options menu will
+		    			// help.
+		    			openOptionsMenu();
+		    		}
+		    		else {
 		    			if (section == 0) {
 			    			mActivity.mPlayerTwoAI = false;
 		    			}
