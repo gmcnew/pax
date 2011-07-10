@@ -9,7 +9,7 @@
     
     <string name="app_name">Pax</string>
     <string name="about_subtitle">a simple real-time-strategy game</string>
-    <string name="version">version 0.3.0</string>
+    <string name="version"></string> <!-- Updated at runtime -->
     
     <string name="authors_header">Credits</string>
     <string name="authors">Greg McNew\n
