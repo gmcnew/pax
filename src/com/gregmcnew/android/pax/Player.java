@@ -11,8 +11,6 @@ public class Player {
 	public static final BuildTarget[] sBuildTargetValues = BuildTarget.values();
 	
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
-	
-	public enum AIDifficulty { EASY, MEDIUM, HARD }
 
 	
 	// Production is measured in money per second and is determined by the
@@ -31,22 +29,7 @@ public class Player {
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
 	
-	// Spend equal amounts of money on all ship types, but never upgrade.
-	private static final float[] AI_BUILD_WEIGHTS = {
-		1.0f / (float) BuildCosts[Entity.FIGHTER],
-		1.0f / (float) BuildCosts[Entity.BOMBER],
-		1.0f / (float) BuildCosts[Entity.FRIGATE],
-		0
-		};
-	
-	private static float AI_BUILD_WEIGHTS_SUM;
-	
-	static {
-		AI_BUILD_WEIGHTS_SUM = 0;
-		for (int i = 0; i < AI_BUILD_WEIGHTS.length; i++) {
-			AI_BUILD_WEIGHTS_SUM += AI_BUILD_WEIGHTS[i];
-		}
-	}
+	private AI mAI;
 	
 	public void setGameSpeed(Game.Speed speed) {
 		switch (speed) {
@@ -63,21 +46,13 @@ public class Player {
 		}
 	}
 	
-	public void setAIDifficulty(AIDifficulty difficulty) {
-		mProductionMultiplier = 1.0f;
-		
+	public void setAIDifficulty(AI.Difficulty difficulty) {
+		mAI.setDifficulty(difficulty);
+	}
+	
+	public void updateAI(Player[] allPlayers) {
 		if (mIsAI) {
-			switch (difficulty) {
-				case EASY:
-					mProductionMultiplier = 0.8f;
-					break;
-				case MEDIUM:
-					mProductionMultiplier = 1.0f;
-					break;
-				case HARD:
-					mProductionMultiplier = 1.2f;
-					break;
-			}
+			mAI.update(allPlayers);
 		}
 	}
 	
@@ -107,16 +82,15 @@ public class Player {
 		
 		playerNo = playerNumber;
 		totalPlayers = players;
+		
+		mAI = new AI(this);
 		mIsAI = false;
+		
 		reset();
 	}
 	
 	public void setAI(boolean ai) {
 		mIsAI = ai;
-		
-		if (mIsAI) {
-			mBuildTarget = aiChooseBuildTarget();
-		}
 	}
 	
 	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
@@ -285,20 +259,9 @@ public class Player {
 		}
 		
 		if (mIsAI) {
-			mBuildTarget = aiChooseBuildTarget();
+			// This triggers the AI to determine a new build target. 
+			mBuildTarget = BuildTarget.NONE;
 		}
-	}
-	
-	private BuildTarget aiChooseBuildTarget() {
-		float r = Pax.sRandom.nextFloat() * AI_BUILD_WEIGHTS_SUM;
-		
-		int nextBuildTarget = 0;
-		while (nextBuildTarget < sBuildTargetValues.length && r >= 0) {
-			r -= AI_BUILD_WEIGHTS[nextBuildTarget];
-			nextBuildTarget++;
-		}
-		
-		return sBuildTargetValues[nextBuildTarget - 1];
 	}
 	
 	private Ship addShip(int type) {

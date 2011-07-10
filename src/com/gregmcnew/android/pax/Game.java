@@ -11,7 +11,7 @@ public class Game {
 	public static final int NUM_PLAYERS = 2;
 	
 	private Speed mSpeed = Speed.NORMAL;
-	private Player.AIDifficulty mAIDifficulty = Player.AIDifficulty.EASY;
+	private AI.Difficulty mAIDifficulty = AI.Difficulty.EASY;
 	
 	public Game()
 	{
@@ -21,6 +21,14 @@ public class Game {
 		}
 		
 		reset();
+	}
+	
+	public void pause() {
+		mIsPaused = true;
+	}
+	
+	public void resume() {
+		mIsPaused = false;
 	}
 	
 	// Restart the game on the next update().
@@ -35,7 +43,7 @@ public class Game {
 		}
 	}
 	
-	public void setAIDifficulty(Player.AIDifficulty difficulty) {
+	public void setAIDifficulty(AI.Difficulty difficulty) {
 		mAIDifficulty = difficulty;
 		for (Player player : mPlayers) {
 			player.setAIDifficulty(difficulty);
@@ -52,6 +60,10 @@ public class Game {
 	public void update(long dt) {
 		if (mRestart) {
 			reset();
+		}
+		
+		if (mIsPaused) {
+			return;
 		}
 		
 		mTimeElapsed += dt;
@@ -87,6 +99,7 @@ public class Game {
 
 			if (mState == State.IN_PROGRESS) {
 				player.build();
+				player.updateAI(mPlayers);
 			}
 			
 			player.moveEntities(dt);
@@ -156,6 +169,7 @@ public class Game {
 		mTimeElapsed = 0;
 		mNumUpdates = 0;
 		mEndedTime = 0;
+		mIsPaused = false;
 	}
 	
 	private void retarget(Player player, Entity entity) {
@@ -189,6 +203,8 @@ public class Game {
 			}
 		}
 	}
+	
+	private boolean mIsPaused;
 	
 	public Player[] mPlayers;
 	public long mEndedTime;

@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -20,7 +19,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MotionEvent;
 
-public class IntroActivity extends Activity {
+public class IntroActivity extends ActivityWithMenu {
 	
 	private static final int COUNTDOWN_SECONDS = Pax.SELF_BENCHMARK ? 0 : 3;
 	
@@ -55,6 +54,13 @@ public class IntroActivity extends Activity {
     	mView.onPause();
     	stopTimer();
     	reset();
+    }
+    
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	stopTimer();
+    	reset();
+        return true;
     }
     
     private void startGame()
@@ -94,23 +100,6 @@ public class IntroActivity extends Activity {
     	Editor editor = settings.edit();
         editor.clear();
         editor.commit();
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	super.onCreateOptionsMenu(menu);
-        
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        return true;
-    }
-    
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	super.onPrepareOptionsMenu(menu);
-    	
-        Intent i = new Intent(this, PrefsActivity.class);
-        startActivity(i);
-        
-        return true;
     }
     
     private class StartGameTask extends TimerTask {

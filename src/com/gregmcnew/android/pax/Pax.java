@@ -4,23 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
-public class Pax extends Activity {
+public class Pax extends ActivityWithMenu {
     
     public static final boolean SELF_BENCHMARK = false;
     public static final boolean SIMPLE_BALANCE_TEST = false;
@@ -28,7 +23,6 @@ public class Pax extends Activity {
     public static final boolean MUSIC = true;
     public static final boolean FIGHTER_SPAM_TEST = false;
     public static final boolean PARTICLES = true;
-    public static final boolean FPS_METER = true;
     
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
@@ -105,25 +99,6 @@ public class Pax extends Activity {
     	mRedWins = mBlueWins = mTies = 0;
     }
     
-    private void applyPreferences() {
-        Resources res = getResources();
-    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-    	
-    	Map<String, Game.Speed> gameSpeeds = new HashMap<String, Game.Speed>();
-    	gameSpeeds.put(res.getString(R.string.game_speed_normal), Game.Speed.NORMAL);
-    	gameSpeeds.put(res.getString(R.string.game_speed_fast),   Game.Speed.FAST);
-    	gameSpeeds.put(res.getString(R.string.game_speed_insane), Game.Speed.INSANE);
-    	Game.Speed gameSpeed = gameSpeeds.get(settings.getString("game_speed_preference", null));
-    	mGame.setGameSpeed(gameSpeed == null ? Game.Speed.NORMAL : gameSpeed);
-    	
-    	Map<String, Player.AIDifficulty> aiDifficulties = new HashMap<String, Player.AIDifficulty>();
-    	aiDifficulties.put(res.getString(R.string.ai_difficulty_easy),   Player.AIDifficulty.EASY);
-    	aiDifficulties.put(res.getString(R.string.ai_difficulty_medium), Player.AIDifficulty.MEDIUM);
-    	aiDifficulties.put(res.getString(R.string.ai_difficulty_hard),   Player.AIDifficulty.HARD);
-    	Player.AIDifficulty aiDifficulty = aiDifficulties.get(settings.getString("ai_difficulty_preference", null));
-    	mGame.setAIDifficulty(aiDifficulty == null ? Player.AIDifficulty.EASY : aiDifficulty);
-    }
-    
     @Override
     public void onResume() {
     	super.onResume();
@@ -134,8 +109,9 @@ public class Pax extends Activity {
     		}
     		mView.onResume();
     	}
-        
-        applyPreferences();
+    	
+    	mGame.setGameSpeed(sGameSpeed == null ? Game.Speed.NORMAL : sGameSpeed);
+    	mGame.setAIDifficulty(sAIDifficulty == null ? AI.Difficulty.EASY : sAIDifficulty);
     }
     
     @Override
@@ -151,19 +127,14 @@ public class Pax extends Activity {
     }
     
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	super.onCreateOptionsMenu(menu);
-        
-		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        return true;
+    public void onOptionsMenuClosed(Menu menu) {
+    	super.onOptionsMenuClosed(menu);
+    	mGame.resume();
     }
     
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
-    	
-        Intent i = new Intent(this, PrefsActivity.class);
-        startActivity(i);
-        
+    	mGame.pause();
         return true;
     }
     

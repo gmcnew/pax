@@ -7,6 +7,9 @@
         <CheckBoxPreference android:key="sound_preference"
                 			android:title="@string/sound" android:defaultValue="false" android:enabled="false"/>
 
+        <CheckBoxPreference android:key="show_fps"
+                			android:title="@string/show_fps" android:defaultValue="true" />
+
     	<ListPreference android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"
                         android:title="@string/ai_difficulty"

@@ -194,7 +194,7 @@ public class GameRenderer extends Renderer {
         	drawButtons(gl);
         }
 		
-		if (Pax.FPS_METER) {
+		if (Pax.sShowFPS) {
 			int fps = FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;

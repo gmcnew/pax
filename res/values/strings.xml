@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="sound">Sound</string>
-    <string name="about">About</string>
+    <string name="tutorial">Tutorial</string>
     <string name="settings">Settings</string>
-    <string name="hello">Hello World, Pax!</string>
+    <string name="about">About</string>
+    
+    
+    <!-- "About" screen strings -->
+    
     <string name="app_name">Pax</string>
+    <string name="about_subtitle">a simple real-time-strategy game</string>
+    <string name="version">version 0.3.0</string>
+    
+    <string name="authors_header">Credits</string>
+    <string name="authors">Greg McNew\n
+    					   Cam Smith</string>
+    
+    
+    <!--<string name="game_origin">Based on Pax Britannica, a PC game designed and programmed by Renaud Bédard, Henk Boom, and Matthew Gallant of No Fun Games.</string>-->
+    <string name="game_origin">Based on Pax Britannica, a game by Renaud Bédard, Henk Boom, Matthew Gallant, Daniel Burton, and Ben Abraham of No Fun Games.</string>
+    <string name="game_origin_url">paxbritannica.henk.ca</string>
+    
+    <string name="game_open_source">This game is open-source!</string>
+    <string name="game_open_source_url">github.com/gmcnew/pax</string>
+    
+    
+    <!-- Settings strings -->
+    
+    <string name="sound">Sound</string>
+    <string name="show_fps">Show framerate</string>
     
     <string name="ai_difficulty">AI difficulty</string>
     <string-array name="ai_difficulty_array">

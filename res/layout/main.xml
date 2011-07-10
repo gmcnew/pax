@@ -1,12 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:layout_height="fill_parent" android:orientation="vertical"
+    android:gravity="center"
+   android:background="@drawable/background">
+<ImageView   
+	android:src="@drawable/title"
+	android:layout_width="130dip"
+	android:layout_height="70dip"
+	android:adjustViewBounds="true"
+	android:scaleType="centerCrop"
+	android:layout_gravity="center_vertical|center_horizontal"
+	/>
 <TextView  
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="@string/hello"
+    android:gravity="center_vertical|center_horizontal"
+    android:paddingTop="16dip"
+    android:text="@string/version"
+    />
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:gravity="center_vertical|center_horizontal"
+    android:paddingTop="16dip"
+    android:text="@string/authors_header"
+    android:textStyle="bold"
+    />
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:gravity="center_vertical|center_horizontal"
+    android:text="@string/authors"
+    />
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+	android:gravity="center_vertical|center_horizontal"
+	android:text="@string/game_open_source"
+	android:id="@+id/openSource"
+    android:paddingTop="16dip"
+    />
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+	android:gravity="center_vertical|center_horizontal"
+	android:text="@string/game_open_source_url"
+	android:id="@+id/openSourceUrl"
+	android:autoLink="all"
+	android:textColorLink="#63939d"
+	/>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/game_origin"
+    android:id="@+id/gameOrigin"
+    android:paddingLeft="16dip"
+    android:paddingRight="16dip"
+    android:paddingTop="16dip"
+    />
+<TextView  
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:text="@string/game_origin_url"
+    android:id="@+id/gameOriginUrl"
+	android:autoLink="all"
+    android:textColorLink="#63939d"
     />
 </LinearLayout>
