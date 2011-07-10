@@ -57,13 +57,14 @@ public class Game {
 	private long mTimeElapsed;
 	private long mNumUpdates;
 	
-	public void update(long dt) {
+	// Returns true if anything has happened since the last update().
+	public boolean update(long dt) {
 		if (mRestart) {
 			reset();
 		}
 		
 		if (mIsPaused) {
-			return;
+			return false;
 		}
 		
 		mTimeElapsed += dt;
@@ -143,6 +144,8 @@ public class Game {
 				mEndedTime = SystemClock.uptimeMillis();
 			}
 		}
+		
+		return true;
 	}
 	
 	public void setBuildTargetIfHuman(int player, Player.BuildTarget buildTarget)
