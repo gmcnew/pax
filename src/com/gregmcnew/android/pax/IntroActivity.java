@@ -24,10 +24,6 @@ public class IntroActivity extends Activity {
 	
 	private static final int COUNTDOWN_SECONDS = Pax.SELF_BENCHMARK ? 0 : 3;
 	
-	public IntroActivity() {
-		super();
-	}
-	
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -57,6 +53,8 @@ public class IntroActivity extends Activity {
     public void onPause() {
     	super.onPause();
     	mView.onPause();
+    	stopTimer();
+    	reset();
     }
     
     private void startGame()
@@ -108,9 +106,6 @@ public class IntroActivity extends Activity {
     
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
-
-    	// Stop the countdown.
-    	stopTimer();
     	
         Intent i = new Intent(this, PrefsActivity.class);
         startActivity(i);
@@ -228,7 +223,6 @@ public class IntroActivity extends Activity {
 				}
 			}
 		}
-		
 		private IntroActivity mActivity;
 		private Painter mNumberPainters[];
 		private Painter mBackgroundPainter;
@@ -248,7 +242,6 @@ public class IntroActivity extends Activity {
 			
 			setEGLConfigChooser(false);
 			setRenderer(mRenderer);
-			setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		}
 		
 		private void updateRotation() {
@@ -261,14 +254,8 @@ public class IntroActivity extends Activity {
 		@Override
 		public void onResume() {
 			super.onResume();
-			updateRotation();
-		}
-		
-		@Override
-		public void onPause() {
-			super.onPause();
 			setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-			mActivity.reset();
+			updateRotation();
 		}
 		
 		@Override
