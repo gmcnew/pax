@@ -188,7 +188,11 @@ public class Pax extends ActivityWithMenu {
     			}
     		}
     		else {
-        		mView.invalidate();
+    			long dt = FramerateCounter.tick();
+    			mGame.update(dt);
+    			if (!mGame.isPaused()) {
+    				mView.requestRender();
+    			}
 	    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
 	    		
 	    		updateState(mGame.getState());

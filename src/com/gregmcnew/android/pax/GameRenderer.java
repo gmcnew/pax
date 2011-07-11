@@ -144,9 +144,8 @@ public class GameRenderer extends Renderer {
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		
-		long dt = FramerateCounter.tick();
-		mGame.update(dt);
+
+        gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
 		
         if (mBackgroundPainter != null) {
         	mBackgroundPainter.draw(gl, 0, 0, mGameWidth, mGameHeight, 0, 1f);

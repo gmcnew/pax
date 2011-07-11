@@ -23,6 +23,10 @@ public class Game {
 		reset();
 	}
 	
+	public boolean isPaused() {
+		return mIsPaused;
+	}
+	
 	public void pause() {
 		mIsPaused = true;
 	}
