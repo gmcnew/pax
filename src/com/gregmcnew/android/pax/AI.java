@@ -1,7 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import android.util.Log;
-
 public class AI {
 	
 	public enum Difficulty { EASY, MEDIUM, HARD }
@@ -112,8 +110,6 @@ public class AI {
 			shipBuildWeights[i] = shipBuildWeights[i] < 0 ? 0 : shipBuildWeights[i];
 		}
 		
-		Log.v(Pax.TAG, String.format("AI non-cost-adjusted weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
-		
 		// So far, shipBuildWeights just tells us which ship type we should
 		// focus on building. We need to take ship cost into account, though, so
 		// we don't build expensive ships too frequently.
@@ -130,7 +126,6 @@ public class AI {
 			shipBuildWeights[i] /= sum;
 		}
 		sum = 1;
-		Log.v(Pax.TAG, String.format("AI cost-adjusted weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 		
 		int nextBuildTarget = 0;
 		float r = Pax.sRandom.nextFloat();
