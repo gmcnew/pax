@@ -22,7 +22,6 @@ public class GameView extends GLSurfaceView {
 		
 		setEGLConfigChooser(false);
 		setRenderer(mRenderer);
-		setRenderMode(RENDERMODE_WHEN_DIRTY);
 		updateRotation();
 	}
 	

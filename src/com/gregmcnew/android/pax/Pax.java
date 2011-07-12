@@ -188,11 +188,9 @@ public class Pax extends ActivityWithMenu {
     			}
     		}
     		else {
-    			long dt = FramerateCounter.tick();
-    			mGame.update(dt);
-    			if (!mGame.isPaused()) {
-    				mView.requestRender();
-    			}
+    			// Actual game updates are performed by the rendering thread.
+    			// Each time a frame is drawn, the game is updated first.
+    			mView.requestRender();
 	    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
 	    		
 	    		updateState(mGame.getState());
