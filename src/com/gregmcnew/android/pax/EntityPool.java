@@ -25,29 +25,7 @@ public class EntityPool implements Iterable<Entity> {
 			entity.reset(parent);
 		}
 		else {
-			switch (entityType) {
-				case Entity.FIGHTER:
-					entity = new Fighter();
-					break;
-				case Entity.BOMBER:
-					entity = new Bomber();
-					break;
-				case Entity.FRIGATE:
-					entity = new Frigate();
-					break;
-				case Entity.FACTORY:
-					entity = new Factory();
-					break;
-				case Entity.LASER:
-					entity = new Laser(parent);
-					break;
-				case Entity.BOMB:
-					entity = new Bomb(parent);
-					break;
-				case Entity.MISSILE:
-					entity = new Missile(parent);
-					break;
-			}
+			entity = createNewEntity(entityType, parent);
 			
 			if (entity != null) {
 				// Grow if necessary. This shouldn't happen much.
@@ -138,6 +116,36 @@ public class EntityPool implements Iterable<Entity> {
 		}
 		
 		mNumCollisionPoints -= entity.mExtraPoints.length + 1;
+	}
+	
+	private Entity createNewEntity(int entityType, Ship parent) {
+		Entity entity = null;
+
+		switch (entityType) {
+			case Entity.FIGHTER:
+				entity = new Fighter();
+				break;
+			case Entity.BOMBER:
+				entity = new Bomber();
+				break;
+			case Entity.FRIGATE:
+				entity = new Frigate();
+				break;
+			case Entity.FACTORY:
+				entity = new Factory();
+				break;
+			case Entity.LASER:
+				entity = new Laser(parent);
+				break;
+			case Entity.BOMB:
+				entity = new Bomb(parent);
+				break;
+			case Entity.MISSILE:
+				entity = new Missile(parent);
+				break;
+		}
+		
+		return entity;
 	}
 	
 	private Stack<Entity> mRecycledEntities;

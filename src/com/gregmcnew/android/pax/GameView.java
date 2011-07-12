@@ -40,42 +40,10 @@ public class GameView extends GLSurfaceView {
     	if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
     		Log.i("Pax:onTouch", String.format("event has %d pointers", event.getPointerCount()));
     		
-    		if (mGame.getState() == Game.State.IN_PROGRESS) { 
-		    	for (int i = 0; i < event.getPointerCount(); i++) {
-			    	float x = event.getX(i);
-			    	float y = event.getY(i);
-			    	// Ignore the "NONE" build target.
-			    	int numBuildTargets = Player.sBuildTargetValues.length - 1;
-			    	
-			    	int selection = 0;
-			    	int player = -1;
-			    	int xGridPos = (int) (x * 4 / getWidth());
-			    	int yGridPos = (int) (y * 4 / getHeight());
-			    	
-			    	if (mRotation % 2 == 0) {
-			    		// Ignore clicks in the center of the screen.
-			    		if (yGridPos == 0 || yGridPos == 3) {
-				    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
-				    		selection = (int) (x * numBuildTargets / getWidth());
-			    		}
-			    	}
-			    	else {
-			    		// Ignore clicks in the center of the screen.
-			    		if (xGridPos == 0 || xGridPos == 3) {
-			    			player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
-			    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
-			    		}
-			    	}
-			    	
-			    	if (player != -1) {
-				    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
-				    	
-				    	if ((player == 1) ^ (mRotation >= 2)) {
-				    		selection = (numBuildTargets - 1) - selection;
-				    	}
-				    	mGame.setBuildTargetIfHuman(player, Player.sBuildTargetValues[selection]);
-			    	}
-		    	}
+    		if (mGame.getState() == Game.State.IN_PROGRESS) {
+    	    	for (int i = 0; i < event.getPointerCount(); i++) {
+    	    		handleGameTouchEvent(event.getX(i), event.getY(i));
+    	    	}
     		}
     		else {
     			// The game is over, but we may need to wait before starting
@@ -98,6 +66,40 @@ public class GameView extends GLSurfaceView {
 		Log.i("onKey", String.format("%d, %s", keyCode, keyEvent.toString()));
 		mContext.finish();
 		return true;
+	}
+	
+	private void handleGameTouchEvent(float x, float y) {
+    	// Ignore the "NONE" build target.
+    	int numBuildTargets = Player.sBuildTargetValues.length - 1;
+    	
+    	int selection = 0;
+    	int player = -1;
+    	int xGridPos = (int) (x * 4 / getWidth());
+    	int yGridPos = (int) (y * 4 / getHeight());
+    	
+    	if (mRotation % 2 == 0) {
+    		// Ignore clicks in the center of the screen.
+    		if (yGridPos == 0 || yGridPos == 3) {
+	    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
+	    		selection = (int) (x * numBuildTargets / getWidth());
+    		}
+    	}
+    	else {
+    		// Ignore clicks in the center of the screen.
+    		if (xGridPos == 0 || xGridPos == 3) {
+    			player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
+    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
+    		}
+    	}
+    	
+    	if (player != -1) {
+	    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
+	    	
+	    	if ((player == 1) ^ (mRotation >= 2)) {
+	    		selection = (numBuildTargets - 1) - selection;
+	    	}
+	    	mGame.setBuildTargetIfHuman(player, Player.sBuildTargetValues[selection]);
+    	}
 	}
 	
 	private Game mGame;

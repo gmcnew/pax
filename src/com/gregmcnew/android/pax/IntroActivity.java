@@ -165,12 +165,17 @@ public class IntroActivity extends ActivityWithMenu {
 		
 		@Override
 		public void onDrawFrame(GL10 gl) {
+
+	        // This seems to be necessary to avoid camera offset problems when the
+	        // screen is rotated while the game is paused (and rendering is thus
+	        // paused as well). TODO: Figure this out.
+	        gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
+	        
 			float minDimension = mScreenWidth < mScreenHeight ? mScreenWidth : mScreenHeight;
 			float maxDimension = mScreenWidth > mScreenHeight ? mScreenWidth : mScreenHeight;
 			
 			float rotationDegrees = -mRotation * 90;
 			
-			float numberSize = maxDimension / 20;
 			float buttonSize = maxDimension / 8;
 			
 			// Draw the background
@@ -199,9 +204,14 @@ public class IntroActivity extends ActivityWithMenu {
 			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, 1f);
 			
 			// Draw the countdown indicator
+			drawCountdown(gl, maxDimension, flip, rotationDegrees);
+		}
+		
+		private void drawCountdown(GL10 gl, float maxDimension, float flip, float rotationDegrees) {
 			if (mActivity.mTimerIsRunning) {
 				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
 				if (msLeft > 0) {
+					float numberSize = maxDimension / 20;
 					float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
 					float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
 					

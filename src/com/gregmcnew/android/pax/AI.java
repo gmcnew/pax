@@ -43,6 +43,19 @@ public class AI {
 
 		float[] shipBuildWeights = { 0, 0, 0 };
 		
+		setShipBuildWeights(shipBuildWeights);
+		
+		int nextBuildTarget = 0;
+		float r = Pax.sRandom.nextFloat();
+		while (nextBuildTarget < Player.sBuildTargetValues.length && r >= 0) {
+			r -= shipBuildWeights[nextBuildTarget];
+			nextBuildTarget++;
+		}
+		
+		mPlayer.mBuildTarget = Player.sBuildTargetValues[nextBuildTarget - 1];
+	}
+	
+	private void setShipBuildWeights(float shipBuildWeights[]) {
 
 		int enemyFighterMoney = Player.BuildCosts[Ship.FIGHTER] * mNumEnemyEntities[Ship.FIGHTER];
 		int enemyBomberMoney  = Player.BuildCosts[Ship.BOMBER]  * mNumEnemyEntities[Ship.BOMBER];
@@ -61,24 +74,20 @@ public class AI {
 		// are completely ignored when intelligence is zero. (mIntelligence is
 		// between -1 and 1, so enemyShipImportance will be between 0 and 1.)
 		float enemyShipImportance = (mIntelligence < 0) ? -mIntelligence : mIntelligence;
-		
-		// If intelligence is negative, negate weights.
-		if (mIntelligence < 0) {
-			for (int i = 0; i < shipBuildWeights.length; i++) {
+
+		float sum = 0;
+		for (int i = 0; i < shipBuildWeights.length; i++) {
+
+			// If intelligence is negative, negate weights.
+			if (mIntelligence < 0) {
 				shipBuildWeights[i] = -shipBuildWeights[i];
 			}
-		}
-		
-		// Zero negative weights.
-		for (int i = 0; i < shipBuildWeights.length; i++) {
+			
+			// Zero negative weights.
 			if (shipBuildWeights[i] < 0) {
 				shipBuildWeights[i] = 0;
 			}
-		}
-		
-		// Calculate the sum.
-		float sum = 0;
-		for (int i = 0; i < shipBuildWeights.length; i++) {
+			
 			sum += shipBuildWeights[i];
 		}
 		
@@ -89,14 +98,11 @@ public class AI {
 				sum++;
 			}
 		}
-
-		// Make each weight relative to the sum.
-		for (int i = 0; i < shipBuildWeights.length; i++) {
-			shipBuildWeights[i] /= sum;
-		}
-		sum = 1;
 		
 		for (int i = 0; i < shipBuildWeights.length; i++) {
+			
+			// Make each weight relative to the sum.
+			shipBuildWeights[i] /= sum;
 			
 			// Fudge the build weights: as enemyShipImportance drops to 0,
 			// converge each build weight toward (1 / shipBuildWeights.length).
@@ -108,14 +114,12 @@ public class AI {
 			// Don't allow any weights to be negative. (This can occur when
 			// intelligence is negative.)
 			shipBuildWeights[i] = shipBuildWeights[i] < 0 ? 0 : shipBuildWeights[i];
+
+			// So far, shipBuildWeights just tells us which ship type we should
+			// focus on building. We need to take ship cost into account, though, so
+			// we don't build expensive ships too frequently.
+			shipBuildWeights[i] /= Player.BuildCosts[i];
 		}
-		
-		// So far, shipBuildWeights just tells us which ship type we should
-		// focus on building. We need to take ship cost into account, though, so
-		// we don't build expensive ships too frequently.
-		shipBuildWeights[Ship.FIGHTER] /= Player.BuildCosts[Ship.FIGHTER];
-		shipBuildWeights[Ship.BOMBER]  /= Player.BuildCosts[Ship.BOMBER];
-		shipBuildWeights[Ship.FRIGATE] /= Player.BuildCosts[Ship.FRIGATE];
 		
 		// Re-normalize.
 		sum = 0;
@@ -126,15 +130,6 @@ public class AI {
 			shipBuildWeights[i] /= sum;
 		}
 		sum = 1;
-		
-		int nextBuildTarget = 0;
-		float r = Pax.sRandom.nextFloat();
-		while (nextBuildTarget < Player.sBuildTargetValues.length && r >= 0) {
-			r -= shipBuildWeights[nextBuildTarget];
-			nextBuildTarget++;
-		}
-		
-		mPlayer.mBuildTarget = Player.sBuildTargetValues[nextBuildTarget - 1];
 	}
 	
 	// Intelligence ranges from -1 to 1:

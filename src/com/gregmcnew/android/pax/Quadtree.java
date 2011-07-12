@@ -129,16 +129,9 @@ public class Quadtree {
 		return reset(points, 0, 0);
 	}
 	
-	private Quadtree reset(Point2[] points, int minIndex, int maxIndex) {
+	private void resetMinMaxValues() {
 		
-		mPoints = points;
-		
-		mMinIndex = minIndex;
-		mMaxIndex = maxIndex;
-		
-		isLeaf = (mMaxIndex - mMinIndex) <= MAX_LEAF_SIZE;
-		
-		// Set mMin and mMax
+		// Set mMinVal and mMaxVal
 		boolean first = true;
 		for (int i = mMinIndex; i < mMaxIndex; i++) {
 			float q = (mDimension == X) ? mPoints[i].x : mPoints[i].y;
@@ -154,6 +147,18 @@ public class Quadtree {
 				mMaxVal = q;
 			}
 		}
+	}
+	
+	private Quadtree reset(Point2[] points, int minIndex, int maxIndex) {
+		
+		mPoints = points;
+		
+		mMinIndex = minIndex;
+		mMaxIndex = maxIndex;
+		
+		isLeaf = (mMaxIndex - mMinIndex) <= MAX_LEAF_SIZE;
+		
+		resetMinMaxValues();
 		
 		if (!isLeaf) {
 			// If this node covers a range in the X dimension (for example), we
@@ -202,6 +207,13 @@ public class Quadtree {
 	private Point2 collide(float centerX, float centerY, float radius, float radiusSquared) {
 		Point2 closest = null;
 		
+		// If the point plus the radius lies outside of mMinVal and mMaxVail,
+		// stop here.
+		float q = (mDimension == X) ? centerX : centerY;
+		if (q + radius < mMinVal || q - radius > mMaxVal) {
+			return closest;
+		}
+		
 		if (isLeaf) {
 			for (int i = mMinIndex; i < mMaxIndex; i++) {
 				Point2 point = mPoints[i];
@@ -209,16 +221,12 @@ public class Quadtree {
 				// First, make sure our the point collides with the square that
 				// contains the circle. If it doesn't, we can save ourselves
 				// some multiplications.
-				float absDx = point.x - centerX;
-				float absDy = point.y - centerY;
-				if (absDx < 0) {
-					absDx = -absDx;
-				}
-				if (absDy < 0) {
-					absDy = -absDy;
-				}
-				if (absDx <= radius && absDy <= radius) {
-					float distanceSquared = (absDx * absDx) + (absDy * absDy);
+				float dx = point.x - centerX;
+				float dy = point.y - centerY;
+				
+				boolean inSquare = (-radius <= dx && dx <= radius) && (-radius <= dy && dy <= radius);
+				if (inSquare) {
+					float distanceSquared = (dx * dx) + (dy * dy);
 					if (distanceSquared < radiusSquared) {
 						
 						// Shorten the search distance, since there may be more
@@ -236,27 +244,19 @@ public class Quadtree {
 			}
 		}
 		else {
-			float q = (low.mDimension == X) ? centerX : centerY;
-			
-			// Collide with the low node (if an intersection is possible).
-			if (q + radius >= low.mMinVal && q - radius <= low.mMaxVal) {
-				closest = low.collide(centerX, centerY, radius, radiusSquared);
+			// Collide with the low node.
+			closest = low.collide(centerX, centerY, radius, radiusSquared);
+				
+			if (closest != null) {
+				// Limit our search even further, since
+				// low.collide() already found something.
+				radiusSquared = closest.distanceToSquared(centerX, centerY);
+				radius = (float) Math.sqrt(radiusSquared);
 			}
 			
-			// Collide with the high node (if an intersection is possible).
-			if (q + radius >= high.mMinVal && q - radius <= high.mMaxVal) {
-				
-				if (closest != null) {
-					// Limit our search even further, since
-					// left.collide() already found something.
-					radiusSquared = closest.distanceToSquared(centerX, centerY);
-					radius = (float) Math.sqrt(radiusSquared);
-				}
-				
-				Point2 rightClosest = high.collide(centerX, centerY, radius, radiusSquared);
-				if (rightClosest != null) {
-					closest = rightClosest;
-				}
+			Point2 rightClosest = high.collide(centerX, centerY, radius, radiusSquared);
+			if (rightClosest != null) {
+				closest = rightClosest;
 			}
 		}
 		
