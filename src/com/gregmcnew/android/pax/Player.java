@@ -28,6 +28,9 @@ public class Player {
 	private static final int INITIAL_PRODUCTION_STEP_SIZE = 20;
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
+	public float[] getAIWeightParameters() {
+		return mAI.mWeightParameters;
+	}
 	
 	private AI mAI;
 	

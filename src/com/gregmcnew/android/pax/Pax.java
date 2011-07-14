@@ -1,5 +1,11 @@
 package com.gregmcnew.android.pax;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -10,6 +16,7 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
@@ -20,9 +27,10 @@ public class Pax extends ActivityWithMenu {
     public static final boolean SELF_BENCHMARK = false;
     public static final boolean SIMPLE_BALANCE_TEST = false;
     public static final boolean BACKGROUND_IMAGE = false;
-    public static final boolean MUSIC = true;
     public static final boolean FIGHTER_SPAM_TEST = false;
+    public static final boolean MUSIC = false;
     public static final boolean PARTICLES = true;
+    public static final boolean AI_TRAINING_MODE = true;
     
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
@@ -92,7 +100,7 @@ public class Pax extends ActivityWithMenu {
             mView.setFocusableInTouchMode(true);
             
             if (MUSIC) {
-            	mMusic = MediaPlayer.create(this, R.raw.music);
+            	//mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
     	
@@ -144,16 +152,25 @@ public class Pax extends ActivityWithMenu {
         mView.updateRotation();
     }
     
+    private float predictScore(float[] features, float[] weights) {
+    	float score = 0;
+    	for (int i = 0; i < features.length; i++) {
+    		if (features[i] > 0) {
+    			score += weights[i];
+    		}
+    		else if (features[i] < 0) {
+    			score -= weights[i];
+    		}
+    	}
+    	return (score < 0) ? -1 : ((score > 0) ? 1 : 0);
+    }
+    
     private Runnable mUpdateViewTask = new Runnable() {
     	public void run() {
     		
     		if (SELF_BENCHMARK) {
-    			for (int frames = 0; frames < 300; frames++) {
+    			for (int frames = 0; frames < 1000; frames++) {
     				mGame.update(UPDATE_INTERVAL_MS);
-    				/*
-	    			mView.invalidate();
-		    		mHandler.postDelayed(this, UPDATE_INTERVAL_MS);
-		    		*/
     				
     				if (frames % 25 == 0 && mGame.getState() != Game.State.IN_PROGRESS) {
     					mGame.restart();
@@ -186,6 +203,85 @@ public class Pax extends ActivityWithMenu {
 	    			Log.i(TAG, String.format("red %d, blue %d, ties %d", mRedWins, mBlueWins, mTies));
 	    			mGame.restart();
     			}
+    		}
+    		else if (AI_TRAINING_MODE) {
+    			float[] w = mGame.mPlayers[0].getAIWeightParameters();
+    			float[] f = { 0f, 0f, 0f, 0f, 0f, 0f };
+    			
+    			for (Player player : mGame.mPlayers) {
+    				player.setAI(true);
+    			}
+    			
+    			//new FileOutputStream(
+    			FileWriter fw;
+    			try {
+					fw = new FileWriter("sdcard/savedData.txt", false);
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+					return;
+				}
+    			
+    			while (true) {//for (int i = 0; i < 1000; i++) {
+    				
+    				// Randomize the AI's weights.
+    				for (int j = 0; j < w.length; j++) {
+    					w[j] = (sRandom.nextFloat() - 0.5f) * 2;
+    				}
+    				
+    				Game.State state = Game.State.IN_PROGRESS;
+					while (state == Game.State.IN_PROGRESS) {
+	    				mGame.update(25);
+	        			state = mGame.getState();
+					}
+					
+					float score = 0f;
+	    			switch (state) {
+	    				case RED_WINS:
+	    					// Our score is the percentage of health the enemy factory has left, negated.
+	    					Entity redFactory = mGame.mPlayers[1].mEntities[Ship.FACTORY].get(0);
+	    					score = -(float) redFactory.health / (float) Factory.HEALTH;
+	    					break;
+	    				case BLUE_WINS:
+	    					// Our score is the percentage of health our factory has left.
+	    					Entity blueFactory = mGame.mPlayers[0].mEntities[Ship.FACTORY].get(0);
+	    					score = (float) blueFactory.health / (float) Factory.HEALTH;
+	    					break;
+	    			}
+
+
+	    			String outString = String.format("score %f with weights %f, %f, %f, %f, %f, %f\n", score, w[0], w[1], w[2], w[3], w[4], w[5]);
+	    			Log.v(TAG, outString);
+	    		    try {
+	    		    	fw.write(outString);
+	    		    	fw.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						Log.v(TAG, "error writing to file!");
+						e.printStackTrace();
+					}
+	    			
+					/*
+	    			// Adjust weights based on the score.
+	    			float delta = 0.01f;
+	    			float predictedScore = predictScore(w, f);
+	    			Log.v(TAG, String.format("predicted score %f (delta: %f)", predictedScore, score - predictedScore));
+	    			for (int j = 0; j < w.length; j++) {
+	    				f[j] += delta * (score - predictedScore) * w[j];
+	    			}
+	    			Log.v(TAG, String.format("new feature weights [%f, %f, %f, %f, %f, %f]", f[0], f[1], f[2], f[3], f[4], f[5]));
+	    			*/
+	    			
+	    			mGame.restart();
+    			}
+    			/*
+    			try {
+					fw.close();
+				} catch (IOException e) {
+					Log.v(TAG, "error closing files");
+				}
+        		updateState(Game.State.TIE);
+				*/
     		}
     		else {
     			// Actual game updates are performed by the rendering thread.

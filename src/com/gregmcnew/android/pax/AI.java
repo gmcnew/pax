@@ -1,8 +1,21 @@
 package com.gregmcnew.android.pax;
 
+import android.util.Log;
+
 public class AI {
 	
 	public enum Difficulty { EASY, MEDIUM, HARD }
+	
+	public float mWeightParameters[] = { 0, 0, 0, 0, 0, 0 };
+	/*
+	public float mWeightParameters[] = {
+			 0.3395f,  0,
+			 0.4651f, -0.0496f,
+		     0.3816f,  0,
+			};
+	*/
+	//public float mWeightParameters[] = { 1, 1, 1, 1, 1, 1 };
+
 	
 	public AI(Player player) {
 		mPlayer = player;
@@ -45,14 +58,34 @@ public class AI {
 		
 		setShipBuildWeights(shipBuildWeights);
 		
-		int nextBuildTarget = 0;
-		float r = Pax.sRandom.nextFloat();
-		while (nextBuildTarget < Player.sBuildTargetValues.length && r >= 0) {
-			r -= shipBuildWeights[nextBuildTarget];
-			nextBuildTarget++;
+		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
+
+		// Find the maximum build weight value.
+		float maxWeight = shipBuildWeights[0];
+		for (int i = 0; i < shipBuildWeights.length; i++) {
+			if (shipBuildWeights[i] >= maxWeight) {
+				maxWeight = shipBuildWeights[i];
+			}
+		}
+
+		float sumCostFactors = 0;
+		for (int i = 0; i < shipBuildWeights.length; i++) {
+			if (shipBuildWeights[i] >= maxWeight) {
+				sumCostFactors += 1f / (float) Player.BuildCosts[i];
+			}
 		}
 		
-		mPlayer.mBuildTarget = Player.sBuildTargetValues[nextBuildTarget - 1];
+		float costFactors = 0;
+		float r = Pax.sRandom.nextFloat() * sumCostFactors;
+		for (int i = 0; i < shipBuildWeights.length; i++) {
+			if (shipBuildWeights[i] >= maxWeight) {
+				costFactors += 1f / (float) Player.BuildCosts[i];
+				if (r <= costFactors) {
+					mPlayer.mBuildTarget = Player.sBuildTargetValues[i];
+					break;
+				}
+			}
+		}
 	}
 	
 	private void setShipBuildWeights(float shipBuildWeights[]) {
@@ -66,10 +99,14 @@ public class AI {
 		// more bombers enemies have, the more fighters we should build.
 		// However, fighters lose to frigates, so the more frigates enemies
 		// have, the fewer fighters we should build.
-		shipBuildWeights[Ship.FIGHTER] = enemyBomberMoney  - enemyFrigateMoney;
-		shipBuildWeights[Ship.BOMBER]  = enemyFrigateMoney - enemyFighterMoney;
-		shipBuildWeights[Ship.FRIGATE] = enemyFighterMoney - enemyBomberMoney;
+		shipBuildWeights[Ship.FIGHTER] = ((enemyBomberMoney
+		                               - enemyFrigateMoney) * mWeightParameters[0]) + mWeightParameters[1];
+		shipBuildWeights[Ship.BOMBER]  = ((enemyFrigateMoney
+		                               - enemyFighterMoney) * mWeightParameters[2]) + mWeightParameters[3];
+		shipBuildWeights[Ship.FRIGATE] = ((enemyFighterMoney
+		                               - enemyBomberMoney)  * mWeightParameters[4]) + mWeightParameters[5];
 		
+		/*
 		// Enemy ships are important if intelligence is positive or negative but
 		// are completely ignored when intelligence is zero. (mIntelligence is
 		// between -1 and 1, so enemyShipImportance will be between 0 and 1.)
@@ -118,7 +155,7 @@ public class AI {
 			// So far, shipBuildWeights just tells us which ship type we should
 			// focus on building. We need to take ship cost into account, though, so
 			// we don't build expensive ships too frequently.
-			shipBuildWeights[i] /= Player.BuildCosts[i];
+			//shipBuildWeights[i] /= Player.BuildCosts[i];
 		}
 		
 		// Re-normalize.
@@ -130,6 +167,7 @@ public class AI {
 			shipBuildWeights[i] /= sum;
 		}
 		sum = 1;
+		*/
 	}
 	
 	// Intelligence ranges from -1 to 1:
