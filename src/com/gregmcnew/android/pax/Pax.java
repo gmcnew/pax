@@ -30,7 +30,7 @@ public class Pax extends ActivityWithMenu {
     public static final boolean FIGHTER_SPAM_TEST = false;
     public static final boolean MUSIC = false;
     public static final boolean PARTICLES = true;
-    public static final boolean AI_TRAINING_MODE = true;
+    public static final boolean AI_TRAINING_MODE = false;
     
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
