@@ -63,8 +63,22 @@ public class Fighter extends Ship {
 		mIsRunningAway = true;
 	}
 	
+	long mSmokeBudgetMs = 0;
+	private static final long SMOKE_INTERVAL_MS = 20;
 	@Override
 	public void emitParticles(Emitter[] emitters, long dt) {
+		
+
+		if (Pax.sJetStreams) {
+			mSmokeBudgetMs += dt;
+			if (mSmokeBudgetMs > SMOKE_INTERVAL_MS) {
+				mSmokeBudgetMs -= SMOKE_INTERVAL_MS;
+				emitters[Emitter.SMOKE].add(8f, body.center.x, body.center.y,
+						(Pax.sRandom.nextFloat() - 0.5f) * 10,
+						(Pax.sRandom.nextFloat() - 0.5f) * 10);
+			}
+		}
+		/*
 		
 		trailPointBudget += dt;
 		
@@ -130,6 +144,7 @@ public class Fighter extends Ship {
 			mTrailVertices = mTempTrailVertices;
 			mTempTrailVertices = temp;
 		}
+		*/
 	}
 	
 	private long trailPointBudget;
