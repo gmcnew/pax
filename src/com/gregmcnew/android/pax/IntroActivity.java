@@ -273,8 +273,8 @@ public class IntroActivity extends ActivityWithMenu {
 		    		// Divide the screen into three sections.
 		    		// A touch in section 0 means player 2 should be human. 
 		    		// A touch in section 2 means player 1 should be human.
-		    		int xSection = (int) (event.getX() * 3 / getWidth());
-		    		int ySection = (int) (event.getY() * 3 / getHeight());
+		    		int xSection = (int) (event.getX(i) * 3 / getWidth());
+		    		int ySection = (int) (event.getY(i) * 3 / getHeight());
 		    		int section = (mRotation % 2 == 0 ? ySection : xSection);
 		    		
 		    		if (section == 1) {
