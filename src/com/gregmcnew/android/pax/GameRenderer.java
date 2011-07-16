@@ -235,7 +235,7 @@ public class GameRenderer extends Renderer {
 			
 			Painter[] buildTargetPainters = (player == 0) ? mBuildTargetPaintersBlue : mBuildTargetPaintersRed;
 			
-			float flip = ((player == 1) ^ (mRotation >= 2)) ? -1 : 1;
+			float flip = (player == 1) ? -1 : 1;
 
 			// Draw buttons along the bottom of the screen
 			float dx = mGameWidth / 4;
@@ -243,10 +243,8 @@ public class GameRenderer extends Renderer {
 			float x = flip * (dx - mGameWidth) / 2;
 			float y = flip * (mButtonSize - mGameHeight) / 2;
 			
-			if ((player == 1) ^ (mRotation >= 2)) {
-				dx = -dx;
-				dy = -dy;
-			}
+			dx *= flip;
+			dy *= flip;
 			
 			for (int i = 0; i < 4; i++) {
 			

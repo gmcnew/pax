@@ -186,7 +186,7 @@ public class IntroActivity extends ActivityWithMenu {
 				mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
 			}
 			
-			float flip = (mRotation >= 2) ? -1 : 1;
+			float flip = 1;
 			float buttonXPos = flip * 0;
 			float buttonYPos = flip * (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
@@ -276,6 +276,10 @@ public class IntroActivity extends ActivityWithMenu {
 		    		int xSection = (int) (event.getX(i) * 3 / getWidth());
 		    		int ySection = (int) (event.getY(i) * 3 / getHeight());
 		    		int section = (mRotation % 2 == 0 ? ySection : xSection);
+		    		
+		    		if (mRotation >= 2) {
+		    			section = 2 - section;
+		    		}
 		    		
 		    		if (section == 1) {
 		    			// The user clicked in the middle of the screen, even
