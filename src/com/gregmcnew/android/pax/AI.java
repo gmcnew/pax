@@ -154,7 +154,14 @@ public class AI {
 
 		float[] shipBuildWeights = { 0, 0, 0 };
 		
-		setShipBuildWeights(shipBuildWeights);
+		int totalEnemyShipsBuilt = mNumEnemyEntities[Ship.FIGHTER]
+		                         + mNumEnemyEntities[Ship.BOMBER]
+		                         + mNumEnemyEntities[Ship.FRIGATE];
+		// Special-case when there are no enemy entities: just build something
+		// at random (by leaving all weights equal).
+		if (totalEnemyShipsBuilt > 0) {
+			setShipBuildWeights(shipBuildWeights);
+		}
 		
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 
@@ -173,6 +180,8 @@ public class AI {
 			}
 		}
 		
+		// Randomly pick a build target with the maximum score. (There's usually
+		// only one, but ties are possible.)
 		float costFactors = 0;
 		float r = Pax.sRandom.nextFloat() * sumCostFactors;
 		for (int i = 0; i < shipBuildWeights.length; i++) {
