@@ -20,6 +20,8 @@ public class GameView extends GLSurfaceView {
 		mContext = activity;
 		mRenderer = new GameRenderer(activity, mGame);
 		
+		setKeepScreenOn(true);
+		
 		setEGLConfigChooser(false);
 		setRenderer(mRenderer);
 		updateRotation();

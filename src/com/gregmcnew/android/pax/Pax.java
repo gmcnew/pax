@@ -138,10 +138,12 @@ public class Pax extends ActivityWithMenu {
     public void onOptionsMenuClosed(Menu menu) {
     	super.onOptionsMenuClosed(menu);
     	mGame.resume();
+    	mView.setKeepScreenOn(true);
     }
     
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
+    	mView.setKeepScreenOn(false);
     	mGame.pause();
         return true;
     }
