@@ -186,9 +186,8 @@ public class IntroActivity extends ActivityWithMenu {
 				mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
 			}
 			
-			float flip = 1;
-			float buttonXPos = flip * 0;
-			float buttonYPos = flip * (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
+			float buttonXPos = 0;
+			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
 			// Draw a glow behind each button that represents a human player.
 			float glowSize = (float) (buttonSize * 4);
@@ -207,13 +206,14 @@ public class IntroActivity extends ActivityWithMenu {
 			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, 1f);
 			
 			// Draw the countdown indicator
-			drawCountdown(gl, maxDimension, flip, rotationDegrees);
+			drawCountdown(gl, maxDimension, rotationDegrees);
 		}
 		
-		private void drawCountdown(GL10 gl, float maxDimension, float flip, float rotationDegrees) {
+		private void drawCountdown(GL10 gl, float maxDimension, float rotationDegrees) {
 			if (mActivity.mTimerIsRunning) {
 				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
 				if (msLeft > 0) {
+					float flip = (mRotation < 2) ? 1 : -1;
 					float numberSize = maxDimension / 20;
 					float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
 					float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
