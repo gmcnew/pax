@@ -5,6 +5,7 @@
     android:gravity="center"
    android:background="@drawable/background">
 <ImageView   
+    android:id="@+id/background_image"
 	android:src="@drawable/title"
 	android:layout_width="130dip"
 	android:layout_height="70dip"

@@ -153,7 +153,9 @@ public class GameRenderer extends Renderer {
         }
         else {
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        	gl.glClearColor(BG_RED, BG_GREEN, BG_BLUE, 1.0f);
+            if (!Pax.sBlackBackground) {
+            	gl.glClearColor(BG_RED, BG_GREEN, BG_BLUE, 1.0f);
+            }
         }
         
         drawParticles(gl, Emitter.SMOKE);

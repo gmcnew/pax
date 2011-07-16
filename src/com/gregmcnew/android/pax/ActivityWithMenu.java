@@ -20,6 +20,7 @@ public class ActivityWithMenu extends Activity {
 	
 	public static Game.Speed sGameSpeed;
 	public static AI.Difficulty sAIDifficulty;
+	public static boolean sBlackBackground;
 	public static boolean sShowFPS;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
@@ -64,7 +65,7 @@ public class ActivityWithMenu extends Activity {
 
     	sAIDifficulty = sAIDifficulties.get(settings.getString("ai_difficulty_preference", null));
     	sGameSpeed = sGameSpeeds.get(settings.getString("game_speed_preference", null));
-    	
+    	sBlackBackground = settings.getBoolean("black_background", false);
     	sShowFPS = settings.getBoolean("show_fps", false);
     }
     

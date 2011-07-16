@@ -27,6 +27,7 @@
     <!-- Settings strings -->
     
     <string name="sound">Sound</string>
+    <string name="black_background">Black background</string>
     <string name="show_fps">Show framerate</string>
     
     <string name="ai_difficulty">AI difficulty</string>

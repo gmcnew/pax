@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class AboutActivity extends Activity {
@@ -11,6 +13,10 @@ public class AboutActivity extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        if (Pax.sBlackBackground) { 
+        	ImageView backgroundImage = (ImageView) findViewById(R.id.background_image);
+        	backgroundImage.setVisibility(View.INVISIBLE);
+        }
         
         // Update the version string.
         TextView versionInfoField = (TextView) findViewById(R.id.version);

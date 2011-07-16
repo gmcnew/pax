@@ -165,6 +165,7 @@ public class IntroActivity extends ActivityWithMenu {
 		
 		@Override
 		public void onDrawFrame(GL10 gl) {
+			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 	        // This seems to be necessary to avoid camera offset problems when the
 	        // screen is rotated while the game is paused (and rendering is thus
@@ -179,9 +180,11 @@ public class IntroActivity extends ActivityWithMenu {
 			float buttonSize = maxDimension / 8;
 			
 			// Draw the background
-			float halfWidth = mScreenWidth / 2;
-			float halfHeight = mScreenHeight / 2;
-			mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
+			if (!Pax.sBlackBackground) { 
+				float halfWidth = mScreenWidth / 2;
+				float halfHeight = mScreenHeight / 2;
+				mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
+			}
 			
 			float flip = (mRotation >= 2) ? -1 : 1;
 			float buttonXPos = flip * 0;
