@@ -99,6 +99,10 @@ public abstract class Entity {
 		velocity.y = (float) Math.sin(heading) * maxSpeed;
 	}
 	
+	public void emitParticles(Emitter[] emitters, long dt) {
+		
+	}
+	
 	public boolean wantsNewTarget() {
 		
 		boolean retarget = false;

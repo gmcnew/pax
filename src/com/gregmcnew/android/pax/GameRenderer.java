@@ -160,6 +160,15 @@ public class GameRenderer extends Renderer {
         
         drawParticles(gl, Emitter.SMOKE);
 		
+		// Draw fighter trails!
+		for (Player player : mGame.mPlayers) {
+		
+			for (Entity entity : player.mEntities[Entity.FIGHTER]) {
+				Fighter fighter = (Fighter) entity;
+				mHighlight.drawTrail(gl, fighter.mTrailVertices, fighter.mVertexColors);
+			}
+		}
+		
 		for (int entityType : ENTITY_LAYERS) {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 				

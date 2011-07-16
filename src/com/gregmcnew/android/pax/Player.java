@@ -183,10 +183,8 @@ public class Player {
 	public void moveEntities(long dt) {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
-				
-				if (Pax.PARTICLES && type == Projectile.MISSILE) {
-					Missile missile = (Missile) entity;
-					missile.smoke(mEmitters[Emitter.SMOKE], dt);
+				if (Pax.PARTICLES) {
+					entity.emitParticles(mEmitters, dt);
 				}
 				
 				entity.updatePosition(dt);

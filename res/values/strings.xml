@@ -29,6 +29,8 @@
     <string name="sound">Sound</string>
     <string name="black_background">Black background</string>
     <string name="show_fps">Show framerate</string>
+    <string name="jet_streams">Jet streams</string>
+    <string name="jet_streams_summary">Experimental</string>
     
     <string name="ai_difficulty">AI difficulty</string>
     <string-array name="ai_difficulty_array">
@@ -41,7 +43,7 @@
     <string name="ai_difficulty_medium">Medium</string>
     <string name="ai_difficulty_hard">Hard</string>
     
-    <string name="game_speed">Game speed</string>
+    <string name="game_speed">Production speed</string>
     <string-array name="game_speed_array">
         <item>@string/game_speed_normal</item>
         <item>@string/game_speed_fast</item>

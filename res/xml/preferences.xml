@@ -22,6 +22,10 @@
 
         <CheckBoxPreference android:key="black_background"
                 			android:title="@string/black_background" android:defaultValue="false"/>
+        <CheckBoxPreference android:key="jet_streams"
+                			android:title="@string/jet_streams"
+                			android:summary="@string/jet_streams_summary"
+                			android:defaultValue="false"/>
 
 	</PreferenceCategory>
 

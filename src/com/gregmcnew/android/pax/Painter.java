@@ -2,6 +2,7 @@ package com.gregmcnew.android.pax;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -86,7 +87,7 @@ public class Painter {
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {
 		
         // Make sure we're not using any transformations left over from the
-		// the last draw().
+		// last draw().
 		gl.glLoadIdentity();
 		
 		// Rotate about the Z-axis.
@@ -129,6 +130,71 @@ public class Painter {
 		// We use 2D vertices, so every vertex is represented by 2 values in
 		// 'vertices'.
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 2);
+	}
+	
+	public void drawTrail(GL10 gl, ShortBuffer trailVertices, FloatBuffer vertexColors) {
+			
+		float sizeX = 2f;
+		float sizeY = 2f;
+		float alpha = 1.0f;
+		float moveX = 0.0f;
+		float moveY = 0.0f;
+		float rotateDegrees = 0.0f;
+		
+        // Make sure we're not using any transformations left over from the
+		// last draw().
+		gl.glLoadIdentity();
+		
+		// Rotate about the Z-axis.
+		gl.glRotatef(sCameraRotationDegrees, 0f, 0f, 1f);
+		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+
+		gl.glColor4f(1f, 1f, 1f, alpha);
+
+		// Force the next painter to rebind.
+		sLastPainter = null;
+		
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
+		
+		// Point to our vertex and texture buffers.
+		
+		if (mVBOSupport) {
+			GL11 gl11 = (GL11) gl;
+			
+			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
+		}
+		int originalLimit = trailVertices.limit();
+		gl.glColorPointer(4, GL10.GL_FLOAT, 0, vertexColors);
+
+		// Skip (0,0) points at the end of the buffer.
+		int i;
+		for (i = trailVertices.limit() - 2; i >= 0; i -= 2) {
+			short x = trailVertices.get(i);
+			short y = trailVertices.get((short) (i + 1));
+			if (x != 0 || y != 0) {
+				break;
+			}
+		}
+		trailVertices.limit(i + 2);
+	
+		gl.glVertexPointer(2, GL10.GL_SHORT, 0, trailVertices);
+		gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
+		
+		gl.glTranslatef(moveX, moveY, 0f);
+		
+		// Rotate about the Z-axis.
+		gl.glRotatef(rotateDegrees, 0f, 0f, 1f);
+		
+		// The vertices buffer describes a 2x2 square, not a 1x1 square, so each
+		// scale value needs to be half of the size.
+		gl.glScalef(sizeX / 2, sizeY / 2, 0f);
+
+		// We use 2D vertices, so every vertex is represented by 2 values in
+		// 'vertices'.
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, trailVertices.remaining() / 2);
+		
+		trailVertices.limit(originalLimit);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 	}
 	
 	private short vertices[] = {

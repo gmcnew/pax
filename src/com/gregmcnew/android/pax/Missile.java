@@ -40,6 +40,11 @@ public class Missile extends Projectile {
 	}
 	
 	@Override
+	public void emitParticles(Emitter[] emitters, long dt) {
+		smoke(emitters[Emitter.SMOKE], dt);
+	}
+	
+	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
 		
