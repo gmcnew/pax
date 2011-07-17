@@ -27,6 +27,7 @@ public class GameRenderer extends Renderer {
     public GameRenderer(Context context, Game game) {
     	super(context);
     	mGame = game;
+    	mStarField = new StarField();
     }
     
     public void updateRotation(int rotation) {
@@ -81,6 +82,8 @@ public class GameRenderer extends Renderer {
     		mPlayerEntityPainters.put(mGame.mPlayers[player], painters);
     	}
 		
+		mStarPainter = getPainter(gl, R.drawable.star);
+		
 		mParticlePainters = new Painter[Emitter.TYPES.length];
 		mParticlePainters[Emitter.SMOKE]       		= getPainter(gl, R.drawable.smoke);
 		mParticlePainters[Emitter.SPARK]       		= getPainter(gl, R.drawable.bomb);
@@ -119,8 +122,6 @@ public class GameRenderer extends Renderer {
 		if (Pax.BACKGROUND_IMAGE) {
 			//mBackgroundPainter = getPainter(gl, R.drawable.background);
         }
-		
-		FramerateCounter.start();
 	}
 
 	@Override
@@ -157,6 +158,11 @@ public class GameRenderer extends Renderer {
             	gl.glClearColor(BG_RED, BG_GREEN, BG_BLUE, 1.0f);
             }
         }
+        
+        if (!mGame.isPaused()) {
+        	mStarField.update(dt);
+        }
+        drawStars(gl);
         
         drawParticles(gl, Emitter.SMOKE);
 		
@@ -218,6 +224,15 @@ public class GameRenderer extends Renderer {
 				x -= digitWidth;
 				fps /= 10;
 			}
+		}
+	}
+	
+	private void drawStars(GL10 gl) {
+		float scale = Math.max(mGameWidth, mGameHeight);
+		float size = 5f;
+		for (StarField.Star star : mStarField.mStars) {
+			float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
+			mStarPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
 		}
 	}
 	
@@ -297,6 +312,8 @@ public class GameRenderer extends Renderer {
 	
 	private Game mGame;
 	
+	private StarField mStarField;
+	
 	// The width and height of the displayed game area, in game units.
 	// These values will -not- change when the screen is rotated.
 	private float mGameWidth;
@@ -304,6 +321,8 @@ public class GameRenderer extends Renderer {
 
 	private Map<Player, Painter[]> mPlayerEntityPainters;
 	private Painter mBackgroundPainter;
+
+	private Painter mStarPainter;
 	
 	private Painter mHighlight;
 	private Painter[] mBuildTargetPaintersBlue;

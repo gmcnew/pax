@@ -118,7 +118,6 @@ public class Pax extends ActivityWithMenu {
     		mView.onResume();
     	}
     	
-    	mGame.setGameSpeed(sGameSpeed == null ? Game.Speed.NORMAL : sGameSpeed);
     	mGame.setAIDifficulty(sAIDifficulty == null ? AI.Difficulty.EASY : sAIDifficulty);
     }
     

@@ -6,11 +6,9 @@ import android.util.Log;
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE }
-	public enum Speed { NORMAL, FAST, INSANE }
 	
 	public static final int NUM_PLAYERS = 2;
 	
-	private Speed mSpeed = Speed.NORMAL;
 	private AI.Difficulty mAIDifficulty = AI.Difficulty.EASY;
 	
 	public Game()
@@ -38,13 +36,6 @@ public class Game {
 	// Restart the game on the next update().
 	public void restart() {
 		mRestart = true;
-	}
-	
-	public void setGameSpeed(Speed speed) {
-		mSpeed = speed;
-		for (Player player : mPlayers) {
-			player.setGameSpeed(speed);
-		}
 	}
 	
 	public void setAIDifficulty(AI.Difficulty difficulty) {
@@ -167,7 +158,6 @@ public class Game {
 			player.reset();
 		}
 		
-		setGameSpeed(mSpeed);
 		setAIDifficulty(mAIDifficulty);
 		
 		mState = State.IN_PROGRESS;

@@ -19,13 +19,10 @@ public class Player {
 	// mNumProductionSteps is incremented every time the player upgrades.
 	private float mNumProductionSteps;
 	
-	// mProductionStepSize changes in response to the game speed setting.
-	private float mProductionStepSize;
-	
 	// mProductionMultiplier changes in response to the AI difficulty setting.
 	private float mProductionMultiplier;
 	
-	private static final int INITIAL_PRODUCTION_STEP_SIZE = 20;
+	private static final int PRODUCTION_STEP_SIZE = 20;
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
 	public float[] getAIWeightParameters() {
@@ -33,21 +30,6 @@ public class Player {
 	}
 	
 	private AI mAI;
-	
-	public void setGameSpeed(Game.Speed speed) {
-		switch (speed) {
-			case NORMAL:
-			default:
-				mProductionStepSize = 20;
-				break;
-			case FAST:
-				mProductionStepSize = 60;
-				break;
-			case INSANE:
-				mProductionStepSize = 120;
-				break;
-		}
-	}
 	
 	public void setAIDifficulty(AI.Difficulty difficulty) {
 		mAI.setDifficulty(difficulty);
@@ -110,7 +92,6 @@ public class Player {
 		mShooterQueue.clear();
 		money = 0;
 		
-		mProductionStepSize = INITIAL_PRODUCTION_STEP_SIZE;
 		mNumProductionSteps = INITIAL_NUM_PRODUCTION_STEPS;
 		mProductionMultiplier = 1.0f;
 		
@@ -122,7 +103,7 @@ public class Player {
 	}
 	
 	public void produce(long dt) {
-		money += (mProductionStepSize * mNumProductionSteps * mProductionMultiplier * dt) / 1000;
+		money += (PRODUCTION_STEP_SIZE * Pax.sGameSpeed * mNumProductionSteps * mProductionMultiplier * dt) / 1000;
 	}
 	
 	public void removeDeadEntities() {

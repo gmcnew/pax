@@ -124,12 +124,14 @@ public class IntroActivity extends ActivityWithMenu {
 		public IntroRenderer(IntroActivity activity) {
 			super(activity);
 			mActivity = activity;
+			mStarField = new StarField();
 		}
 		
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 			super.onSurfaceCreated(gl, config);
 			mBackgroundPainter = getPainter(gl, R.drawable.background);
+			mStarPainter = getPainter(gl, R.drawable.star);
 			mTitlePainter = getPainter(gl, R.drawable.title);
 			mBlueButtonPainter = getPainter(gl, R.drawable.ohblue);
 			mRedButtonPainter = getPainter(gl, R.drawable.ohred);
@@ -165,6 +167,9 @@ public class IntroActivity extends ActivityWithMenu {
 		
 		@Override
 		public void onDrawFrame(GL10 gl) {
+			long dt = FramerateCounter.tick();
+			mStarField.update(dt);
+			
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 	        // This seems to be necessary to avoid camera offset problems when the
@@ -184,6 +189,9 @@ public class IntroActivity extends ActivityWithMenu {
 				float halfWidth = mScreenWidth / 2;
 				float halfHeight = mScreenHeight / 2;
 				mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
+			}
+			else {
+				drawStars(gl);
 			}
 			
 			float buttonXPos = 0;
@@ -209,6 +217,15 @@ public class IntroActivity extends ActivityWithMenu {
 			drawCountdown(gl, maxDimension, rotationDegrees);
 		}
 		
+		private void drawStars(GL10 gl) {
+			float scale = Math.max(mScreenWidth, mScreenHeight);
+			float size = 5f;
+			for (StarField.Star star : mStarField.mStars) {
+				float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
+				mStarPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
+			}
+		}
+		
 		private void drawCountdown(GL10 gl, float maxDimension, float rotationDegrees) {
 			if (mActivity.mTimerIsRunning) {
 				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
@@ -225,7 +242,9 @@ public class IntroActivity extends ActivityWithMenu {
 				}
 			}
 		}
+		private StarField mStarField;
 		private IntroActivity mActivity;
+		private Painter mStarPainter;
 		private Painter mNumberPainters[];
 		private Painter mBackgroundPainter;
 		private Painter mTitlePainter;
@@ -256,7 +275,6 @@ public class IntroActivity extends ActivityWithMenu {
 		@Override
 		public void onResume() {
 			super.onResume();
-			setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 			updateRotation();
 		}
 		

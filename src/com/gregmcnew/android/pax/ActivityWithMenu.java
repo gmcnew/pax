@@ -18,14 +18,14 @@ import android.widget.Toast;
  */
 public class ActivityWithMenu extends Activity {
 	
-	public static Game.Speed sGameSpeed;
+	public static float sGameSpeed; // 1 is normal
 	public static AI.Difficulty sAIDifficulty;
 	public static boolean sBlackBackground;
 	public static boolean sShowFPS;
 	public static boolean sJetStreams;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
-	private static Map<String, Game.Speed> sGameSpeeds = null;
+	private static Map<String, Float> sGameSpeeds = null;
 	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,10 +49,10 @@ public class ActivityWithMenu extends Activity {
 		
 		Resources res = getResources();
 		if (sGameSpeeds == null) {
-			sGameSpeeds = new HashMap<String, Game.Speed>();
-			sGameSpeeds.put(res.getString(R.string.game_speed_normal), Game.Speed.NORMAL);
-			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   Game.Speed.FAST);
-			sGameSpeeds.put(res.getString(R.string.game_speed_insane), Game.Speed.INSANE);
+			sGameSpeeds = new HashMap<String, Float>();
+			sGameSpeeds.put(res.getString(R.string.game_speed_normal), 1f);
+			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   3f);
+			sGameSpeeds.put(res.getString(R.string.game_speed_insane), 6f);
 		}
 		
 		if (sAIDifficulties == null) {
