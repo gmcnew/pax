@@ -1,7 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import android.graphics.PointF;
-
 /**Abstract class. Represents any entity in the game's id, health, velocity, etc.**/
 public abstract class Entity {
 	
@@ -21,7 +19,7 @@ public abstract class Entity {
 	public final float maxSpeed;
 	public final int originalLifeMs;
 	public final CircleF body;
-	public final PointF velocity;
+	public final Point2 velocity;
 	
 	public int lifeMs;
 	public int health;
@@ -71,7 +69,7 @@ public abstract class Entity {
 		maxSpeed = MaxSpeed;
 		
 		body = new CircleF(new Point2(), radius);
-		velocity = new PointF();
+		velocity = new Point2();
 		
 		originalHealth = Health;
 		

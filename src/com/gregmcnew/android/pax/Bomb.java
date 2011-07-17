@@ -24,7 +24,7 @@ public class Bomb extends Projectile {
 		
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
-		velocity.offset(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
+		velocity.add(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
 	}
 	
 	@Override
