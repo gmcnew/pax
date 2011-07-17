@@ -210,7 +210,7 @@ public class IntroActivity extends ActivityWithMenu {
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
 			// Draw a glow behind each button that represents a human player.
-			float glowSize = (float) (buttonSize * 4);
+			float glowSize = (float) (buttonSize * 3);
 			if (!mPlayerOneAI) {
 				mSmokePainter.draw(gl, -buttonXPos, -buttonYPos, glowSize, glowSize, 0, 1f);
 			}
