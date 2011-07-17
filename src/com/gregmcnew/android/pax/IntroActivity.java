@@ -40,6 +40,7 @@ public class IntroActivity extends ActivityWithMenu {
     	mPlayerOneAI = true;
     	mPlayerTwoAI = true;
 		mTimerIsRunning = false;
+		mMenuOpen = false;
     }
     
     @Override
@@ -56,11 +57,19 @@ public class IntroActivity extends ActivityWithMenu {
     	reset();
     }
     
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
     	stopTimer();
     	reset();
+    	mMenuOpen = true;
         return true;
+    }
+    
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+    	super.onOptionsMenuClosed(menu);
+    	mMenuOpen = false;
     }
     
     private void startGame()
@@ -109,6 +118,7 @@ public class IntroActivity extends ActivityWithMenu {
 		}
     }
     
+    private boolean mMenuOpen;
     private IntroView mView;
     private Timer mTimer;
     private long mGameStartTime;
@@ -168,7 +178,9 @@ public class IntroActivity extends ActivityWithMenu {
 		@Override
 		public void onDrawFrame(GL10 gl) {
 			long dt = FramerateCounter.tick();
-			mStarField.update(dt);
+			if (!mActivity.mMenuOpen) {
+				mStarField.update(dt);
+			}
 			
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
