@@ -137,11 +137,6 @@ public class AI {
 	
 	public void update(Player[] allPlayers) {
 		
-		// Do nothing if the player already has a build target.
-		if (mPlayer.mBuildTarget != Player.BuildTarget.NONE) {
-			return;
-		}
-		
 		// Count enemy entities by type.
 		for (int type : Entity.TYPES) {
 			mNumEnemyEntities[type] = 0;
@@ -151,16 +146,25 @@ public class AI {
 				}
 			}
 		}
-
+		
 		float[] shipBuildWeights = { 0, 0, 0 };
 		
-		int totalEnemyShipsBuilt = mNumEnemyEntities[Ship.FIGHTER]
-		                         + mNumEnemyEntities[Ship.BOMBER]
-		                         + mNumEnemyEntities[Ship.FRIGATE];
-		// Special-case when there are no enemy entities: just build something
+		int numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
+		                        + mNumEnemyEntities[Ship.BOMBER]
+		                        + mNumEnemyEntities[Ship.FRIGATE];
+		
+		// Special-case when there are no enemy attack ships: just build something
 		// at random (by leaving all weights equal).
-		if (totalEnemyShipsBuilt > 0) {
+		if (numEnemyAttackShips > 0) {
 			setShipBuildWeights(shipBuildWeights);
+		}
+		else if (mPlayer.mBuildTarget != Player.BuildTarget.NONE) {
+			// There are no enemy attack ships, so all build weights are equal.
+			// We've already chosen a build target, so we should keep it
+			// (instead of selecting another at random). This keeps the AI from
+			// rapidly switching between different build targets when no enemy
+			// attack ships are present.
+			return;
 		}
 		
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
