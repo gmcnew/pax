@@ -104,9 +104,9 @@ public class AI {
 	// scores and weights were run through linear regression to come up with the
 	// following optimal weights.
 	public static final float OPTIMAL_WEIGHTS[] = {
-			0.3108f, -0.0283f,
-			0.4480f, -0.0488f,
-			0.4053f,
+			0.7668f, -0.0698f,
+			1.1054f, -0.1204f,
+			1.0f
 			};
 	
 	public float mWeights[];
