@@ -158,23 +158,27 @@ public class AI {
 		if (numEnemyAttackShips > 0) {
 			setShipBuildWeights(shipBuildWeights);
 		}
-		else if (mPlayer.mBuildTarget != Player.BuildTarget.NONE) {
-			// There are no enemy attack ships, so all build weights are equal.
-			// We've already chosen a build target, so we should keep it
-			// (instead of selecting another at random). This keeps the AI from
-			// rapidly switching between different build targets when no enemy
-			// attack ships are present.
-			return;
-		}
 		
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 
 		// Find the maximum build weight value.
+		float minWeight = shipBuildWeights[0];
 		float maxWeight = shipBuildWeights[0];
-		for (int i = 0; i < shipBuildWeights.length; i++) {
-			if (shipBuildWeights[i] >= maxWeight) {
+		for (int i = 1; i < shipBuildWeights.length; i++) {
+			if (shipBuildWeights[i] < minWeight) {
+				minWeight = shipBuildWeights[i];
+			}
+			else if (shipBuildWeights[i] > maxWeight) {
 				maxWeight = shipBuildWeights[i];
 			}
+		}
+		
+		if (minWeight == maxWeight && mPlayer.mBuildTarget != Player.BuildTarget.NONE) {
+			// All build weights are equal, so our choice will be random. The
+			// player already has a build target, though, so we'll just keep it.
+			// (Otherwise, the AI will rapidly switch between randomly-selected
+			// build targets while weights are equal.)
+			return;
 		}
 
 		float sumCostFactors = 0;
