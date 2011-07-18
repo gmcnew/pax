@@ -47,6 +47,7 @@ public abstract class Projectile extends Entity {
 				
 				if (victimShip.health <= 0) {
 					victim.mEntities[victimShipType].remove(victimShip);
+					GameSounds.play(GameSounds.Sound.EXPLOSION);
 				}
 				
 				break; // don't examine other ship types

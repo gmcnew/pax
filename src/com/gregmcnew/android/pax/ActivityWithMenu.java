@@ -23,6 +23,7 @@ public class ActivityWithMenu extends Activity {
 	public static boolean sBlackBackground;
 	public static boolean sShowFPS;
 	public static boolean sJetStreams;
+	public static boolean sSound;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
 	private static Map<String, Float> sGameSpeeds = null;
@@ -69,6 +70,7 @@ public class ActivityWithMenu extends Activity {
     	sBlackBackground = settings.getBoolean("black_background", false);
     	sShowFPS = settings.getBoolean("show_fps", false);
     	sJetStreams = settings.getBoolean("jet_streams", false);
+    	sSound = settings.getBoolean("sound", false);
     }
     
     @Override

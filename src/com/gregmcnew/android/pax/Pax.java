@@ -70,6 +70,8 @@ public class Pax extends ActivityWithMenu {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
         
+        GameSounds.initialize(this);
+        
         mGame = new Game();
 		
 		mLastState = Game.State.IN_PROGRESS;

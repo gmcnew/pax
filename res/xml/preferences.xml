@@ -4,8 +4,10 @@
 
     <PreferenceCategory android:title="@string/settings">
 
-        <CheckBoxPreference android:key="sound_preference"
-                			android:title="@string/sound" android:defaultValue="false" android:enabled="false"/>
+        <CheckBoxPreference android:key="sound"
+                			android:title="@string/sound"
+                			android:summary="@string/sound_summary"
+                			android:defaultValue="false"/>
 
         <CheckBoxPreference android:key="show_fps"
                 			android:title="@string/show_fps" android:defaultValue="true" />

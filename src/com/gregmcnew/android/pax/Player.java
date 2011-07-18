@@ -236,6 +236,7 @@ public class Player {
 				addShip(Entity.FRIGATE);
 				break;
 			case UPGRADE:
+				GameSounds.play(GameSounds.Sound.UPGRADE);
 				mNumProductionSteps++;
 				break;
 		}
@@ -283,13 +284,16 @@ public class Player {
 		int projectileType;
 		switch (parent.type) {
 			case Entity.FIGHTER:
+				GameSounds.play(GameSounds.Sound.SHOOT_LASER);
 				projectileType = Entity.LASER;
 				break;
 			case Entity.BOMBER:
+				GameSounds.play(GameSounds.Sound.SHOOT_BOMB);
 				projectileType = Entity.BOMB;
 				break;
 			default:
 			case Entity.FRIGATE:
+				GameSounds.play(GameSounds.Sound.SHOOT_MISSILE);
 				projectileType = Entity.MISSILE;
 				break;
 		}
