@@ -2,6 +2,6 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/tutorial" android:id="@+id/tutorial" android:icon="@android:drawable/ic_menu_help"></item>
-    <item android:title="@string/settings" android:id="@+id/settings" android:icon="@android:drawable/ic_menu_manage"></item>
+    <item android:title="@string/settings" android:id="@+id/settings" android:icon="@android:drawable/ic_menu_preferences"></item>
     <item android:title="@string/about" android:id="@+id/about" android:icon="@android:drawable/ic_menu_info_details"></item>
 </menu>
