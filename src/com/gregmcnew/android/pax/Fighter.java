@@ -40,8 +40,6 @@ public class Fighter extends Ship {
 		mTempTrailVertices.position(0);
 		mTrailVertices.position(0);
 		
-		mOriginalBufferLimit = mTrailVertices.limit();
-		
 		reset(null);
 	}
 	
@@ -55,7 +53,6 @@ public class Fighter extends Ship {
 
 		mTempTrailVertices.limit(0);
 		mTrailVertices.limit(0);
-		trailPointBudget = 0;
 		
 		// Run away by default. This avoids scenarios in which enemy ships are
 		// hovering over our factory and newly-spawned fighters turn in circles
@@ -63,93 +60,6 @@ public class Fighter extends Ship {
 		mIsRunningAway = true;
 	}
 	
-	long mSmokeBudgetMs = 0;
-	private static final long SMOKE_INTERVAL_MS = 20;
-	@Override
-	public void emitParticles(Emitter[] emitters, long dt) {
-		
-
-		if (Pax.sJetStreams) {
-			mSmokeBudgetMs += dt;
-			if (mSmokeBudgetMs > SMOKE_INTERVAL_MS) {
-				mSmokeBudgetMs -= SMOKE_INTERVAL_MS;
-				emitters[Emitter.SMOKE].add(8f, body.center.x, body.center.y,
-						(Pax.sRandom.nextFloat() - 0.5f) * 10,
-						(Pax.sRandom.nextFloat() - 0.5f) * 10);
-			}
-		}
-		/*
-		
-		trailPointBudget += dt;
-		
-		// TODO: Move most of this to a separate object so (1) the code is
-		// cleaner and (2) the stream is still drawn after the fighter dies.
-		if (!Pax.sJetStreams) {
-			mTrailVertices.position(0);
-			mTrailVertices.limit(0);
-			mTempTrailVertices.position(0);
-			mTempTrailVertices.limit(0);
-		}
-		else if (trailPointBudget >= TRAIL_POINT_INTERVAL) {
-			trailPointBudget -= TRAIL_POINT_INTERVAL;
-			
-			mTempTrailVertices.position(0);
-			mTrailVertices.position(0);
-			mVertexColors.position(0);
-			
-			int newLimit = mTrailVertices.limit() + 4;
-			if (newLimit > mOriginalBufferLimit) {
-				newLimit = mOriginalBufferLimit;
-			}
-			mTempTrailVertices.limit(newLimit);
-			
-			short x = (short) body.center.x;
-			short y = (short) body.center.y;
-			float dx = (float) Math.sin(heading) * 5;
-			float dy = (float) Math.cos(heading) * 5;
-			if (x != 0 && y != 0) {
-				mTempTrailVertices.put((short) (x - dx));
-				mTempTrailVertices.put((short) (y - dy));
-				mTempTrailVertices.put((short) (x + dx));
-				mTempTrailVertices.put((short) (y + dy));
-				for (int i = 0; i < 8; i++) {
-					//mVertexColors.put(0.5f);
-				}
-			}
-			
-			int i = mTempTrailVertices.position();
-			while (i < mTempTrailVertices.capacity() && mTrailVertices.hasRemaining()) {
-				mTempTrailVertices.put(mTrailVertices.get());
-				i++;
-				for (int j = 0; j < 4; j++) {
-					//mVertexColors.put(0.5f);
-				}
-			}
-			mTempTrailVertices.limit(i);
-			
-			int numVertices = i / 2;
-			mVertexColors.position(0);
-			for (i = 0; i < numVertices * 2; i++) {
-				mVertexColors.put(1f);
-				mVertexColors.put(1f);
-				mVertexColors.put(1f);
-				float alpha = (float) (numVertices - i) / numVertices;
-				mVertexColors.put(alpha);
-			}
-			
-			mTempTrailVertices.position(0);
-			mTrailVertices.position(0);
-			
-			ShortBuffer temp = mTrailVertices;
-			mTrailVertices = mTempTrailVertices;
-			mTempTrailVertices = temp;
-		}
-		*/
-	}
-	
-	private long trailPointBudget;
-	
-	private int mOriginalBufferLimit;
 	protected ShortBuffer mTrailVertices;
 	protected ShortBuffer mTempTrailVertices;
 	protected FloatBuffer mVertexColors;
