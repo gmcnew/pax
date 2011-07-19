@@ -22,13 +22,14 @@ public class Particle {
 		sRecycled.push(this);
 	}
 	
-	public void reset(long Life, float Scale, float X, float Y, float VelX, float VelY) {
+	public void reset(long Life, float Scale, float X, float Y, float VelX, float VelY, float Accel) {
 		life = Life;
 		scale = Scale;
 		x = X;
 		y = Y;
 		velX = VelX;
 		velY = VelY;
+		accel = Accel;
 	}
 
 	public long life; // in milliseconds
@@ -37,4 +38,5 @@ public class Particle {
 	public float y;
 	public float velX;
 	public float velY;
+	public float accel;
 }

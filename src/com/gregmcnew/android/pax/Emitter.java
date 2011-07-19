@@ -80,6 +80,8 @@ public class Emitter {
 		for (int i = mStart; i != mEnd; i = (i + 1) % mCapacity) {
 			Particle p = mParticles[i];
 
+			p.velX *= 1f + p.accel * dtS;
+			p.velY *= 1f + p.accel * dtS;
 			p.x += p.velX * dtS;
 			p.y += p.velY * dtS;
 			p.life -= elapsedLife;
@@ -91,8 +93,11 @@ public class Emitter {
 			}
 		}
 	}
-	
 	public void add(float scale, float x, float y, float velX, float velY) {
+		add(scale, x, y, velX, velY, 0f);
+	}
+	
+	public void add(float scale, float x, float y, float velX, float velY, float accel) {
 		// Only add new particles if we're above the midpoint of the
 		// throttling window.
 		if (mIgnoreAddFps == NO_THROTTLE || FramerateCounter.getFPS() > mIgnoreAddFps) {
@@ -100,7 +105,7 @@ public class Emitter {
 				if (mParticles[mEnd] == null) {
 					mParticles[mEnd] = Particle.create();
 				}
-				mParticles[mEnd].reset(mInitialLifeMs, scale, x, y, velX, velY);
+				mParticles[mEnd].reset(mInitialLifeMs, scale, x, y, velX, velY, accel);
 				mEnd = (mEnd + 1) % mCapacity;
 			}
 		}

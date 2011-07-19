@@ -149,6 +149,14 @@ public class Player {
 					entity.lifeMs -= dt;
 					if (entity.lifeMs <= 0) {
 						entity.health = 0;
+						
+						// Missiles should appear to explode when they die.
+						if (Entity.MISSILE == entity.type) {
+							mEmitters[Emitter.SHIP_EXPLOSION].add(entity.radius,
+									entity.body.center.x, entity.body.center.y,
+									entity.velocity.x, entity.velocity.y,
+									-1f);
+						}
 					}
 				}
 			}
