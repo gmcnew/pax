@@ -38,14 +38,20 @@
     
     <string name="ai_difficulty">AI difficulty</string>
     <string-array name="ai_difficulty_array">
+        <item>@string/ai_difficulty_braindead</item>
         <item>@string/ai_difficulty_easy</item>
         <item>@string/ai_difficulty_medium</item>
         <item>@string/ai_difficulty_hard</item>
+        <item>@string/ai_difficulty_very_hard</item>
+        <item>@string/ai_difficulty_insane</item>
     </string-array>
     
+    <string name="ai_difficulty_braindead">Braindead</string>
     <string name="ai_difficulty_easy">Easy</string>
     <string name="ai_difficulty_medium">Medium</string>
     <string name="ai_difficulty_hard">Hard</string>
+    <string name="ai_difficulty_very_hard">Very hard</string>
+    <string name="ai_difficulty_insane">Insane</string>
     
     <string name="game_speed">Production speed</string>
     <string-array name="game_speed_array">

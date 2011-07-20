@@ -56,9 +56,12 @@ public class ActivityWithMenu extends Activity {
 		
 		if (sAIDifficulties == null) {
 			sAIDifficulties = new HashMap<String, AI.Difficulty>();
-			sAIDifficulties.put(res.getString(R.string.ai_difficulty_easy),   AI.Difficulty.EASY);
-			sAIDifficulties.put(res.getString(R.string.ai_difficulty_medium), AI.Difficulty.MEDIUM);
-			sAIDifficulties.put(res.getString(R.string.ai_difficulty_hard),   AI.Difficulty.HARD);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_braindead), AI.Difficulty.BRAINDEAD);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_easy),      AI.Difficulty.EASY);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_medium),    AI.Difficulty.MEDIUM);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_hard),      AI.Difficulty.HARD);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_very_hard), AI.Difficulty.VERY_HARD);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_insane),    AI.Difficulty.INSANE);
 		}
 		
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);

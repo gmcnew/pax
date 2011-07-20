@@ -93,7 +93,7 @@ public class AI {
 	 * <to be continued>
 	 */
 	
-	public enum Difficulty { EASY, MEDIUM, HARD }
+	public enum Difficulty { BRAINDEAD, EASY, MEDIUM, HARD, VERY_HARD, INSANE }
 	
 	// These weights were determined through experimentation. Over 3000 games
 	// were played between the null AI (with weights of 0) and an AI with random
@@ -118,17 +118,19 @@ public class AI {
 	}
 	
 	public void setDifficulty(Difficulty difficulty) {
+		mIntelligence = 0f;
+		
+		// The insane AI beats the medium AI about 93.6% of the time.
+		// Difficulties between medium and insane are intended to be geometric
+		// means. That is, the percentage of games that an AI wins against the
+		// next-easiest AI should be constant (and is about 61%).
 		switch (difficulty) {
-			case EASY:
-				mIntelligence = -1f;
-				break;
-			case MEDIUM:
-			default:
-				mIntelligence = 0;
-				break;
-			case HARD:
-				mIntelligence = 1f;
-				break;
+			case BRAINDEAD: mIntelligence = -1f; 	 break;
+			case EASY:		mIntelligence = -0.33f;  break;
+			case MEDIUM:	mIntelligence =  0f;	 break;
+			case HARD:		mIntelligence =  0.132f; break;
+			case VERY_HARD: mIntelligence =  0.354f; break;
+			case INSANE:	mIntelligence =  1f;     break;
 		}
 		for (int i = 0; i < OPTIMAL_WEIGHTS.length; i++) {
 			mWeights[i] = mIntelligence * OPTIMAL_WEIGHTS[i];
