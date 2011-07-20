@@ -2,6 +2,18 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/about_category">
+                			
+        <PreferenceScreen
+		    android:title="@string/about"
+		    android:summary="@string/about_summary">
+			<intent
+			    android:action="android.intent.action.MAIN"
+			    android:targetPackage="com.gregmcnew.android.pax"
+			    android:targetClass="com.gregmcnew.android.pax.AboutActivity" />
+		</PreferenceScreen>
+	</PreferenceCategory>
+
     <PreferenceCategory android:title="@string/settings">
 
         <CheckBoxPreference android:key="sound"

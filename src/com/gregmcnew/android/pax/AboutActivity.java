@@ -12,10 +12,6 @@ public class AboutActivity extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        if (Pax.sBlackBackground) { 
-        	LinearLayout layout = (LinearLayout) findViewById(R.id.about_layout);
-        	layout.setBackgroundDrawable(null);
-        }
         
         // Update the version string.
         TextView versionInfoField = (TextView) findViewById(R.id.version);

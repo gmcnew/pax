@@ -2,7 +2,11 @@
 <resources>
     <string name="tutorial">Tutorial</string>
     <string name="settings">Settings</string>
-    <string name="about">About</string>
+    <string name="high_scores">High scores</string>
+    
+    <string name="about_category">About</string>
+    <string name="about">About Pax</string>
+    <string name="about_summary">Would you like to know more?</string>
     
     
     <!-- "About" screen strings -->
