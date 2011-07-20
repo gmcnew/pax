@@ -140,7 +140,6 @@ public class IntroActivity extends ActivityWithMenu {
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 			super.onSurfaceCreated(gl, config);
-			mBackgroundPainter = getPainter(gl, R.drawable.background);
 			mStarPainter = getPainter(gl, R.drawable.star);
 			mTitlePainter = getPainter(gl, R.drawable.title);
 			mBlueButtonPainter = getPainter(gl, R.drawable.ohblue);
@@ -196,15 +195,7 @@ public class IntroActivity extends ActivityWithMenu {
 			
 			float buttonSize = maxDimension / 8;
 			
-			// Draw the background
-			if (!Pax.sBlackBackground) { 
-				float halfWidth = mScreenWidth / 2;
-				float halfHeight = mScreenHeight / 2;
-				mBackgroundPainter.drawFillBounds(gl, -halfWidth, halfWidth, -halfHeight, halfHeight, rotationDegrees, 1f);
-			}
-			else {
-				drawStars(gl);
-			}
+			drawStars(gl);
 			
 			float buttonXPos = 0;
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
@@ -258,7 +249,6 @@ public class IntroActivity extends ActivityWithMenu {
 		private IntroActivity mActivity;
 		private Painter mStarPainter;
 		private Painter mNumberPainters[];
-		private Painter mBackgroundPainter;
 		private Painter mTitlePainter;
 		private Painter mBlueButtonPainter;
 		private Painter mRedButtonPainter;

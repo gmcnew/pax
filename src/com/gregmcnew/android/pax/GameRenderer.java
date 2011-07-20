@@ -10,10 +10,6 @@ import android.opengl.GLU;
 
 public class GameRenderer extends Renderer {
 	
-	private static final float BG_RED   = 0.094f;
-	private static final float BG_GREEN = 0.137f;
-	private static final float BG_BLUE  = 0.145f;
-	
 	// The size of the screen's largest dimension, measured in game units. 
 	public static final float GAME_VIEW_SIZE = 1000f;
 	
@@ -149,15 +145,7 @@ public class GameRenderer extends Renderer {
         long dt = FramerateCounter.tick();
         mGame.update(dt);
 		
-        if (mBackgroundPainter != null) {
-        	mBackgroundPainter.draw(gl, 0, 0, mGameWidth, mGameHeight, 0, 1f);
-        }
-        else {
-            gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-            if (!Pax.sBlackBackground) {
-            	gl.glClearColor(BG_RED, BG_GREEN, BG_BLUE, 1.0f);
-            }
-        }
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
         if (!mGame.isPaused()) {
         	mStarField.update(dt);
@@ -320,7 +308,6 @@ public class GameRenderer extends Renderer {
 	private float mGameHeight;
 
 	private Map<Player, Painter[]> mPlayerEntityPainters;
-	private Painter mBackgroundPainter;
 
 	private Painter mStarPainter;
 	

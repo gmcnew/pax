@@ -28,7 +28,6 @@
     
     <string name="sound">Sound</string>
     <string name="sound_summary">Experimental</string>
-    <string name="black_background">Black background</string>
     <string name="show_fps">Show framerate</string>
     <string name="jet_streams">Jet streams</string>
     <string name="jet_streams_summary">Experimental</string>

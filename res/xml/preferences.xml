@@ -22,9 +22,6 @@
                         android:entryValues="@array/game_speed_array"
                         android:defaultValue="@string/game_speed_normal" android:key="game_speed_preference"/>
 
-        <CheckBoxPreference android:key="black_background"
-                			android:title="@string/black_background" android:defaultValue="true"/>
-
 	</PreferenceCategory>
 
 </PreferenceScreen>

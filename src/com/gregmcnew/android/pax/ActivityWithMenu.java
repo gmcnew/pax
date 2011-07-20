@@ -20,7 +20,6 @@ public class ActivityWithMenu extends Activity {
 	
 	public static float sGameSpeed; // 1 is normal
 	public static AI.Difficulty sAIDifficulty;
-	public static boolean sBlackBackground;
 	public static boolean sShowFPS;
 	public static boolean sSound;
 
@@ -66,7 +65,6 @@ public class ActivityWithMenu extends Activity {
 
     	sAIDifficulty = sAIDifficulties.get(settings.getString("ai_difficulty_preference", null));
     	sGameSpeed = sGameSpeeds.get(settings.getString("game_speed_preference", null));
-    	sBlackBackground = settings.getBoolean("black_background", false);
     	sShowFPS = settings.getBoolean("show_fps", false);
     	sSound = settings.getBoolean("sound", false);
     }
