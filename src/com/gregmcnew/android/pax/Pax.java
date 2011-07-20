@@ -209,11 +209,15 @@ public class Pax extends ActivityWithMenu {
     		}
     		else if (AI_TRAINING_MODE) {
     			float[] w = mGame.mPlayers[0].getAIWeightParameters();
-    			float[] f = { 0f, 0f, 0f, 0f, 0f, 0f };
+    			float[] f = { 0f, 0f, 0f, 0f, 0f };
     			
     			for (Player player : mGame.mPlayers) {
     				player.setAI(true);
     			}
+				mGame.mPlayers[1].setAIDifficulty(AI.Difficulty.MEDIUM);
+    			
+    			float[] x = mGame.mPlayers[1].getAIWeightParameters();
+    			Log.v(TAG, String.format("other AI is using weights %f, %f, %f, %f, %f", x[0], x[1], x[2], x[3], x[4]));
     			
     			//new FileOutputStream(
     			FileWriter fw;
@@ -227,10 +231,18 @@ public class Pax extends ActivityWithMenu {
     			
     			while (true) {//for (int i = 0; i < 1000; i++) {
     				
-    				// Randomize the AI's weights.
+    				// Randomize the AI's weights, making sure that weights
+    				// 0, 2 and 4 are positive.
+    				w[0] = sRandom.nextFloat();
+    				w[2] = sRandom.nextFloat();
+    				w[4] = sRandom.nextFloat();
+    				w[1] = (sRandom.nextFloat() - 0.5f) * 2;
+    				w[3] = (sRandom.nextFloat() - 0.5f) * 2;
+    				/*
     				for (int j = 0; j < w.length; j++) {
     					w[j] = (sRandom.nextFloat() - 0.5f) * 2;
     				}
+    				*/
     				
     				Game.State state = Game.State.IN_PROGRESS;
 					while (state == Game.State.IN_PROGRESS) {
@@ -253,7 +265,7 @@ public class Pax extends ActivityWithMenu {
 	    			}
 
 
-	    			String outString = String.format("score %f with weights %f, %f, %f, %f, %f, %f\n", score, w[0], w[1], w[2], w[3], w[4], w[5]);
+	    			String outString = String.format("score %f with weights %f, %f, %f, %f, %f\n", score, w[0], w[1], w[2], w[3], w[4]);
 	    			Log.v(TAG, outString);
 	    		    try {
 	    		    	fw.write(outString);
