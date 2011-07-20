@@ -44,6 +44,7 @@
         <item>@string/ai_difficulty_hard</item>
         <item>@string/ai_difficulty_very_hard</item>
         <item>@string/ai_difficulty_insane</item>
+        <item>@string/ai_difficulty_cheater</item>
     </string-array>
     
     <string name="ai_difficulty_braindead">Braindead</string>
@@ -52,6 +53,7 @@
     <string name="ai_difficulty_hard">Hard</string>
     <string name="ai_difficulty_very_hard">Very hard</string>
     <string name="ai_difficulty_insane">Insane</string>
+    <string name="ai_difficulty_cheater">Cheating Scum</string>
     
     <string name="game_speed">Production speed</string>
     <string-array name="game_speed_array">

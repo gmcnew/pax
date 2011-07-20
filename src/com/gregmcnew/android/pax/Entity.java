@@ -54,7 +54,7 @@ public abstract class Entity {
 		Laser.DIAMETER / 2, Bomb.DIAMETER / 2, Missile.DIAMETER / 2
 		};
 	
-	private final int originalHealth;
+	public final int originalHealth;
 	
 	protected Entity(int Type, int[] TargetPriorities, float[] TargetSearchLimits, int LifeMs, int Health, float Diameter, float Length, float TurnSpeed, float[] AccelerationLimits, float MaxSpeed) {
 		type = Type;

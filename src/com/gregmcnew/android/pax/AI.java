@@ -93,7 +93,7 @@ public class AI {
 	 * <to be continued>
 	 */
 	
-	public enum Difficulty { BRAINDEAD, EASY, MEDIUM, HARD, VERY_HARD, INSANE }
+	public enum Difficulty { BRAINDEAD, EASY, MEDIUM, HARD, VERY_HARD, INSANE, CHEATER }
 	
 	// These weights were determined through experimentation. Over 3000 games
 	// were played between the null AI (with weights of 0) and an AI with random
@@ -103,10 +103,14 @@ public class AI {
 	// percentage of health the enemy's factory had left, negated. The resulting
 	// scores and weights were run through linear regression to come up with the
 	// following optimal weights.
+	
+	// The final weight [0..1] indicates the importance of enemy health. 0 means
+	// a nearly-dead enemy is treated as equal to a full-health enemy. 1 means a
+	// nearly-dead enemy is almost ignored.
 	public static final float OPTIMAL_WEIGHTS[] = {
 			0.6277f, -0.2779f,
 			1.1031f, -0.1376f,
-			1.0f
+			1.0f,	 0f,
 			};
 	
 	public float mWeights[];
@@ -120,6 +124,10 @@ public class AI {
 	public void setDifficulty(Difficulty difficulty) {
 		mIntelligence = 0f;
 		
+		for (int i = 0; i < OPTIMAL_WEIGHTS.length; i++) {
+			mWeights[i] = OPTIMAL_WEIGHTS[i];
+		}
+		
 		// The insane AI beats the medium AI about 93.6% of the time.
 		// Difficulties between medium and insane are intended to be geometric
 		// means. That is, the percentage of games that an AI wins against the
@@ -131,9 +139,12 @@ public class AI {
 			case HARD:		mIntelligence =  0.132f; break;
 			case VERY_HARD: mIntelligence =  0.354f; break;
 			case INSANE:	mIntelligence =  1f;     break;
-		}
-		for (int i = 0; i < OPTIMAL_WEIGHTS.length; i++) {
-			mWeights[i] = OPTIMAL_WEIGHTS[i];
+			case CHEATER:
+				mIntelligence =  1f;
+				
+				// Pay attention to the health of enemy units.
+				mWeights[mWeights.length - 1] = 0.5f;
+				break;
 		}
 	}
 	
@@ -144,16 +155,24 @@ public class AI {
 			mNumEnemyEntities[type] = 0;
 			for (Player player : allPlayers) {
 				if (player != mPlayer) {
-					mNumEnemyEntities[type] += player.mEntities[type].size();
+					if (mWeights[5] == 0) {
+						mNumEnemyEntities[type] += player.mEntities[type].size();
+					}
+					else {
+						for (Entity e : player.mEntities[type]) {
+							float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
+							mNumEnemyEntities[type] += 1f - percentHealthLost * mWeights[5];
+						}
+					}
 				}
 			}
 		}
 		
 		float[] shipBuildScores = { 0, 0, 0 };
 		
-		int numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
-		                        + mNumEnemyEntities[Ship.BOMBER]
-		                        + mNumEnemyEntities[Ship.FRIGATE];
+		float numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
+		                          + mNumEnemyEntities[Ship.BOMBER]
+		                          + mNumEnemyEntities[Ship.FRIGATE];
 
 		if (mPlayer.mBuildTarget == Player.BuildTarget.NONE) {
 			resetDistortion();

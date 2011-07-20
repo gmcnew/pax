@@ -62,6 +62,7 @@ public class ActivityWithMenu extends Activity {
 			sAIDifficulties.put(res.getString(R.string.ai_difficulty_hard),      AI.Difficulty.HARD);
 			sAIDifficulties.put(res.getString(R.string.ai_difficulty_very_hard), AI.Difficulty.VERY_HARD);
 			sAIDifficulties.put(res.getString(R.string.ai_difficulty_insane),    AI.Difficulty.INSANE);
+			sAIDifficulties.put(res.getString(R.string.ai_difficulty_cheater),   AI.Difficulty.CHEATER);
 		}
 		
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
