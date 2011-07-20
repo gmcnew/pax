@@ -88,12 +88,13 @@ public class Pax extends ActivityWithMenu {
         else {
             Bundle bundle = getIntent().getExtras();
             if (bundle != null) {
-	            if (bundle.getBoolean(PLAYER_ONE_AI)) {
-	        		mGame.mPlayers[0].setAI(true);
-	            }
-	            if (bundle.getBoolean(PLAYER_TWO_AI)) {
-	        		mGame.mPlayers[1].setAI(true);
-	            }
+            	mPlayerIsAI[0] = bundle.getBoolean(PLAYER_ONE_AI);
+            	mPlayerIsAI[1] = bundle.getBoolean(PLAYER_TWO_AI);
+            }
+            else {
+            	for (int i = 0; i < mPlayerIsAI.length; i++) {
+            		mPlayerIsAI[i] = false;
+            	}
             }
             
             mView = new GameView(this, mGame);
@@ -112,15 +113,42 @@ public class Pax extends ActivityWithMenu {
     @Override
     public void onResume() {
     	super.onResume();
+    	
+    	if (sBenchmarkMode || sBenchmarkMode != mLastBenchmarkMode) {
+    		mLastBenchmarkMode = sBenchmarkMode;
+    		mGame.restart();
+    	}
+    	
+    	if (sBenchmarkMode) {
+    		sRandom.setSeed(0);
+    		FramerateCounter.start();
+    		mGame.mPlayers[0].setAI(true);
+    		mGame.mPlayers[1].setAI(true);
+
+    		// Preferences are reapplied in every call to onResume() in
+    		// ActivityWithMenu (our superclass), so it's okay to override them
+    		// here.
+    		sGameSpeed = GAME_SPEED_INSANE;
+    		sAIDifficulty = AI.Difficulty.MEDIUM;
+    		sSound = false;
+    		sShowFPS = true;
+    	}
+    	else {
+    		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+    			mGame.mPlayers[i].setAI(mPlayerIsAI[i]);
+    		}
+    	}
+    	
+    	mGame.setAIDifficulty(sAIDifficulty);
+		
     	if (!SELF_BENCHMARK) {
             mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     		if (MUSIC) {
     	    	mMusic.start();
     		}
+    		
     		mView.onResume();
     	}
-    	
-    	mGame.setAIDifficulty(sAIDifficulty == null ? AI.Difficulty.EASY : sAIDifficulty);
     }
     
     @Override
@@ -327,7 +355,12 @@ public class Pax extends ActivityWithMenu {
 			String resultString = mGameResultStrings.get(state);
 			if (resultString != null) {
     			Log.v(TAG, resultString);
-    			Toast.makeText(this, resultString, Toast.LENGTH_LONG).show();
+    			
+    			String toastString = sBenchmarkMode
+    					? String.format("Average framerate: %.2f", FramerateCounter.getTotalFPS())
+    					: resultString;
+    			
+    			Toast.makeText(this, toastString, Toast.LENGTH_LONG).show();
     			if (SELF_BENCHMARK) {
     				finish();
     			}
@@ -338,11 +371,16 @@ public class Pax extends ActivityWithMenu {
     // To be used for log messages.
     public static final String TAG = "Pax";
     
+    private boolean mPlayerIsAI[] = { false, false };
+    
     private Game mGame;
     private GameView mView;
     private Game.State mLastState;
     private MediaPlayer mMusic;
     private Handler mHandler;
+    
+    // Keep track of the last state of the "benchmark mode" preference.
+    private boolean mLastBenchmarkMode;
     
 	private Map<Game.State, String> mGameResultStrings;
     

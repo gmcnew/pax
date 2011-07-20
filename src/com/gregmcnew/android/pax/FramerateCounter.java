@@ -8,15 +8,23 @@ public class FramerateCounter {
 		return sStarted ? sFps : 0;
 	}
 	
+	public static float getTotalFPS() {
+		return sStarted ? sTotalFps : 0;
+	}
+	
 	public static void start() {
 		for (int i = 0; i < NUM_FPS_SAMPLES; i++) {
-			sFpsSamples[i] = 0;
+			sRecentSamples[i] = 0;
 		}
 		
-		sNextSampleIndex = 0;
-		sFpsNumSamples = 0;
-		sFpsTotalTime = 0;
+		sNextRecentSampleIndex = 0;
+		sNumRecentSamples = 0;
+		sRecentSampleTimeSum = 0;
 		sFps = 0;
+		
+		sTotalTime = 0;
+		sNumTotalSamples = 0;
+		sTotalFps = 0;
 		
 		sLastTime = SystemClock.uptimeMillis();
 		
@@ -41,16 +49,21 @@ public class FramerateCounter {
 			
 			sLastTime = time;
 			
-			sFpsTotalTime += dt - sFpsSamples[sNextSampleIndex];
-			sFpsSamples[sNextSampleIndex] = dt;
+			sRecentSampleTimeSum += dt - sRecentSamples[sNextRecentSampleIndex];
+			sRecentSamples[sNextRecentSampleIndex] = dt;
 			
-			sNextSampleIndex = (sNextSampleIndex + 1) % NUM_FPS_SAMPLES;
-			if (sNextSampleIndex > sFpsNumSamples) {
-				sFpsNumSamples = sNextSampleIndex;
+			sTotalTime += dt;
+			sNumTotalSamples++;
+			
+			sTotalFps = (float) (1000 * sNumTotalSamples) / sTotalTime;
+			
+			sNextRecentSampleIndex = (sNextRecentSampleIndex + 1) % NUM_FPS_SAMPLES;
+			if (sNextRecentSampleIndex > sNumRecentSamples) {
+				sNumRecentSamples = sNextRecentSampleIndex;
 			}
 			
-			if (sFpsTotalTime > 0) {
-				sFps = (float) (1000 * sFpsNumSamples) / sFpsTotalTime;
+			if (sRecentSampleTimeSum > 0) {
+				sFps = (float) (1000 * sNumRecentSamples) / sRecentSampleTimeSum;
 			}
 		}
 		
@@ -65,11 +78,16 @@ public class FramerateCounter {
 	
 	// Static variables
 	
-	private static final long[] sFpsSamples = new long[NUM_FPS_SAMPLES];
+	private static final long[] sRecentSamples = new long[NUM_FPS_SAMPLES];
 	private static float sFps;
-	private static int sFpsNumSamples;
-	private static int sNextSampleIndex;
-	private static long sFpsTotalTime;
+	private static int sNumRecentSamples;
+	private static int sNextRecentSampleIndex;
+	private static long sRecentSampleTimeSum;
 	private static long sLastTime;
+	
+	private static long sTotalTime;
+	private static int sNumTotalSamples;
+	private static float sTotalFps;
+	
 	private static boolean sStarted = false;
 }

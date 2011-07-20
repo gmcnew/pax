@@ -18,10 +18,15 @@ import android.widget.Toast;
  */
 public class ActivityWithMenu extends Activity {
 	
-	public static float sGameSpeed; // 1 is normal
+	public static final float GAME_SPEED_NORMAL = 1f;
+	public static final float GAME_SPEED_FAST   = 3f;
+	public static final float GAME_SPEED_INSANE = 6f;
+	public static float sGameSpeed;
+	
 	public static AI.Difficulty sAIDifficulty;
 	public static boolean sShowFPS;
 	public static boolean sSound;
+	public static boolean sBenchmarkMode;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
 	private static Map<String, Float> sGameSpeeds = null;
@@ -49,9 +54,9 @@ public class ActivityWithMenu extends Activity {
 		Resources res = getResources();
 		if (sGameSpeeds == null) {
 			sGameSpeeds = new HashMap<String, Float>();
-			sGameSpeeds.put(res.getString(R.string.game_speed_normal), 1f);
-			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   3f);
-			sGameSpeeds.put(res.getString(R.string.game_speed_insane), 6f);
+			sGameSpeeds.put(res.getString(R.string.game_speed_normal), GAME_SPEED_NORMAL);
+			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   GAME_SPEED_FAST);
+			sGameSpeeds.put(res.getString(R.string.game_speed_insane), GAME_SPEED_INSANE);
 		}
 		
 		if (sAIDifficulties == null) {
@@ -71,6 +76,7 @@ public class ActivityWithMenu extends Activity {
     	sGameSpeed = sGameSpeeds.get(settings.getString("game_speed_preference", null));
     	sShowFPS = settings.getBoolean("show_fps", false);
     	sSound = settings.getBoolean("sound", false);
+    	sBenchmarkMode = settings.getBoolean("benchmark_mode", false);
     }
     
     @Override

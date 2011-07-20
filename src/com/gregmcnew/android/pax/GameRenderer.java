@@ -241,6 +241,12 @@ public class GameRenderer extends Renderer {
 
 	// Draw UI elements along a short edge of the screen.
     private void drawButtons(GL10 gl) {
+    	
+    	// Don't draw buttons in benchmark mode, since they change very quickly
+    	// and can't be controlled anyway.
+    	if (Pax.sBenchmarkMode) {
+    		return;
+    	}
     	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 			
 			float buildIndicatorRotation = (player == 0) ? 0 : 180;

@@ -71,6 +71,12 @@ public class GameView extends GLSurfaceView {
 	}
 	
 	private void handleGameTouchEvent(float x, float y) {
+		
+    	// Ignore touches in benchmark mode.
+    	if (Pax.sBenchmarkMode) {
+    		return;
+    	}
+    	
     	// Ignore the "NONE" build target.
     	int numBuildTargets = Player.sBuildTargetValues.length - 1;
     	

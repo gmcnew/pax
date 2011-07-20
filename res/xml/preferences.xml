@@ -22,7 +22,13 @@
                 			android:defaultValue="false"/>
 
         <CheckBoxPreference android:key="show_fps"
-                			android:title="@string/show_fps" android:defaultValue="true" />
+                			android:title="@string/show_fps"
+                			android:defaultValue="true" />
+
+        <CheckBoxPreference android:key="benchmark_mode"
+                			android:title="@string/benchmark_mode"
+                			android:summary="@string/benchmark_mode_summary"
+                			android:defaultValue="false" />
 
     	<ListPreference android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"

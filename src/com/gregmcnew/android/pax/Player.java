@@ -103,7 +103,11 @@ public class Player {
 	}
 	
 	public void produce(long dt) {
-		money += (PRODUCTION_STEP_SIZE * Pax.sGameSpeed * mNumProductionSteps * mProductionMultiplier * dt) / 1000;
+		float production = PRODUCTION_STEP_SIZE * Pax.sGameSpeed * mNumProductionSteps * mProductionMultiplier;
+		if (Pax.sBenchmarkMode) {
+			production *= 100;
+		}
+		money += (production * dt) / 1000;
 	}
 	
 	public void removeDeadEntities() {

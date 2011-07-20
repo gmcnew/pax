@@ -1,10 +1,13 @@
 package com.gregmcnew.android.pax;
 
+import java.util.Random;
+
 public class StarField {
 	
 	public static final int NUM_STARS = 100;
 	
 	public StarField() {
+		mRandom = new Random();
 		mStars = new Star[NUM_STARS];
 		for (int i = 0; i < NUM_STARS; i++) {
 			mStars[i] = new Star();
@@ -25,6 +28,7 @@ public class StarField {
 	}
 	
 	protected Star mStars[];
+	private Random mRandom;
 	
 	public class Star {
 		public Star() {
@@ -32,8 +36,8 @@ public class StarField {
 		}
 		
 		public void reset() {
-			mX = Pax.sRandom.nextFloat() - 0.5f;
-			mY = Pax.sRandom.nextFloat() - 0.5f;
+			mX = mRandom.nextFloat() - 0.5f;
+			mY = mRandom.nextFloat() - 0.5f;
 			mAge = 0;
 		}
 		
