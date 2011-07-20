@@ -43,9 +43,14 @@ public abstract class Ship extends Entity {
 		}
 		
 		if (target != null && shotsLeft > 0 && shotTimer > shotTimeMs) {
-			// Don't let a fighter shoot unless it's looking almost directly at
-			// its target point (and isn't running away).
-			if (type == Entity.FIGHTER) {
+			float viewSizeSquared = GameRenderer.GAME_VIEW_SIZE * GameRenderer.GAME_VIEW_SIZE;
+			if (body.center.distanceToSquared(target.body.center) > viewSizeSquared) {
+				// Don't shoot if the target is more than one screen away.
+			}
+			else if (type == Entity.FIGHTER) {
+				// Don't let a fighter shoot unless it's looking almost directly
+				// at its target point (and isn't running away).
+				
 				Fighter fighter = (Fighter) this;
 				
 				float absHeadingToTargetHeading = (headingToTargetHeading < 0)

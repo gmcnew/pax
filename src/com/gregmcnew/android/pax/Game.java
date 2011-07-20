@@ -178,7 +178,8 @@ public class Game {
 			float searchCenterX = entity.body.center.x;
 			float searchCenterY = entity.body.center.y;
 			
-			float searchLimit = 9000.1f; // XXX
+			// By default, don't target anything that's more than 1 screen away.
+			float searchLimit = GameRenderer.GAME_VIEW_SIZE;
 			if (entity.targetSearchLimits != null) {
 				searchLimit = entity.targetSearchLimits[i];
 			}
