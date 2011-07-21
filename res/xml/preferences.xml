@@ -16,29 +16,31 @@
 
     <PreferenceCategory android:title="@string/settings">
 
-        <CheckBoxPreference android:key="sound"
-                			android:title="@string/sound"
-                			android:summary="@string/sound_summary"
-                			android:defaultValue="false"/>
-
-        <CheckBoxPreference android:key="show_fps"
-                			android:title="@string/show_fps"
-                			android:defaultValue="true" />
-
-        <CheckBoxPreference android:key="benchmark_mode"
+        <CheckBoxPreference android:key="@string/benchmark_mode"
                 			android:title="@string/benchmark_mode"
                 			android:summary="@string/benchmark_mode_summary"
                 			android:defaultValue="false" />
 
-    	<ListPreference android:entries="@array/ai_difficulty_array"
+        <CheckBoxPreference android:key="@string/sound"
+                			android:title="@string/sound"
+                			android:summary="@string/sound_summary"
+                			android:defaultValue="false"/>
+
+        <CheckBoxPreference android:key="@string/show_fps"
+                			android:title="@string/show_fps"
+                			android:defaultValue="true" />
+
+    	<ListPreference android:key="@string/ai_difficulty"
+    					android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"
                         android:title="@string/ai_difficulty"
-                        android:defaultValue="@string/ai_difficulty_easy" android:key="ai_difficulty_preference"/>
+                        android:defaultValue="@string/ai_difficulty_easy"/>
 
-    	<ListPreference android:title="@string/game_speed"
+    	<ListPreference android:key="@string/game_speed"
+    					android:title="@string/game_speed"
                         android:entries="@array/game_speed_array"
                         android:entryValues="@array/game_speed_array"
-                        android:defaultValue="@string/game_speed_normal" android:key="game_speed_preference"/>
+                        android:defaultValue="@string/game_speed_normal"/>
 
 	</PreferenceCategory>
 

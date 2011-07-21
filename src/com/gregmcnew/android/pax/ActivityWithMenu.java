@@ -72,11 +72,14 @@ public class ActivityWithMenu extends Activity {
 		
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
-    	sAIDifficulty = sAIDifficulties.get(settings.getString("ai_difficulty_preference", null));
-    	sGameSpeed = sGameSpeeds.get(settings.getString("game_speed_preference", null));
-    	sShowFPS = settings.getBoolean("show_fps", false);
-    	sSound = settings.getBoolean("sound", false);
-    	sBenchmarkMode = settings.getBoolean("benchmark_mode", false);
+    	sAIDifficulty = sAIDifficulties.get(settings.getString(getString(R.string.ai_difficulty), null));
+    	
+    	String gameSpeedString = settings.getString(getString(R.string.game_speed), null);
+    	Float gameSpeed = sGameSpeeds.get(gameSpeedString);
+    	sGameSpeed = (gameSpeed == null) ? 0 : gameSpeed;
+    	sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);
+    	sSound = settings.getBoolean(getString(R.string.sound), false);
+    	sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
     }
     
     @Override
