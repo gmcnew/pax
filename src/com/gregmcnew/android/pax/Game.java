@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import java.util.Random;
+
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -10,6 +12,8 @@ public class Game {
 	public static final int NUM_PLAYERS = 2;
 	
 	private AI.Difficulty mAIDifficulty = AI.Difficulty.EASY;
+	
+	public static final Random sRandom = new Random();
 	
 	public Game()
 	{
@@ -159,6 +163,8 @@ public class Game {
 		}
 		
 		setAIDifficulty(mAIDifficulty);
+		
+		sRandom.setSeed(0);
 		
 		mState = State.IN_PROGRESS;
 		mRestart = false;

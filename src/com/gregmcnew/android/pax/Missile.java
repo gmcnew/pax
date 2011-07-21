@@ -34,8 +34,8 @@ public class Missile extends Projectile {
 		if (mSmokeBudgetMs > Missile.SMOKE_INTERVAL_MS) {
 			mSmokeBudgetMs -= Missile.SMOKE_INTERVAL_MS;
 			emitter.add(16f, body.center.x, body.center.y,
-					(Pax.sRandom.nextFloat() - 0.5f) * 40,
-					(Pax.sRandom.nextFloat() - 0.5f) * 40);
+					(Game.sRandom.nextFloat() - 0.5f) * 40,
+					(Game.sRandom.nextFloat() - 0.5f) * 40);
 		}
 	}
 	
@@ -49,9 +49,9 @@ public class Missile extends Projectile {
 		super.reset(parent);
 		
 		// Pick a side of the ship at random.
-		float side = (float) (parent.heading + (Pax.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));
+		float side = (float) (parent.heading + (Game.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));
 		
-		heading = (float) (side + (Pax.sRandom.nextFloat() - .5) * Math.PI / 6);
+		heading = (float) (side + (Game.sRandom.nextFloat() - .5) * Math.PI / 6);
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
 		body.center.set(parent.body.center);

@@ -143,6 +143,9 @@ public class GameRenderer extends Renderer {
 	public void onDrawFrame(GL10 gl) {
         
         long dt = FramerateCounter.tick();
+        if (Pax.sBenchmarkMode) {
+        	dt = Pax.UPDATE_INTERVAL_MS;
+        }
         mGame.update(dt);
 		
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);

@@ -88,7 +88,7 @@ public abstract class Entity {
 		velocity.x = 0;
 		velocity.y = 0;
 		
-		mRetargetCounter = Pax.sRandom.nextInt(100);
+		mRetargetCounter = Game.sRandom.nextInt(100);
 	}
 	
 	/**Sets the ship to max speed on its current heading.**/

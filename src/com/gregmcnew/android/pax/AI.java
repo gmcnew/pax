@@ -113,6 +113,8 @@ public class AI {
 			1.0f,	 0f,
 			};
 	
+	private static final int RELEVANT_ENEMY_ENTITY_TYPES[] = { Ship.FIGHTER, Ship.BOMBER, Ship.FRIGATE };
+	
 	public float mWeights[];
 	
 	public AI(Player player) {
@@ -151,7 +153,7 @@ public class AI {
 	public void update(Player[] allPlayers) {
 		
 		// Count enemy entities by type.
-		for (int type : Entity.TYPES) {
+		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
 			mNumEnemyEntities[type] = 0;
 			for (Player player : allPlayers) {
 				if (player != mPlayer) {
@@ -226,7 +228,7 @@ public class AI {
 		// only one, but ties are possible.) Weigh by cost so expensive ships
 		// aren't built too often.
 		float costFactors = 0;
-		float r = Pax.sRandom.nextFloat() * sumCostFactors;
+		float r = Game.sRandom.nextFloat() * sumCostFactors;
 		for (int i = 0; i < shipBuildScores.length; i++) {
 			if (shipBuildScores[i] >= maxScore) {
 				costFactors += 1f / (float) Player.BuildCosts[i];
@@ -242,7 +244,7 @@ public class AI {
 	
 	private void resetDistortion() {
 		float threshold = (mIntelligence < 0) ? -mIntelligence : mIntelligence;
-		mDistorted = (Pax.sRandom.nextFloat() > threshold);
+		mDistorted = (Game.sRandom.nextFloat() > threshold);
 	}
 	
 	private void setShipBuildScores(float shipBuildScores[]) {

@@ -37,13 +37,11 @@ public class Pax extends ActivityWithMenu {
 	
 	public static final String PLAYER_ONE_AI = "playerOneAI";
 	public static final String PLAYER_TWO_AI = "playerTwoAI";
-	
-	public static final Random sRandom = new Random();
 
     static {
     	if (SELF_BENCHMARK) {
     		// Make randomness deterministic in benchmark mode.
-    		sRandom.setSeed(0);
+    		Game.sRandom.setSeed(0);
     	}
     }
 	
@@ -120,7 +118,6 @@ public class Pax extends ActivityWithMenu {
     	}
     	
     	if (sBenchmarkMode) {
-    		sRandom.setSeed(0);
     		FramerateCounter.start();
     		mGame.mPlayers[0].setAI(true);
     		mGame.mPlayers[1].setAI(true);
@@ -261,11 +258,11 @@ public class Pax extends ActivityWithMenu {
     				
     				// Randomize the AI's weights, making sure that weights
     				// 0, 2 and 4 are positive.
-    				w[0] = sRandom.nextFloat();
-    				w[2] = sRandom.nextFloat();
-    				w[4] = sRandom.nextFloat();
-    				w[1] = (sRandom.nextFloat() - 0.5f) * 2;
-    				w[3] = (sRandom.nextFloat() - 0.5f) * 2;
+    				w[0] = Game.sRandom.nextFloat();
+    				w[2] = Game.sRandom.nextFloat();
+    				w[4] = Game.sRandom.nextFloat();
+    				w[1] = (Game.sRandom.nextFloat() - 0.5f) * 2;
+    				w[3] = (Game.sRandom.nextFloat() - 0.5f) * 2;
     				/*
     				for (int j = 0; j < w.length; j++) {
     					w[j] = (sRandom.nextFloat() - 0.5f) * 2;

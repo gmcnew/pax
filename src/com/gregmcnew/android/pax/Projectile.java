@@ -81,8 +81,8 @@ public abstract class Projectile extends Entity {
 			
 			Emitter explosionEmitter = victim.mEmitters[Emitter.SHIP_EXPLOSION];
 			for (int i = 0; i < particles; i++) {
-				float x = victimShip.body.center.x + (Pax.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
-				float y = victimShip.body.center.y + (Pax.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
+				float x = victimShip.body.center.x + (Game.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
+				float y = victimShip.body.center.y + (Game.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
 				
 				explosionEmitter.add(victimShip.radius, x, y, victimShip.velocity.x, victimShip.velocity.y);
 			}
