@@ -6,8 +6,8 @@ import java.util.Stack;
 public class EntityPool implements Iterable<Entity> {
 
 	public EntityPool(int type) {
-		mSize = INITIAL_SIZE;
-		mList = new Entity[mSize];
+		mCapacity = INITIAL_SIZE;
+		mList = new Entity[mCapacity];
 		mNextIndex = 0;
 		mRecycledEntities = new Stack<Entity>();
 		
@@ -29,13 +29,13 @@ public class EntityPool implements Iterable<Entity> {
 			
 			if (entity != null) {
 				// Grow if necessary. This shouldn't happen much.
-				if (mNextIndex >= mSize) {
+				if (mNextIndex >= mCapacity) {
 					Entity[] oldList = mList;
-					mList = new Entity[mSize * 2];
-					for (int i = 0; i < mSize; i++) {
+					mList = new Entity[mCapacity * 2];
+					for (int i = 0; i < mCapacity; i++) {
 						mList[i] = oldList[i];
 					}
-					mSize *= 2;
+					mCapacity *= 2;
 				}
 				
 				entity.id = mNextIndex;
@@ -148,11 +148,15 @@ public class EntityPool implements Iterable<Entity> {
 		return entity;
 	}
 	
+	public int getCapacity() {
+		return mCapacity;
+	}
+	
 	private Stack<Entity> mRecycledEntities;
 	
 	private Entity[] mList;
 	private int mNextIndex;
-	private int mSize;
+	private int mCapacity;
 	private static final int INITIAL_SIZE = 1;
 	
 	private int mNumCollisionPoints;

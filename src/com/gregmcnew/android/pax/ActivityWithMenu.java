@@ -6,6 +6,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -37,6 +38,13 @@ public class ActivityWithMenu extends Activity {
     	
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
+		
+		/*
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		Editor editor = settings.edit();
+		editor.clear();
+		editor.commit();
+		*/
         
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         
@@ -71,8 +79,11 @@ public class ActivityWithMenu extends Activity {
 		}
 		
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-
+    	
     	sAIDifficulty = sAIDifficulties.get(settings.getString(getString(R.string.ai_difficulty), null));
+    	if (sAIDifficulty == null) {
+    		sAIDifficulty = AI.Difficulty.EASY;
+    	}
     	
     	String gameSpeedString = settings.getString(getString(R.string.game_speed), null);
     	Float gameSpeed = sGameSpeeds.get(gameSpeedString);

@@ -180,7 +180,7 @@ public class GameRenderer extends Renderer {
 						// "health" image, scaled according to the entity's
 						// health. Finally, the ship's outline is drawn on top.
 						
-						float scale = entity.diameter * 1.05f * entity.health / Factory.HEALTH;
+						float scale = entity.diameter * 1.05f * entity.health / entity.originalHealth;
 						mShipUnhealth[i].draw(gl, entity);
 						mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
 						mShipOutlinePainter.draw(gl, entity);
