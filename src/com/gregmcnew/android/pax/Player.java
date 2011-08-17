@@ -190,8 +190,27 @@ public class Player {
 		mShooterQueue.clear();
 	}
 	
+	private static CollisionHandler sCH = new CollisionHandler();
+	
 	public void attack(Player victim) {
-		for (int type : Projectile.TYPES) {
+		for (int shipType : Ship.TYPES_LARGEST_FIRST) {
+			for (int projectileType : Projectile.TYPES) {
+				EntityPool shipPool = victim.mEntities[shipType];
+				EntityPool projectilePool = mEntities[projectileType];
+				
+				boolean flip = (shipPool.size() > projectilePool.size());
+				
+				sCH.initialize(victim, shipPool, projectilePool, flip);
+				
+				if (flip) {
+					projectilePool.collide(shipPool, sCH);
+				}
+				else {
+					shipPool.collide(projectilePool, sCH);
+				}
+				
+				/*
+			         		for (int type : Projectile.TYPES) {
 			for (Entity entity : mEntities[type]) {
 				
 				Projectile projectile = (Projectile) entity;
@@ -201,6 +220,7 @@ public class Player {
 					// in which case it will be removed later.
 					projectile.attack(victim);
 				}
+				*/
 			}
 		}
 	}
@@ -260,6 +280,12 @@ public class Player {
 	}
 	
 	private Ship addShip(int type) {
+
+		Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
+		
+		if (factory == null && type != Entity.FACTORY) {
+			return null;
+		}
 		
 		Ship ship = (Ship) mEntities[type].add(type, null);
 		
@@ -267,7 +293,6 @@ public class Player {
 			
 			// Fix the ship's location.
 			if (type != Entity.FACTORY) { // If the ship being spawned ISN'T a factory...
-				Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
 				float spawnX = factory.body.center.x + (float) (Factory.DIAMETER * 0.4 * Math.cos(factory.heading));
 				float spawnY = factory.body.center.y + (float) (Factory.DIAMETER * 0.4 * Math.sin(factory.heading));
 				ship.body.center.set(spawnX, spawnY);

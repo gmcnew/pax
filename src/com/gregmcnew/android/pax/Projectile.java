@@ -14,49 +14,8 @@ public abstract class Projectile extends Entity {
 		super.reset(parent);
 	}
 	
-	public void attack(Player victim) {
-
-		// TODO: Fix the case in which the projectile intersects with two ships
-		// (of different types) and kills the first one it finds (when it
-		// actually should have hit the other ship first).
-		
-		// Start with the larger ship types to improve the speed of collision
-		// detection.
-		for (int victimShipType : Ship.TYPES_LARGEST_FIRST) {
-			Ship victimShip = (Ship) victim.mEntities[victimShipType].collide(body.center, body.radius);
-
-			// Check other collision points if necessary.
-			for (int i = 0; i < mExtraPoints.length && victimShip == null; i++) {
-				victimShip = (Ship) victim.mEntities[victimShipType].collide(mExtraPoints[i], body.radius);
-			}
-			
-			if (victimShip != null) {
-				
-				int damage = health;
-				health = 0;
-				
-				if (type == MISSILE && victimShipType == BOMBER) {
-					// Frigates shouldn't be that good against bombers.
-					damage /= 4;
-				}
-				
-				// This needs to be called before damage is applied.
-				addHitParticle(victim, victimShip, damage);
-				
-				victimShip.health -= damage;
-				
-				if (victimShip.health <= 0) {
-					victim.mEntities[victimShipType].remove(victimShip);
-					GameSounds.play(GameSounds.Sound.EXPLOSION);
-				}
-				
-				break; // don't examine other ship types
-			}
-		}
-	}
-	
 	// This should be called before damage is applied.
-	private void addHitParticle(Player victim, Ship victimShip, int damage) {
+	public void addHitParticle(Player victim, Ship victimShip, int damage) {
 
 		int emitterType = Emitter.BOMB_HIT;
 		switch (type) {

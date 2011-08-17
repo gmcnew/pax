@@ -90,6 +90,10 @@ public class EntityPool implements Iterable<Entity> {
 		return (p == null) ? null : get(p.id);
 	}
 	
+	public void collide(EntityPool projectiles, CollisionHandler ch) {
+		Quadtree.collide(mBodies, projectiles.mBodies, ch);
+	}
+	
 	public void invalidateCollisionSpaces() {
 		mBodies.invalidate();
 	}
