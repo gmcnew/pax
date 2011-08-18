@@ -40,6 +40,7 @@ public class ActivityWithMenu extends Activity {
 	public static boolean sShowParticles;
 	public static boolean sShowCollisionBoxes;
 	public static boolean sShowFPS;
+	public static boolean sShowHealthForAllShipTypes;
 	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,6 +101,7 @@ public class ActivityWithMenu extends Activity {
     	sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
     	sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
     	sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);
+    	sShowHealthForAllShipTypes = settings.getBoolean(getString(R.string.show_all_health), false);
     	sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);
     	sSound = settings.getBoolean(getString(R.string.sound), false);
     	sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);

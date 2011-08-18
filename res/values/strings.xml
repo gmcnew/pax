@@ -76,6 +76,8 @@
     <string name="show_ships_summary">... and projectiles</string>
     <string name="show_particles">Show particles</string>
     <string name="show_fps">Show framerate</string>
+    <string name="show_all_health">Show health for all ships</string>
+    <string name="show_all_health_summary">... not just factories</string>
     <string name="show_collision_boxes">Show collision boxes</string>
     <string name="show_collision_boxes_summary">... for fighters only</string>
     

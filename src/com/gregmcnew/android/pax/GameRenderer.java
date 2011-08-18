@@ -192,8 +192,8 @@ public class GameRenderer extends Renderer {
 					Painter[] painters = mPlayerEntityPainters.get(player);
 				
 					for (Entity entity : player.mEntities[entityType]) {
-						
-						if (entityType == Entity.FACTORY) {
+
+						if (entityType == Entity.FACTORY || Pax.sShowHealthForAllShipTypes) {
 							
 							// The "unhealth" image is drawn first, followed by the
 							// "health" image, scaled according to the entity's
