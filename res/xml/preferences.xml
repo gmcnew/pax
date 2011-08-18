@@ -14,7 +14,7 @@
 		</PreferenceScreen>
 	</PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/settings">
+    <PreferenceCategory android:title="@string/general_settings">
 
         <CheckBoxPreference android:key="@string/benchmark_mode"
                 			android:title="@string/benchmark_mode"
@@ -25,10 +25,6 @@
                 			android:title="@string/sound"
                 			android:summary="@string/sound_summary"
                 			android:defaultValue="false"/>
-
-        <CheckBoxPreference android:key="@string/show_fps"
-                			android:title="@string/show_fps"
-                			android:defaultValue="true" />
 
     	<ListPreference android:key="@string/ai_difficulty"
     					android:entries="@array/ai_difficulty_array"
@@ -41,6 +37,22 @@
                         android:entries="@array/game_speed_array"
                         android:entryValues="@array/game_speed_array"
                         android:defaultValue="@string/game_speed_normal"/>
+
+	</PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/graphics_settings">
+
+        <CheckBoxPreference android:key="@string/show_ships"
+                			android:title="@string/show_ships"
+                			android:defaultValue="true" />
+
+        <CheckBoxPreference android:key="@string/show_particles"
+                			android:title="@string/show_particles"
+                			android:defaultValue="true" />
+
+        <CheckBoxPreference android:key="@string/show_fps"
+                			android:title="@string/show_fps"
+                			android:defaultValue="true" />
 
 	</PreferenceCategory>
 

@@ -28,15 +28,14 @@
     <string name="game_open_source_url">github.com/gmcnew/pax</string>
     
     
-    <!-- Settings strings -->
+    <!-- General settings strings -->
+    
+    <string name="general_settings">Settings</string>
     
     <string name="sound">Sound</string>
     <string name="sound_summary">Experimental</string>
     <string name="benchmark_mode">Benchmark mode</string>
     <string name="benchmark_mode_summary">Experimental</string>
-    <string name="show_fps">Show framerate</string>
-    <string name="jet_streams">Jet streams</string>
-    <string name="jet_streams_summary">Experimental</string>
     
     <string name="ai_difficulty">AI difficulty</string>
     <string-array name="ai_difficulty_array">
@@ -67,4 +66,14 @@
     <string name="game_speed_normal">Normal</string>
     <string name="game_speed_fast">Fast</string>
     <string name="game_speed_insane">Insane</string>
+    
+    
+    <!-- Graphics settings strings -->
+    
+    <string name="graphics_settings">Graphics</string>
+    
+    <string name="show_ships">Show ships</string>
+    <string name="show_particles">Show particles</string>
+    <string name="show_fps">Show framerate</string>
+    
 </resources>

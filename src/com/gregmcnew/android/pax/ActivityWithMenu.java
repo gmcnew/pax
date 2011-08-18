@@ -19,18 +19,26 @@ import android.widget.Toast;
  */
 public class ActivityWithMenu extends Activity {
 	
+	// General settings
+	
 	public static final float GAME_SPEED_NORMAL = 1f;
 	public static final float GAME_SPEED_FAST   = 3f;
 	public static final float GAME_SPEED_INSANE = 6f;
 	public static float sGameSpeed;
 	
 	public static AI.Difficulty sAIDifficulty;
-	public static boolean sShowFPS;
 	public static boolean sSound;
 	public static boolean sBenchmarkMode;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
 	private static Map<String, Float> sGameSpeeds = null;
+
+	
+	// Graphics settings
+	
+	public static boolean sShowShips;
+	public static boolean sShowParticles;
+	public static boolean sShowFPS;
 	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -88,6 +96,8 @@ public class ActivityWithMenu extends Activity {
     	String gameSpeedString = settings.getString(getString(R.string.game_speed), null);
     	Float gameSpeed = sGameSpeeds.get(gameSpeedString);
     	sGameSpeed = (gameSpeed == null) ? 0 : gameSpeed;
+    	sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
+    	sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
     	sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);
     	sSound = settings.getBoolean(getString(R.string.sound), false);
     	sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);

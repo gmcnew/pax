@@ -155,7 +155,9 @@ public class GameRenderer extends Renderer {
         }
         drawStars(gl);
         
-        drawParticles(gl, Emitter.SMOKE);
+        if (Pax.sShowParticles) {
+	        drawParticles(gl, Emitter.SMOKE);
+        }
 		
 		// Draw fighter trails!
 		for (Player player : mGame.mPlayers) {
@@ -166,38 +168,42 @@ public class GameRenderer extends Renderer {
 			}
 		}
 		
-		for (int entityType : ENTITY_LAYERS) {
-			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-				
-				Player player = mGame.mPlayers[i];
-				Painter[] painters = mPlayerEntityPainters.get(player);
-			
-				for (Entity entity : player.mEntities[entityType]) {
+		if (Pax.sShowShips) {
+			for (int entityType : ENTITY_LAYERS) {
+				for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 					
-					if (entityType == Entity.FACTORY) {
+					Player player = mGame.mPlayers[i];
+					Painter[] painters = mPlayerEntityPainters.get(player);
+				
+					for (Entity entity : player.mEntities[entityType]) {
 						
-						// The "unhealth" image is drawn first, followed by the
-						// "health" image, scaled according to the entity's
-						// health. Finally, the ship's outline is drawn on top.
-						
-						float scale = entity.diameter * 1.05f * entity.health / entity.originalHealth;
-						mShipUnhealth[i].draw(gl, entity);
-						mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
-						mShipOutlinePainter.draw(gl, entity);
-					}
-					else {
-						painters[entityType].draw(gl, entity);
+						if (entityType == Entity.FACTORY) {
+							
+							// The "unhealth" image is drawn first, followed by the
+							// "health" image, scaled according to the entity's
+							// health. Finally, the ship's outline is drawn on top.
+							
+							float scale = entity.diameter * 1.05f * entity.health / entity.originalHealth;
+							mShipUnhealth[i].draw(gl, entity);
+							mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
+							mShipOutlinePainter.draw(gl, entity);
+						}
+						else {
+							painters[entityType].draw(gl, entity);
+						}
 					}
 				}
 			}
 		}
-        
-    	drawParticles(gl, Emitter.SPARK);
-    	drawParticles(gl, Emitter.LASER_HIT);
-    	drawParticles(gl, Emitter.MISSILE_HIT);
-    	drawParticles(gl, Emitter.BOMB_HIT);
-    	drawParticles(gl, Emitter.SHIP_EXPLOSION);
 		
+        if (Pax.sShowParticles) {
+	    	drawParticles(gl, Emitter.SPARK);
+	    	drawParticles(gl, Emitter.LASER_HIT);
+	    	drawParticles(gl, Emitter.MISSILE_HIT);
+	    	drawParticles(gl, Emitter.BOMB_HIT);
+	    	drawParticles(gl, Emitter.SHIP_EXPLOSION);
+		}
+        
         if (mGame.getState() == Game.State.IN_PROGRESS) { 
         	drawButtons(gl);
         }
