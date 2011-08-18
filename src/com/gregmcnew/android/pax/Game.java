@@ -164,7 +164,9 @@ public class Game {
 		
 		setAIDifficulty(mAIDifficulty);
 		
-		sRandom.setSeed(0);
+		if (Pax.sBenchmarkMode) { 
+			sRandom.setSeed(0);
+		}
 		
 		mState = State.IN_PROGRESS;
 		mRestart = false;
