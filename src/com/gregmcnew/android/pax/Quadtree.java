@@ -153,6 +153,154 @@ public class Quadtree {
 		return collide(centerX, centerY, radius, radius * radius);
 	}
 	
+	//private static Stack<Quadtree> as = new Stack<Quadtree>();
+	//private static Stack<Quadtree> bs = new Stack<Quadtree>();
+	
+	public static void collide(Quadtree treeA, Quadtree treeB, CollisionHandler ch) {
+		
+		float radiuses = treeA.mEntrySize + treeB.mEntrySize;
+		
+		if (treeB.mMaxVal + radiuses < treeA.mMinVal || treeB.mMinVal - radiuses > treeA.mMaxVal) {
+			return;
+		}
+
+		if (treeA.isLeaf) {
+			for (int i = treeA.mMinIndex; i < treeA.mMaxIndex; i++) {
+				Point2 a = treeA.mPoints[i];
+				Point2 b = treeB.collide(a, treeA.mEntrySize);
+				while (b != null) {
+					int result = ch.collide(a, b);
+					
+					if (0 != (result & CollisionHandler.REMOVE_B)) {
+						treeB.remove(b);
+					}
+					
+					if (0 != (result & CollisionHandler.REMOVE_A)) {
+						treeA.mPoints[i] = treeA.mPoints[treeA.mMaxIndex - 1];
+						treeA.mMaxIndex--;
+						i--;
+						break;
+					}
+					b = treeB.collide(a, treeA.mEntrySize);
+				}
+			}
+		}
+		else {
+			collide(treeA.low, treeB, ch);
+			collide(treeA.high, treeB, ch);
+		}
+		
+		/*
+		as.clear();
+		bs.clear();
+		
+		as.push(treeA);
+		bs.push(treeB);
+		
+		float radiuses = treeA.mEntrySize + treeB.mEntrySize;
+		
+		while (!as.isEmpty()) {
+			Quadtree aTree = as.pop();
+			Quadtree bTree = bs.pop();
+			
+			if (bTree.mMaxVal + radiuses < aTree.mMinVal || bTree.mMinVal - radiuses > aTree.mMaxVal) {
+				// No overlap.
+				continue;
+			}
+			
+			if (aTree.isLeaf && bTree.isLeaf) {
+				for (int i = aTree.mMinIndex; i < aTree.mMaxIndex; i++) {
+					Point2 a = aTree.mPoints[i];
+					for (int j = bTree.mMinIndex; j < bTree.mMaxIndex; j++) {
+						Point2 b = bTree.mPoints[j];
+						
+						// First, make sure our the point collides with the square that
+						// contains the circle. If it doesn't, we can save ourselves
+						// some multiplications.
+						float dx = a.x - b.x;
+						float dy = a.y - b.y;
+						
+						boolean inSquare = (-radiuses <= dx && dx <= radiuses) && (-radiuses <= dy && dy <= radiuses);
+						if (inSquare) {
+							float distanceSquared = (dx * dx) + (dy * dy);
+							float radiusesSquared = radiuses * radiuses;
+							if (distanceSquared < radiusesSquared) {
+								
+								int result = ch.collide(a, b);
+								
+								if (0 != (result & CollisionHandler.REMOVE_B)) {
+									bTree.mPoints[j] = bTree.mPoints[bTree.mMaxIndex - 1];
+									j--;
+									bTree.mMaxIndex--;
+								}
+								
+								if (0 != (result & CollisionHandler.REMOVE_A)) {
+									aTree.mPoints[i] = aTree.mPoints[aTree.mMaxIndex - 1];
+									i--;
+									aTree.mMaxIndex--;
+									
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (aTree.isLeaf || bTree.isLeaf) {
+				int minIndex = (aTree.isLeaf ? aTree.mMinIndex : bTree.mMinIndex);
+				int maxIndex = (aTree.isLeaf ? aTree.mMaxIndex : bTree.mMaxIndex);
+				
+				Point2 a, b;
+				for (int i = minIndex; i < maxIndex; i++) {
+					if (aTree.isLeaf) {
+						a = aTree.mPoints[i];
+						b = bTree.collide(a, aTree.mEntrySize);
+					}
+					else {
+						b = bTree.mPoints[i];
+						a = aTree.collide(b, bTree.mEntrySize);
+					}
+					
+					if (a != null && b != null) {
+					
+						int result = ch.collide(a, b);
+						
+						if (0 != (result & CollisionHandler.REMOVE_A)) {
+							aTree.remove(a);
+							if (aTree.isLeaf) {
+								maxIndex--;
+								i--;
+							}
+						}
+						
+						if (0 != (result & CollisionHandler.REMOVE_B)) {
+							bTree.remove(b);
+							if (aTree.isLeaf && 0 == (result & CollisionHandler.REMOVE_A)) {
+								i--;
+							}
+							else if (!aTree.isLeaf) {
+								maxIndex--;
+								i--;
+							}
+						}
+					}
+				}
+			}
+			else {
+				// Check all combinations of children.
+				as.push(aTree.low);
+				as.push(aTree.low);
+				as.push(aTree.high);
+				as.push(aTree.high);
+				bs.push(bTree.low);
+				bs.push(bTree.high);
+				bs.push(bTree.low);
+				bs.push(bTree.high);
+			}
+		}
+		*/
+	}
+	
 	// Returns true if the point was removed.
 	public boolean remove(Point2 point) {
 		assert(mIsValid);

@@ -1,7 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import android.util.Log;
-
 public class CollisionHandler {
 
 	private Player mVictim;
