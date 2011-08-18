@@ -1,4 +1,7 @@
 package com.gregmcnew.android.pax;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +49,14 @@ public class GameRenderer extends Renderer {
 		mShipUnhealth = new Painter[Game.NUM_PLAYERS];
 		mShipHealth = new Painter[Game.NUM_PLAYERS];
 		mShipOutlinePainter = getPainter(gl, R.drawable.ship_outline);
+		
+		float lineVertices[] = { -0.5f, 0, 0.5f, 0 };
+		
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(lineVertices.length * Short.SIZE);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		mLineVertices = byteBuffer.asFloatBuffer();
+		mLineVertices.put(lineVertices);
+		mLineVertices.position(0);
 		
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
@@ -166,6 +177,11 @@ public class GameRenderer extends Renderer {
 				Fighter fighter = (Fighter) entity;
 				mHighlight.drawTrail(gl, fighter.mTrailVertices, fighter.mVertexColors);
 			}
+		}
+		
+		if (Pax.sShowCollisionBoxes) {
+			mGame.mPlayers[0].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, true, mRotation);
+			mGame.mPlayers[1].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, false, mRotation);
 		}
 		
 		if (Pax.sShowShips) {
@@ -316,6 +332,8 @@ public class GameRenderer extends Renderer {
 	private Game mGame;
 	
 	private StarField mStarField;
+	
+	private FloatBuffer mLineVertices;
 	
 	// The width and height of the displayed game area, in game units.
 	// These values will -not- change when the screen is rotated.
