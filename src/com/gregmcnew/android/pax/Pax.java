@@ -75,8 +75,8 @@ public class Pax extends ActivityWithMenu {
 		mLastState = Game.State.IN_PROGRESS;
 
         mHandler = new Handler();
-        mHandler.removeCallbacks(mUpdateViewTask);
-        mHandler.postDelayed(mUpdateViewTask, 0);
+        
+        mNumUpdates = 0;
 
         if (SELF_BENCHMARK) {
         	for (Player player : mGame.mPlayers) {
@@ -146,11 +146,14 @@ public class Pax extends ActivityWithMenu {
     		
     		mView.onResume();
     	}
+    	
+        mHandler.postDelayed(mUpdateViewTask, 0);
     }
     
     @Override
     public void onPause() {
     	super.onPause();
+        mHandler.removeCallbacks(mUpdateViewTask);
     	if (!SELF_BENCHMARK) {
     		mView.onPause();
         	if (MUSIC) {
@@ -331,9 +334,20 @@ public class Pax extends ActivityWithMenu {
 	    		
 	    		updateState(mGame.getState());
 	    		
-	    		if (mShakeDetector.isShaking()) {
-	    			mGame.restart();
+	    		if (sBenchmarkMode) {
+	    			if (mNumUpdates > 1000) {
+	    				updateState(Game.State.TIE);
+	    				mGame.restart();
+	    				mNumUpdates = 0;
+	    			}
 	    		}
+	    		else {
+		    		if (mShakeDetector.isShaking()) {
+		    			mGame.restart();
+		    		}
+	    		}
+	    		
+	    		mNumUpdates++;
     		}
     	}
     };
@@ -384,4 +398,6 @@ public class Pax extends ActivityWithMenu {
     private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    
+    private int mNumUpdates;
 }
