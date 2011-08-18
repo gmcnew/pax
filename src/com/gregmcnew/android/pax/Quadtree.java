@@ -44,6 +44,10 @@ public class Quadtree {
 	}
 	
 	public void draw(GL10 gl, boolean bluePlayer, int rotation, float minVal, float maxVal) {
+		
+		if (mMinIndex >= mMaxIndex) {
+			return;
+		}
 
 		float avg = (minVal + maxVal) / 2;
 		float delta = maxVal - minVal;
