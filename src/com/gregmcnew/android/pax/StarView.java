@@ -56,22 +56,13 @@ public class StarView extends GLSurfaceView {
 			mStarField.update(dt);
 			
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
-	        // This seems to be necessary to avoid camera offset problems when the
-	        // screen is rotated while the game is paused (and rendering is thus
-	        // paused as well). TODO: Figure this out.
-	        gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
-	        
-			drawStars(gl);
-		}
-		
-		private void drawStars(GL10 gl) {
-			float scale = Math.max(mScreenWidth, mScreenHeight);
-			float size = 5f;
-			for (StarField.Star star : mStarField.mStars) {
-				float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
-				mStarPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
-			}
+			
+			// This seems to be necessary to avoid camera offset problems when the
+			// screen is rotated while the game is paused (and rendering is thus
+			// paused as well). TODO: Figure this out.
+			gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
+			
+			mStarField.draw(gl, mStarPainter, mScreenWidth, mScreenHeight);
 		}
 		
 		private StarField mStarField;

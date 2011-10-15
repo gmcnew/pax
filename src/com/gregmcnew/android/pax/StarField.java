@@ -2,6 +2,8 @@ package com.gregmcnew.android.pax;
 
 import java.util.Random;
 
+import javax.microedition.khronos.opengles.GL10;
+
 public class StarField {
 	
 	public static final int NUM_STARS = 100;
@@ -27,10 +29,19 @@ public class StarField {
 		}
 	}
 	
-	protected Star mStars[];
+	public void draw(GL10 gl, Painter starPainter, float width, float height) {
+		float scale = Math.max(width, height);
+		float size = 5f;
+		for (Star star : mStars) {
+			float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
+			starPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
+		}
+	}
+	
+	private Star mStars[];
 	private Random mRandom;
 	
-	public class Star {
+	private class Star {
 		public Star() {
 			reset();
 		}

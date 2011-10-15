@@ -164,7 +164,8 @@ public class GameRenderer extends Renderer {
         if (!mGame.isPaused()) {
         	mStarField.update(dt);
         }
-        drawStars(gl);
+        
+        mStarField.draw(gl, mStarPainter, mGameWidth, mGameHeight);
         
         if (Pax.sShowParticles) {
 	        drawParticles(gl, Emitter.SMOKE);
@@ -248,15 +249,6 @@ public class GameRenderer extends Renderer {
 			mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, alpha);
 			x -= digitWidth;
 			number /= 10;
-		}
-	}
-	
-	private void drawStars(GL10 gl) {
-		float scale = Math.max(mGameWidth, mGameHeight);
-		float size = 5f;
-		for (StarField.Star star : mStarField.mStars) {
-			float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
-			mStarPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
 		}
 	}
 	

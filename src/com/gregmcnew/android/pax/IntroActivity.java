@@ -196,7 +196,7 @@ public class IntroActivity extends ActivityWithMenu {
 			
 			float buttonSize = maxDimension / 8;
 			
-			drawStars(gl);
+			mStarField.draw(gl, mStarPainter, mScreenWidth, mScreenHeight);
 			
 			float buttonXPos = 0;
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
@@ -219,15 +219,6 @@ public class IntroActivity extends ActivityWithMenu {
 			
 			// Draw the countdown indicator
 			drawCountdown(gl, maxDimension, rotationDegrees);
-		}
-		
-		private void drawStars(GL10 gl) {
-			float scale = Math.max(mScreenWidth, mScreenHeight);
-			float size = 5f;
-			for (StarField.Star star : mStarField.mStars) {
-				float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
-				mStarPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
-			}
 		}
 		
 		private void drawCountdown(GL10 gl, float maxDimension, float rotationDegrees) {
