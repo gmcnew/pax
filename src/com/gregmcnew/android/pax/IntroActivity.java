@@ -286,7 +286,8 @@ public class IntroActivity extends ActivityWithMenu {
 	    	// We don't care which pointer was pressed.
 	    	int action = event.getAction() & MotionEvent.ACTION_MASK;
 	    	
-	    	if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+	    	if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN)
+	    			&& !mActivity.mMenuOpen) {
 	    		
 		    	for (int i = 0; i < event.getPointerCount(); i++) {
 		    		
