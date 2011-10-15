@@ -193,7 +193,14 @@ public class GameRenderer extends Renderer {
 				
 					for (Entity entity : player.mEntities[entityType]) {
 
-						if (entityType == Entity.FACTORY || Pax.sShowHealthForAllShipTypes) {
+						if (entityType == Entity.FACTORY
+							|| (Pax.sShowHealthForAllShipTypes
+								&& (entityType == Ship.FIGHTER
+									|| entityType == Ship.BOMBER
+									|| entityType == Ship.FRIGATE
+									)
+								)
+							) {
 							
 							// The "unhealth" image is drawn first, followed by the
 							// "health" image, scaled according to the entity's
