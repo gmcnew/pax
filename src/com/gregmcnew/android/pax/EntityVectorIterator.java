@@ -17,7 +17,7 @@ public class EntityVectorIterator implements Iterator<Entity> {
 		EntityVectorIterator iterator = sNextIterator < 0
 			? new EntityVectorIterator()
 			: sIterators[sNextIterator--];
-		return iterator.initialize(entityVector.mData, entityVector.mSize);
+		return iterator.initialize(entityVector);
 	}
 	
 	
@@ -26,9 +26,8 @@ public class EntityVectorIterator implements Iterator<Entity> {
 	private EntityVectorIterator() {
 	}
 	
-	private EntityVectorIterator initialize(Entity[] list, int maxIndex) {
-		mList = list;
-		mMaxIndex = maxIndex;
+	private EntityVectorIterator initialize(EntityVector entityVector) {
+		mVect = entityVector;
 		i = 0;
 		return this;
 	}
@@ -38,11 +37,11 @@ public class EntityVectorIterator implements Iterator<Entity> {
 
 		// Skip null (recycled) entries, and advance i, since we don't want it
 		// to be pointing at null entries.
-		while (i < mMaxIndex && mList[i] == null) {
+		while (i < mVect.mSize && mVect.mData[i] == null) {
 			i++;
 		}
 		
-		boolean hasNext = (i < mMaxIndex);
+		boolean hasNext = (i < mVect.mSize);
 		if (!hasNext) {
 			// We assume that if an iterator has no more entries, it won't be
 			// used any more, so it can be recycled.
@@ -54,7 +53,7 @@ public class EntityVectorIterator implements Iterator<Entity> {
 
 	@Override
 	public Entity next() {
-		return mList[i++];
+		return mVect.mData[i++];
 	}
 
 	@Override
@@ -62,7 +61,6 @@ public class EntityVectorIterator implements Iterator<Entity> {
 		throw new UnsupportedOperationException();
 	}
 	
-	private Entity[] mList;
-	private int mMaxIndex;
+	private EntityVector mVect;
 	private int i;
 }

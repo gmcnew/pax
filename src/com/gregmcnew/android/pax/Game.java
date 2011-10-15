@@ -11,8 +11,6 @@ public class Game {
 	
 	public static final int NUM_PLAYERS = 2;
 	
-	private AI.Difficulty mAIDifficulty = AI.Difficulty.EASY;
-	
 	public static final Random sRandom = new Random();
 	
 	public Game()
@@ -43,7 +41,6 @@ public class Game {
 	}
 	
 	public void setAIDifficulty(AI.Difficulty difficulty) {
-		mAIDifficulty = difficulty;
 		for (Player player : mPlayers) {
 			player.setAIDifficulty(difficulty);
 		}
@@ -161,8 +158,6 @@ public class Game {
 		for (Player player : mPlayers) {
 			player.reset();
 		}
-		
-		setAIDifficulty(mAIDifficulty);
 		
 		if (Pax.sBenchmarkMode) { 
 			sRandom.setSeed(0);
