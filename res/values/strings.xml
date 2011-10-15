@@ -2,7 +2,7 @@
 <resources>
     <string name="tutorial">Tutorial</string>
     <string name="settings">Settings</string>
-    <string name="high_scores">High scores</string>
+    <string name="restart_game">Restart Game</string>
     
     <string name="about_category">About</string>
     <string name="about">About Pax</string>

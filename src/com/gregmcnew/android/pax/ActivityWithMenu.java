@@ -118,9 +118,6 @@ public class ActivityWithMenu extends Activity {
                 Intent prefsIntent = new Intent(this, PrefsActivity.class);
                 startActivity(prefsIntent);
                 break;
-            case R.id.high_scores:
-            	// TODO: Add high scores.
-                break;
         }
         return true;
     }

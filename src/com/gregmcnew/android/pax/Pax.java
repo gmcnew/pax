@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.os.Debug;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class Pax extends ActivityWithMenu {
@@ -170,6 +172,24 @@ public class Pax extends ActivityWithMenu {
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
         mView.updateRotation();
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.tutorial:
+            	// TODO: Add a tutorial.
+            	Toast.makeText(this, "Sorry, buddy, you're on your own!", Toast.LENGTH_LONG).show();
+            	break;
+            case R.id.settings:
+                Intent prefsIntent = new Intent(this, PrefsActivity.class);
+                startActivity(prefsIntent);
+                break;
+            case R.id.restart_game:
+            	mGame.restart();
+            	break;
+        }
+        return true;
     }
     
     /*

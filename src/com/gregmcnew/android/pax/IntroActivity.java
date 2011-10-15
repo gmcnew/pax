@@ -60,6 +60,7 @@ public class IntroActivity extends ActivityWithMenu {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.restart_game).setVisible(false);
     	stopTimer();
     	reset();
     	mMenuOpen = true;

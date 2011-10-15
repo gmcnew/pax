@@ -3,5 +3,5 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/tutorial" android:id="@+id/tutorial" android:icon="@android:drawable/ic_menu_help"></item>
     <item android:title="@string/settings" android:id="@+id/settings" android:icon="@android:drawable/ic_menu_preferences"></item>
-    <item android:title="@string/high_scores" android:id="@+id/high_scores" android:icon="@android:drawable/ic_menu_agenda" android:enabled="false"></item>
+    <item android:title="@string/restart_game" android:id="@+id/restart_game" android:enabled="true" android:icon="@android:drawable/ic_menu_rotate"></item>
 </menu>
