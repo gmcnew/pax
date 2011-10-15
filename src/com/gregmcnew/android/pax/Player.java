@@ -1,8 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class Player {
 
 	public enum BuildTarget { FIGHTER, BOMBER, FRIGATE, UPGRADE, NONE }
@@ -53,8 +50,8 @@ public class Player {
 		
 		mEntities = new EntityPool[Entity.TYPES.length];
 		
-		mRetargetQueue = new LinkedList<Entity>();
-		mShooterQueue = new LinkedList<Ship>();
+		mRetargetQueue = new EntityVector();
+		mShooterQueue = new EntityVector();
 		
 		for (int type : Entity.TYPES) {
 			mEntities[type] = new EntityPool(type);
@@ -184,8 +181,8 @@ public class Player {
 			}
 		}
 		
-		for (Ship ship : mShooterQueue) {
-			addProjectile(ship);
+		for (Entity shooter : mShooterQueue) {
+			addProjectile((Ship) shooter);
 		}
 		mShooterQueue.clear();
 	}
@@ -343,10 +340,15 @@ public class Player {
 	public EntityPool[] mEntities;
 	public Emitter[] mEmitters;
 	
-	// The retarget queue contains entities that want a new target. This queue
+	// Iterators require allocations, which can be expensive if they kick off
+	// the garbage collector, so we use a custom collection instead for the
+	// retarget and shooter queues. (They're not even queues, really. I should
+	// probably rename them.)
+	//
+	// The retarget vector contains entities that want a new target. This queue
 	// should be handled and cleared on every call to Game.update().
-	public Queue<Entity> mRetargetQueue;
-	public Queue<Ship> mShooterQueue;
+	public EntityVector mRetargetQueue;
+	public EntityVector mShooterQueue;
 	
 	public float money;
 	public BuildTarget mBuildTarget;

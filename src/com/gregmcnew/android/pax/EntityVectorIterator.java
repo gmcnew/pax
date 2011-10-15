@@ -2,32 +2,31 @@ package com.gregmcnew.android.pax;
 
 import java.util.Iterator;
 
-public class EntityPoolIterator implements Iterator<Entity> {
+public class EntityVectorIterator implements Iterator<Entity> {
 	
 	// Static members and methods
 	
 	// (If we ever need more than 10 iterators at once, we're doing something
 	// wrong.)
-	private static final EntityPoolIterator sIterators[] = new EntityPoolIterator[10];
+	private static final EntityVectorIterator sIterators[] = new EntityVectorIterator[10];
 	private static int sNextIterator = -1;
 	
 	// Entities are enumerated extremely frequently, so it's important that
 	// creating an EntityPoolIterator is fast. Recycling helps.
-	public static EntityPoolIterator create(EntityPool entityPool, Entity[] list, int maxIndex) {
-		EntityPoolIterator iterator = sNextIterator < 0
-			? new EntityPoolIterator()
+	public static EntityVectorIterator create(EntityVector entityVector) {
+		EntityVectorIterator iterator = sNextIterator < 0
+			? new EntityVectorIterator()
 			: sIterators[sNextIterator--];
-		return iterator.initialize(entityPool, list, maxIndex);
+		return iterator.initialize(entityVector.mData, entityVector.mSize);
 	}
 	
 	
 	// Object members and methods
 
-	private EntityPoolIterator() {
+	private EntityVectorIterator() {
 	}
 	
-	private EntityPoolIterator initialize(EntityPool entityPool, Entity[] list, int maxIndex) {
-		mEntityPool = entityPool;
+	private EntityVectorIterator initialize(Entity[] list, int maxIndex) {
 		mList = list;
 		mMaxIndex = maxIndex;
 		i = 0;
@@ -60,10 +59,9 @@ public class EntityPoolIterator implements Iterator<Entity> {
 
 	@Override
 	public void remove() {
-		mEntityPool.remove(i);
+		throw new UnsupportedOperationException();
 	}
 	
-	private EntityPool mEntityPool;
 	private Entity[] mList;
 	private int mMaxIndex;
 	private int i;

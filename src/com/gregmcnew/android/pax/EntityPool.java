@@ -6,9 +6,7 @@ import java.util.Stack;
 public class EntityPool implements Iterable<Entity> {
 
 	public EntityPool(int type) {
-		mCapacity = INITIAL_SIZE;
-		mList = new Entity[mCapacity];
-		mNextIndex = 0;
+		mList = new EntityVector();
 		mRecycledEntities = new Stack<Entity>();
 		
 		// Keep track of the number of collision points among all entities.
@@ -28,24 +26,16 @@ public class EntityPool implements Iterable<Entity> {
 			entity = createNewEntity(entityType, parent);
 			
 			if (entity != null) {
-				// Grow if necessary. This shouldn't happen much.
-				if (mNextIndex >= mCapacity) {
-					Entity[] oldList = mList;
-					mList = new Entity[mCapacity * 2];
-					for (int i = 0; i < mCapacity; i++) {
-						mList[i] = oldList[i];
-					}
-					mCapacity *= 2;
-				}
-				
-				entity.id = mNextIndex;
-				mNextIndex++;
+				// An entity's ID is its position in the list.
+				entity.id = mList.add(entity);
 			}
 		}
 		
 		if (entity != null) {
 			
-			mList[entity.id] = entity;
+			// Whether an entity is new or recycled, its ID is the index
+			// it should occupy in the list.
+			mList.mData[entity.id] = entity;
 			
 			entity.body.center.id = entity.id;
 			for (Point2 extraPoint : entity.mExtraPoints) {
@@ -59,11 +49,11 @@ public class EntityPool implements Iterable<Entity> {
 	}
 	
 	public Entity get(int id) {
-		return mList[id];
+		return mList.mData[id];
 	}
 	
 	public int size() {
-		return mNextIndex - mRecycledEntities.size();
+		return mList.mSize - mRecycledEntities.size();
 	}
 	
 	public boolean isEmpty() {
@@ -78,7 +68,7 @@ public class EntityPool implements Iterable<Entity> {
 	}
 
 	public Iterator<Entity> iterator() {
-		return EntityPoolIterator.create(this, mList, mNextIndex);
+		return EntityVectorIterator.create(mList);
 	}
 	
 	public Entity collide(Point2 center, float radius) {
@@ -104,7 +94,7 @@ public class EntityPool implements Iterable<Entity> {
 	
 	protected void remove(int id) {
 		assert(id != Entity.NO_ENTITY);
-		remove(mList[id]);
+		remove(mList.mData[id]);
 	}
 	
 	public void remove(Entity entity) {
@@ -112,7 +102,7 @@ public class EntityPool implements Iterable<Entity> {
 		assert(entity.id != Entity.NO_ENTITY);
 		assert(entity.id == entity.body.center.id);
 		
-		mList[entity.id] = null;
+		mList.mData[entity.id] = null;
 		mRecycledEntities.push(entity);
 		mBodies.remove(entity.body.center);
 		for (Point2 extraPoint : entity.mExtraPoints) {
@@ -152,16 +142,9 @@ public class EntityPool implements Iterable<Entity> {
 		return entity;
 	}
 	
-	public int getCapacity() {
-		return mCapacity;
-	}
-	
 	private Stack<Entity> mRecycledEntities;
 	
-	private Entity[] mList;
-	private int mNextIndex;
-	private int mCapacity;
-	private static final int INITIAL_SIZE = 1;
+	private EntityVector mList;
 	
 	private int mNumCollisionPoints;
 	
