@@ -145,6 +145,7 @@ public class Pax extends ActivityWithMenu {
     		}
     		
     		mView.onResume();
+        	setScreenPowerState(mGame.getState());
     	}
     	
         mHandler.postDelayed(mUpdateViewTask, 0);
@@ -167,7 +168,7 @@ public class Pax extends ActivityWithMenu {
     public void onOptionsMenuClosed(Menu menu) {
     	super.onOptionsMenuClosed(menu);
     	mGame.resume();
-    	mView.setKeepScreenOn(true);
+    	setScreenPowerState(mGame.getState());
     }
     
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -363,6 +364,9 @@ public class Pax extends ActivityWithMenu {
     public void updateState(Game.State state) {
 		if (state != mLastState) {
 			mLastState = state;
+			
+			setScreenPowerState(state);
+			
 			String resultString = mGameResultStrings.get(state);
 			if (resultString != null) {
     			Log.v(TAG, resultString);
@@ -377,6 +381,10 @@ public class Pax extends ActivityWithMenu {
     			}
     		}
 		}
+    }
+    
+    private void setScreenPowerState(Game.State state) {
+    	mView.setKeepScreenOn(Game.State.IN_PROGRESS == state);
     }
     
     // To be used for log messages.
