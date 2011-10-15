@@ -235,7 +235,8 @@ public class GameRenderer extends Renderer {
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
 			drawNumber(gl, x, y, (long) FramerateCounter.getFPS(), 0.2f);
-			drawNumber(gl, x, y - 35, FramerateCounter.getJitter(), 0.1f);
+			drawNumber(gl, x, y - 35, FramerateCounter.getRecentJitter(), 0.1f);
+			drawNumber(gl, x, y - 70, FramerateCounter.getMaxJitter(), 0.1f);
 		}
 	}
 	

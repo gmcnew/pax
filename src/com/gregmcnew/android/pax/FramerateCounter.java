@@ -12,7 +12,11 @@ public class FramerateCounter {
 		return sStarted ? sTotalFps : 0;
 	}
 	
-	public static long getJitter() {
+	public static long getRecentJitter() {
+		return sStarted ? sRecentJitterMs : 0;
+	}
+	
+	public static long getMaxJitter() {
 		return sStarted ? sMaxJitterMs : 0;
 	}
 	
@@ -26,7 +30,8 @@ public class FramerateCounter {
 		sRecentSampleTimeSum = 0;
 		sFps = 0;
 		
-		sMaxJitterTime = 0;
+		sRecentJitterTime = 0;
+		sRecentJitterMs = 0;
 		sMaxJitterMs = 0;
 		
 		sTotalTime = 0;
@@ -54,14 +59,18 @@ public class FramerateCounter {
 			
 			dt = time - sLastTime;
 			
-			// Jitter will be measured as the largest delta to occur within the
-			// last second. (That's not exactly what this code does, since all
-			// jitter values 1 second following a peak are ignored, even if
-			// they were higher than the jitter value which follows the 1-second
-			// window. This is close enough, though.)
-			if (dt > sMaxJitterMs || sMaxJitterTime + 1000 < time) {
+			// Recent jitter will be measured as the largest delta to occur
+			// within the last second. (That's not exactly what this code does,
+			// since all jitter values 1 second following a peak are ignored,
+			// even if they were higher than the jitter value which follows the
+			// 1-second window. This is close enough, though.)
+			if (dt > sRecentJitterMs || sRecentJitterTime + 1000 < time) {
+				sRecentJitterMs = dt;
+				sRecentJitterTime = time;
+			}
+			
+			if (dt > sMaxJitterMs && sNumTotalSamples > 0) {
 				sMaxJitterMs = dt;
-				sMaxJitterTime = time;
 			}
 			
 			sLastTime = time;
@@ -102,7 +111,8 @@ public class FramerateCounter {
 	private static long sRecentSampleTimeSum;
 	private static long sLastTime;
 	
-	private static long sMaxJitterTime;
+	private static long sRecentJitterTime;
+	private static long sRecentJitterMs;
 	private static long sMaxJitterMs;
 	
 	private static long sTotalTime;
