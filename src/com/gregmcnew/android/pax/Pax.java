@@ -1,22 +1,14 @@
 package com.gregmcnew.android.pax;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import android.content.res.Configuration;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Debug;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
@@ -53,10 +45,6 @@ public class Pax extends ActivityWithMenu {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        mShakeDetector = new ShakeDetector();
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         
         // These strings describe game-over states.
         mGameResultStrings = new HashMap<Game.State, String>();
@@ -141,7 +129,6 @@ public class Pax extends ActivityWithMenu {
     	mGame.setAIDifficulty(sAIDifficulty);
 		
     	if (!SELF_BENCHMARK) {
-            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     		if (MUSIC) {
     	    	mMusic.start();
     		}
@@ -162,7 +149,6 @@ public class Pax extends ActivityWithMenu {
         	if (MUSIC) {
         		mMusic.pause();
         	}
-            mSensorManager.unregisterListener(mShakeDetector);
     	}
     }
     
@@ -186,6 +172,7 @@ public class Pax extends ActivityWithMenu {
         mView.updateRotation();
     }
     
+    /*
     private float predictScore(float[] features, float[] weights) {
     	float score = 0;
     	for (int i = 0; i < features.length; i++) {
@@ -198,6 +185,7 @@ public class Pax extends ActivityWithMenu {
     	}
     	return (score < 0) ? -1 : ((score > 0) ? 1 : 0);
     }
+    */
     
     private Runnable mUpdateViewTask = new Runnable() {
     	public void run() {
@@ -344,11 +332,6 @@ public class Pax extends ActivityWithMenu {
 	    				mNumUpdates = 0;
 	    			}
 	    		}
-	    		else {
-		    		if (mShakeDetector.isShaking()) {
-		    			mGame.restart();
-		    		}
-	    		}
 	    		
 	    		mNumUpdates++;
     		}
@@ -406,10 +389,6 @@ public class Pax extends ActivityWithMenu {
     private boolean mLastBenchmarkMode;
     
 	private Map<Game.State, String> mGameResultStrings;
-    
-    private ShakeDetector mShakeDetector;
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
     
     private Toast mToast;
     
