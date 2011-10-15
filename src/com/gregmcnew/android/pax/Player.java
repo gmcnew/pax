@@ -313,7 +313,7 @@ public class Player {
 			// perimeter of a circle.
 			
 			// The larger this value, the faster the factories will converge.
-			float offset = (float) Math.PI / 40; 
+			float offset = (float) Math.PI / 40;
 			
 			// The factory's initial distance from the map's center.
 			float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4;
