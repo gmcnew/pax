@@ -312,6 +312,9 @@ public class Player {
 			// If the ship being spawned IS a factory, make it spawn on the
 			// perimeter of a circle.
 			
+			// The larger this value, the faster the factories will converge.
+			float offset = (float) Math.PI / 40; 
+			
 			// The factory's initial distance from the map's center.
 			float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4;
 			
@@ -323,7 +326,7 @@ public class Player {
 			
 			spawnX = (float) (orbitRadius * Math.cos(theta));
 			spawnY = (float) (orbitRadius * Math.sin(theta));
-			heading = theta - (float) Math.PI / 2;
+			heading = theta - (float) Math.PI / 2 - offset;
 		}
 		
 		Ship ship = null;
