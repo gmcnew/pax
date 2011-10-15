@@ -48,17 +48,21 @@ public class Missile extends Projectile {
 	public void reset(Ship parent) {
 		super.reset(parent);
 		
-		// Pick a side of the ship at random.
-		float side = (float) (parent.heading + (Game.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));
-		
-		heading = (float) (side + (Game.sRandom.nextFloat() - .5) * Math.PI / 6);
-		float headingX = (float) Math.cos(heading);
-		float headingY = (float) Math.sin(heading);
-		body.center.set(parent.body.center);
-		body.center.add(-5 * headingX, -5 * headingY);
-		velocity.set(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
-		targetHeading = parent.targetHeading;
-		target = parent.target;
+		// Parent may be null if this projectile is being preallocated (i.e.,
+		// created and instantly recycled).
+		if (parent != null) {
+			// Pick a side of the ship at random.
+			float side = (float) (parent.heading + (Game.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));
+			
+			heading = (float) (side + (Game.sRandom.nextFloat() - .5) * Math.PI / 6);
+			float headingX = (float) Math.cos(heading);
+			float headingY = (float) Math.sin(heading);
+			body.center.set(parent.body.center);
+			body.center.add(-5 * headingX, -5 * headingY);
+			velocity.set(headingX * INITIAL_VELOCITY, headingY * INITIAL_VELOCITY);
+			targetHeading = parent.targetHeading;
+			target = parent.target;
+		}
 		
 		mSmokeBudgetMs = 0;
 	}

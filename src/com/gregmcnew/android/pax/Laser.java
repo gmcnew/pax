@@ -29,8 +29,13 @@ public class Laser extends Projectile {
 	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
-		body.center.set(parent.body.center);
-		heading = parent.heading;
+		
+		// Parent may be null if this projectile is being preallocated (i.e.,
+		// created and instantly recycled).
+		if (parent != null) {
+			body.center.set(parent.body.center);
+			heading = parent.heading;
+		}
 		targetHeading = heading;
 		
 		float headingX = (float) Math.cos(heading);

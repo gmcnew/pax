@@ -18,9 +18,14 @@ public class Bomb extends Projectile {
 	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
-		body.center.set(parent.body.center);
-		velocity.set(parent.velocity);
-		heading = parent.targetHeading;
+		
+		// Parent may be null if this projectile is being preallocated (i.e.,
+		// created and instantly recycled).
+		if (parent != null) {
+			body.center.set(parent.body.center);
+			velocity.set(parent.velocity);
+			heading = parent.targetHeading;
+		}
 		
 		float headingX = (float) Math.cos(heading);
 		float headingY = (float) Math.sin(heading);
