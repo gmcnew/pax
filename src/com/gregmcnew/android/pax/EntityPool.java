@@ -25,25 +25,20 @@ public class EntityPool implements Iterable<Entity> {
 		else {
 			entity = createNewEntity(entityType, parent);
 			
-			if (entity != null) {
-				// An entity's ID is its position in the list.
-				entity.id = mList.add(entity);
-			}
+			// An entity's ID is its position in the list.
+			entity.id = mList.add(entity);
+		}
+			
+		// Whether an entity is new or recycled, its ID is the index
+		// it should occupy in the list.
+		mList.mData[entity.id] = entity;
+		
+		entity.body.center.id = entity.id;
+		for (Point2 extraPoint : entity.mExtraPoints) {
+			extraPoint.id = entity.id;
 		}
 		
-		if (entity != null) {
-			
-			// Whether an entity is new or recycled, its ID is the index
-			// it should occupy in the list.
-			mList.mData[entity.id] = entity;
-			
-			entity.body.center.id = entity.id;
-			for (Point2 extraPoint : entity.mExtraPoints) {
-				extraPoint.id = entity.id;
-			}
-			
-			mNumCollisionPoints += entity.mExtraPoints.length + 1;
-		}
+		mNumCollisionPoints += entity.mExtraPoints.length + 1;
 		
 		return entity;
 	}
@@ -92,11 +87,6 @@ public class EntityPool implements Iterable<Entity> {
 		mBodies.rebuild(this, mNumCollisionPoints);
 	}
 	
-	protected void remove(int id) {
-		assert(id != Entity.NO_ENTITY);
-		remove(mList.mData[id]);
-	}
-	
 	public void remove(Entity entity) {
 
 		assert(entity.id != Entity.NO_ENTITY);
@@ -137,6 +127,9 @@ public class EntityPool implements Iterable<Entity> {
 			case Entity.MISSILE:
 				entity = new Missile(parent);
 				break;
+			default:
+				throw new IllegalArgumentException(
+						String.format("entity type %d not recognized", entityType));
 		}
 		
 		return entity;

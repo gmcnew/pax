@@ -277,37 +277,55 @@ public class Player {
 	}
 	
 	private Ship addShip(int type) {
-
-		Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
 		
-		if (factory == null && type != Entity.FACTORY) {
-			return null;
+		float spawnX = 0;
+		float spawnY = 0;
+		float heading = 0;
+		
+		boolean createShip = true;
+		
+		// Determine the location and heading of the new ship.
+		if (type != Entity.FACTORY) {
+			// If the ship being spawned ISN'T a factory, make it spawn at the
+			// front of the factory.
+
+			Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
+			
+			// This ship can only be built from a factory, and it's possible
+			// that the player's factory has been destroyed.
+			if (factory != null) {
+				spawnX = factory.body.center.x + (float) (Factory.DIAMETER * 0.4 * Math.cos(factory.heading));
+				spawnY = factory.body.center.y + (float) (Factory.DIAMETER * 0.4 * Math.sin(factory.heading));
+				heading = factory.heading;
+			}
+			else {
+				createShip = false;
+			}
+		}
+		else {
+			// If the ship being spawned IS a factory, make it spawn on the
+			// perimeter of a circle.
+			
+			// The factory's initial distance from the map's center.
+			float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4;
+			
+			// Distance in radians between factories.
+			float spacing = (float) (2 * Math.PI / totalPlayers);
+			
+			// The angle in radians at which this particular factory will be spawned.
+			float theta = (float) (spacing * playerNo - Math.PI / 2);
+			
+			spawnX = (float) (orbitRadius * Math.cos(theta));
+			spawnY = (float) (orbitRadius * Math.sin(theta));
+			heading = theta - (float) Math.PI / 2;
 		}
 		
-		Ship ship = (Ship) mEntities[type].add(type, null);
+		Ship ship = null;
 		
-		if (ship != null) {
-			
-			// Fix the ship's location.
-			if (type != Entity.FACTORY) { // If the ship being spawned ISN'T a factory...
-				float spawnX = factory.body.center.x + (float) (Factory.DIAMETER * 0.4 * Math.cos(factory.heading));
-				float spawnY = factory.body.center.y + (float) (Factory.DIAMETER * 0.4 * Math.sin(factory.heading));
-				ship.body.center.set(spawnX, spawnY);
-				ship.heading = factory.heading;
-			}
-			else { // If the ship being spawned IS a factory...
-				float offset = (float) Math.PI/40; // The larger this value, the faster the factories will converge.
-				
-				float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4; // The radius that the factory will orbit the center at.
-				float spacing = (float)(2*Math.PI / totalPlayers);// The spacing in radians between the factories.
-				float theta = spacing*(float)(playerNo) - (float) (Math.PI / 2);// The angle in radians at which this particular factory will be spawned.
-				
-				float factoryX = (float) (orbitRadius * Math.cos(theta));
-				float factoryY = (float) (orbitRadius * Math.sin(theta));
-				
-				ship.body.center.set(factoryX, factoryY);
-				ship.heading = theta - (float) Math.PI/2 - offset;
-			}
+		if (createShip) {
+			ship = (Ship) mEntities[type].add(type, null);
+			ship.body.center.set(spawnX, spawnY);
+			ship.heading = heading;
 		}
 		
 		return ship;
