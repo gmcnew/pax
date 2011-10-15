@@ -62,7 +62,7 @@ public class StarView extends GLSurfaceView {
 			// paused as well). TODO: Figure this out.
 			gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
 			
-			mStarField.draw(gl, mStarPainter, mScreenWidth, mScreenHeight);
+			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight);
 		}
 		
 		private StarField mStarField;

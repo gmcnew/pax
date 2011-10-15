@@ -29,19 +29,10 @@ public class StarField {
 		}
 	}
 	
-	public void draw(GL10 gl, Painter starPainter, float width, float height) {
-		float scale = Math.max(width, height);
-		float size = 5f;
-		for (Star star : mStars) {
-			float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
-			starPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
-		}
-	}
-	
-	private Star mStars[];
+	public Star mStars[];
 	private Random mRandom;
 	
-	private class Star {
+	public class Star {
 		public Star() {
 			reset();
 		}

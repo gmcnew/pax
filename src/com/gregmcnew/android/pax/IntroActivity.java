@@ -196,7 +196,7 @@ public class IntroActivity extends ActivityWithMenu {
 			
 			float buttonSize = maxDimension / 8;
 			
-			mStarField.draw(gl, mStarPainter, mScreenWidth, mScreenHeight);
+			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight);
 			
 			float buttonXPos = 0;
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;

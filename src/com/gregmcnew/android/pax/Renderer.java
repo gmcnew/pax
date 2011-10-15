@@ -106,6 +106,15 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 		return BitmapFactory.decodeStream(is);
 	}
 	
+	public void drawStars(GL10 gl, StarField stars, Painter starPainter, float width, float height) {
+		float scale = Math.max(width, height);
+		float size = 5f;
+		for (StarField.Star star : stars.mStars) {
+			float alpha = star.mAge < 1000 ? ((float) star.mAge / 1000) : 1f;
+			starPainter.draw(gl, star.mX * scale, star.mY * scale, size, size, 0f, alpha);
+		}
+	}
+	
 	// The screen's width and height, in pixels.
 	// These values -will- change when the screen is rotated.
 	protected float mScreenWidth;

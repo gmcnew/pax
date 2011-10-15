@@ -165,7 +165,7 @@ public class GameRenderer extends Renderer {
         	mStarField.update(dt);
         }
         
-        mStarField.draw(gl, mStarPainter, mGameWidth, mGameHeight);
+        drawStars(gl, mStarField, mStarPainter, mGameWidth, mGameHeight);
         
         if (Pax.sShowParticles) {
 	        drawParticles(gl, Emitter.SMOKE);
