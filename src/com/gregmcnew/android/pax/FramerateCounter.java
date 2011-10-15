@@ -12,6 +12,10 @@ public class FramerateCounter {
 		return sStarted ? sTotalFps : 0;
 	}
 	
+	public static long getJitter() {
+		return sStarted ? sMaxJitterMs : 0;
+	}
+	
 	public static void start() {
 		for (int i = 0; i < NUM_FPS_SAMPLES; i++) {
 			sRecentSamples[i] = 0;
@@ -21,6 +25,9 @@ public class FramerateCounter {
 		sNumRecentSamples = 0;
 		sRecentSampleTimeSum = 0;
 		sFps = 0;
+		
+		sMaxJitterTime = 0;
+		sMaxJitterMs = 0;
 		
 		sTotalTime = 0;
 		sNumTotalSamples = 0;
@@ -46,6 +53,16 @@ public class FramerateCounter {
 			long time = SystemClock.uptimeMillis();
 			
 			dt = time - sLastTime;
+			
+			// Jitter will be measured as the largest delta to occur within the
+			// last second. (That's not exactly what this code does, since all
+			// jitter values 1 second following a peak are ignored, even if
+			// they were higher than the jitter value which follows the 1-second
+			// window. This is close enough, though.)
+			if (dt > sMaxJitterMs || sMaxJitterTime + 1000 < time) {
+				sMaxJitterMs = dt;
+				sMaxJitterTime = time;
+			}
 			
 			sLastTime = time;
 			
@@ -84,6 +101,9 @@ public class FramerateCounter {
 	private static int sNextRecentSampleIndex;
 	private static long sRecentSampleTimeSum;
 	private static long sLastTime;
+	
+	private static long sMaxJitterTime;
+	private static long sMaxJitterMs;
 	
 	private static long sTotalTime;
 	private static int sNumTotalSamples;

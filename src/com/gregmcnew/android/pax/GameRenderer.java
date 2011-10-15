@@ -232,18 +232,21 @@ public class GameRenderer extends Renderer {
         }
 		
 		if (Pax.sShowFPS) {
-			int fps = (int) FramerateCounter.getFPS();
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
-			
-			int digitWidth = 25;
-			int digitHeight = 30;
-			while (fps > 0) {
-				int digit = fps % 10;
-				mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, 0.2f);
-				x -= digitWidth;
-				fps /= 10;
-			}
+			drawNumber(gl, x, y, (long) FramerateCounter.getFPS(), 0.2f);
+			drawNumber(gl, x, y - 35, FramerateCounter.getJitter(), 0.1f);
+		}
+	}
+	
+	private void drawNumber(GL10 gl, float x, float y, long number, float alpha) {
+		int digitWidth = 25;
+		int digitHeight = 30;
+		while (number > 0) {
+			int digit = (int) number % 10;
+			mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, alpha);
+			x -= digitWidth;
+			number /= 10;
 		}
 	}
 	

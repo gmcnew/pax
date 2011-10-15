@@ -53,6 +53,7 @@
 
         <CheckBoxPreference android:key="@string/show_fps"
                 			android:title="@string/show_fps"
+                			android:summary="@string/show_fps_summary"
                 			android:defaultValue="true" />
 
         <CheckBoxPreference android:key="@string/show_all_health"
