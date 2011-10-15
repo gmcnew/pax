@@ -76,6 +76,8 @@ public class Pax extends ActivityWithMenu {
 
         mHandler = new Handler();
         
+        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+        
         mNumUpdates = 0;
 
         if (SELF_BENCHMARK) {
@@ -375,7 +377,9 @@ public class Pax extends ActivityWithMenu {
     					? String.format("Average framerate: %.2f", FramerateCounter.getTotalFPS())
     					: resultString;
     			
-    			Toast.makeText(this, toastString, Toast.LENGTH_LONG).show();
+    			mToast.setText(toastString);
+    			mToast.show();
+    			
     			if (SELF_BENCHMARK) {
     				finish();
     			}
@@ -406,6 +410,8 @@ public class Pax extends ActivityWithMenu {
     private ShakeDetector mShakeDetector;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    
+    private Toast mToast;
     
     private int mNumUpdates;
 }
