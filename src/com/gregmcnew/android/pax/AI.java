@@ -150,8 +150,7 @@ public class AI {
 		}
 	}
 	
-	public void update(Player[] allPlayers) {
-		
+	private void countEnemyEntities(Player[] allPlayers) {
 		// Count enemy entities by type.
 		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
 			mNumEnemyEntities[type] = 0;
@@ -169,39 +168,25 @@ public class AI {
 				}
 			}
 		}
+	}
+	
+	public void update(Player[] allPlayers) {
 		
-		float[] shipBuildScores = { 0, 0, 0 };
-		
-		float numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
-		                          + mNumEnemyEntities[Ship.BOMBER]
-		                          + mNumEnemyEntities[Ship.FRIGATE];
+		countEnemyEntities(allPlayers);
 
 		if (mPlayer.mBuildTarget == Player.BuildTarget.NONE) {
 			resetDistortion();
 		}
-		
-		// Special-case when there are no enemy attack ships: just build something
-		// at random (by leaving all weights equal).
-		if (numEnemyAttackShips > 0 && !mDistorted) {
-			setShipBuildScores(shipBuildScores);
-			if (mIntelligence < 0) {
-				for (int i = 0; i < shipBuildScores.length; i++) {
-					shipBuildScores[i] *= -1;
-				}
-			}
-		}
-		
+
+		float[] shipBuildScores = { 0, 0, 0 };
+		setShipBuildScores(shipBuildScores);
 		
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 
 		// Find the maximum build weight value.
-		float minScore = shipBuildScores[0];
 		float maxScore = shipBuildScores[0];
 		for (int i = 1; i < shipBuildScores.length; i++) {
-			if (shipBuildScores[i] < minScore) {
-				minScore = shipBuildScores[i];
-			}
-			else if (shipBuildScores[i] > maxScore) {
+			if (shipBuildScores[i] > maxScore) {
 				maxScore = shipBuildScores[i];
 			}
 		}
@@ -216,7 +201,14 @@ public class AI {
 			// score.
 			return;
 		}
+		
+		pickBuildTarget(shipBuildScores, maxScore);
+	}
 
+	// Randomly pick a build target with the maximum score. (There's usually
+	// only one, but ties are possible.) Weigh by cost so expensive ships
+	// aren't built too often.
+	private void pickBuildTarget(float[] shipBuildScores, float maxScore) {
 		float sumCostFactors = 0;
 		for (int i = 0; i < shipBuildScores.length; i++) {
 			if (shipBuildScores[i] >= maxScore) {
@@ -224,9 +216,6 @@ public class AI {
 			}
 		}
 		
-		// Randomly pick a build target with the maximum score. (There's usually
-		// only one, but ties are possible.) Weigh by cost so expensive ships
-		// aren't built too often.
 		float costFactors = 0;
 		float r = Game.sRandom.nextFloat() * sumCostFactors;
 		for (int i = 0; i < shipBuildScores.length; i++) {
@@ -249,6 +238,21 @@ public class AI {
 	
 	private void setShipBuildScores(float shipBuildScores[]) {
 
+		// If we're blinded, leave weights alone. 
+		if (mDistorted) {
+			return;
+		}
+		
+		float numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
+		                          + mNumEnemyEntities[Ship.BOMBER]
+		                          + mNumEnemyEntities[Ship.FRIGATE];
+
+		// Special-case when there are no enemy attack ships: just build something
+		// at random (by leaving all weights equal).
+		if (numEnemyAttackShips == 0) {
+			return;
+		}
+
 		int enemyFighterMoney = Player.BuildCosts[Ship.FIGHTER] * mNumEnemyEntities[Ship.FIGHTER];
 		int enemyBomberMoney  = Player.BuildCosts[Ship.BOMBER]  * mNumEnemyEntities[Ship.BOMBER];
 		int enemyFrigateMoney = Player.BuildCosts[Ship.FRIGATE] * mNumEnemyEntities[Ship.FRIGATE];
@@ -264,6 +268,13 @@ public class AI {
 			   							- enemyFighterMoney) * mWeights[2]) + mWeights[3];
 		shipBuildScores[Ship.FRIGATE] 	= ((enemyFighterMoney
 										- enemyBomberMoney)  * mWeights[4]);
+		
+		// If intelligence is negative, negate all weights.
+		if (mIntelligence < 0) {
+			for (int i = 0; i < shipBuildScores.length; i++) {
+				shipBuildScores[i] *= -1;
+			}
+		}
 	}
 	
 	// Intelligence ranges from -1 to 1:
