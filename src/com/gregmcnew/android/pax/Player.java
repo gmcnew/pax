@@ -231,6 +231,12 @@ public class Player {
 			// top of each other. Ship AI is deterministic, so they'll always
 			// stay on top of each other, acting like a super-ship but looking
 			// like a single ship.
+			
+			// Also, building multiple ships per frame makes it very easy for
+			// the game to slow to a crawl if a player has lots of production
+			// upgrades. Using "if" instead of "while" is a cheap form of
+			// throttling. =)
+			
 			if (money >= cost) {
 				build(mBuildTarget);
 				money -= cost;
@@ -370,6 +376,6 @@ public class Player {
 	
 	public float money;
 	public BuildTarget mBuildTarget;
-	public int playerNo;
-	public int totalPlayers;
+	public final int playerNo;
+	public final int totalPlayers;
 }
