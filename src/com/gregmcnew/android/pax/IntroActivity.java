@@ -196,7 +196,31 @@ public class IntroActivity extends ActivityWithMenu {
 			
 			float buttonSize = maxDimension / 8;
 			
-			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight);
+			float fadeAlpha = 1f;
+			float countdownAlpha = 0f;
+			int secondsLeft = 0;
+			
+			if (mActivity.mTimerIsRunning) {
+				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
+				if (msLeft > 0) {
+					
+					countdownAlpha = ((float) (msLeft % 1000)) / 1000;
+					secondsLeft = (int) Math.ceil(((float) msLeft) / 1000);
+					
+					if (secondsLeft <= 1) {
+						fadeAlpha = countdownAlpha;
+					}
+				}
+				else {
+					fadeAlpha = 0f;
+				}
+			}
+			
+			if (!sFadeOutIntro) {
+				fadeAlpha = 1f;
+			}
+			
+			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight, fadeAlpha);
 			
 			float buttonXPos = 0;
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
@@ -204,39 +228,28 @@ public class IntroActivity extends ActivityWithMenu {
 			// Draw a glow behind each button that represents a human player.
 			float glowSize = (float) (buttonSize * 3);
 			if (!mPlayerOneAI) {
-				mSmokePainter.draw(gl, -buttonXPos, -buttonYPos, glowSize, glowSize, 0, 1f);
+				mSmokePainter.draw(gl, -buttonXPos, -buttonYPos, glowSize, glowSize, 0, fadeAlpha);
 			}
 			if (!mPlayerTwoAI) {
-				mSmokePainter.draw(gl, buttonXPos, buttonYPos, glowSize, glowSize, 0, 1f);
+				mSmokePainter.draw(gl, buttonXPos, buttonYPos, glowSize, glowSize, 0, fadeAlpha);
 			}
-			
-			// Draw buttons
-			mBlueButtonPainter.draw(gl, -buttonXPos, -buttonYPos, buttonSize, buttonSize, 180, 1f);
-			mRedButtonPainter.draw(gl, buttonXPos, buttonYPos, buttonSize, buttonSize, 0, 1f);
 			
 			// Draw the title text
-			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, 1f);
+			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, fadeAlpha);
+
+			float flip = (mRotation < 2) ? 1 : -1;
+			float numberSize = maxDimension / 20;
+			float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
+			float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
 			
-			// Draw the countdown indicator
-			drawCountdown(gl, maxDimension, rotationDegrees);
+			// Draw the countdown.
+			mNumberPainters[secondsLeft].draw(gl, numberXPos, numberYPos, numberSize, numberSize, rotationDegrees, countdownAlpha);
+			
+			// Draw buttons
+			mBlueButtonPainter.draw(gl, -buttonXPos, -buttonYPos, buttonSize, buttonSize, 180, fadeAlpha);
+			mRedButtonPainter.draw(gl, buttonXPos, buttonYPos, buttonSize, buttonSize, 0, fadeAlpha);
 		}
 		
-		private void drawCountdown(GL10 gl, float maxDimension, float rotationDegrees) {
-			if (mActivity.mTimerIsRunning) {
-				long msLeft = mActivity.mGameStartTime - SystemClock.uptimeMillis();
-				if (msLeft > 0) {
-					float flip = (mRotation < 2) ? 1 : -1;
-					float numberSize = maxDimension / 20;
-					float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
-					float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
-					
-					float alpha = ((float) (msLeft % 1000)) / 1000;
-					int secondsLeft = (int) Math.ceil(((float) msLeft) / 1000);
-					
-					mNumberPainters[secondsLeft].draw(gl, numberXPos, numberYPos, numberSize, numberSize, rotationDegrees, alpha);
-				}
-			}
-		}
 		private StarField mStarField;
 		private IntroActivity mActivity;
 		private Painter mStarPainter;

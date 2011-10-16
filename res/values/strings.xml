@@ -81,5 +81,6 @@
     <string name="show_all_health_summary">... not just factories</string>
     <string name="show_collision_boxes">Show collision boxes</string>
     <string name="show_collision_boxes_summary">... for fighters only</string>
+    <string name="fade_out_intro">Fade out intro</string>
     
 </resources>

@@ -66,6 +66,10 @@
                 			android:summary="@string/show_collision_boxes_summary"
                 			android:defaultValue="false" />
 
+        <CheckBoxPreference android:key="@string/fade_out_intro"
+                			android:title="@string/fade_out_intro"
+                			android:defaultValue="true" />
+
 	</PreferenceCategory>
 
 </PreferenceScreen>
