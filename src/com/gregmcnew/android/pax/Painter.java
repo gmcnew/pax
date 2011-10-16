@@ -29,9 +29,10 @@ public class Painter {
 		mContext = context;
 		mVBOSupport = vboSupport;
 		mResourceID = resourceID;
+		mInitialized = false;
+		
+		initialize(gl);
 	}
-	
-	private boolean mInitialized = false;
 	
 	private void initialize(GL10 gl) {
 		
@@ -124,8 +125,6 @@ public class Painter {
 	
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {
 		
-		initialize(gl);
-		
         // Make sure we're not using any transformations left over from the
 		// last draw().
 		gl.glLoadIdentity();
@@ -173,8 +172,6 @@ public class Painter {
 	}
 	
 	public void drawTrail(GL10 gl, ShortBuffer trailVertices, FloatBuffer vertexColors) {
-		
-		initialize(gl);
 			
 		float sizeX = 2f;
 		float sizeY = 2f;
@@ -263,7 +260,8 @@ public class Painter {
 	private static int sTextureBufferObjectID;
 	private static ShortBuffer sVertexBuffer;
 	private static ShortBuffer sTextureBuffer;
-	
+
+	private boolean mInitialized;
 	private int mTextureID;
 	private boolean mVBOSupport;
 
