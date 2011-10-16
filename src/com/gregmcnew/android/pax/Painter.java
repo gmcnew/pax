@@ -1,5 +1,6 @@
 package com.gregmcnew.android.pax;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -8,8 +9,12 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 public class Painter {
 	
@@ -20,47 +25,30 @@ public class Painter {
 		sCameraRotationDegrees = degrees;
 	}
 	
-	public Painter(GL10 gl, boolean vboSupport, Bitmap bitmap) {
-		
+	public Painter(GL10 gl, Context context, boolean vboSupport, int resourceID) {
+		mContext = context;
 		mVBOSupport = vboSupport;
+		mResourceID = resourceID;
+	}
+	
+	private boolean mInitialized = false;
+	
+	private void initialize(GL10 gl) {
 		
-		ByteBuffer byteBuffer;
-		byteBuffer = ByteBuffer.allocateDirect(vertices.length * Short.SIZE);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mVertexBuffer = byteBuffer.asShortBuffer();
-		mVertexBuffer.put(vertices);
-		mVertexBuffer.position(0);
+		if (mInitialized) {
+			return;
+		}
 		
-		byteBuffer = ByteBuffer.allocateDirect(texture.length * Short.SIZE);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mTextureBuffer = byteBuffer.asShortBuffer();
-		mTextureBuffer.put(texture);
-		mTextureBuffer.position(0);
+		mInitialized = true;
+		
+		Bitmap bitmap = loadBitmap(mResourceID);
 		
 		// Generate texture IDs.
 		int[] textureIDs = new int[1];
 		gl.glGenTextures(textureIDs.length, textureIDs, 0);
 		mTextureID = textureIDs[0];
 		
-		if (mVBOSupport) {
-			GL11 gl11 = (GL11) gl;
-			
-			// Generate buffer IDs.
-			int[] bufferIDs = new int[2];
-			gl11.glGenBuffers(bufferIDs.length, bufferIDs, 0);
-			mVertexBufferObjectID = bufferIDs[0];
-			mTextureBufferObjectID = bufferIDs[1];
-
-			// Upload the vertex data
-			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
-			mVertexBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mVertexBuffer.capacity(), mVertexBuffer, GL11.GL_STATIC_DRAW);
-            
-			// Upload the texture vertices
-			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
-			mTextureBuffer.position(0);
-			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, mTextureBuffer.capacity(), mTextureBuffer, GL11.GL_STATIC_DRAW);
-		}
+		loadBuffers(gl);
 		
 		// Send the bitmap to the video device.
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
@@ -70,6 +58,56 @@ public class Painter {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+		
+		bitmap.recycle();
+	}
+	
+	public static void resetSharedBuffers() {
+		sSharedBuffersInitialized = false;
+	}
+	
+	private static boolean sSharedBuffersInitialized = false;
+	
+	private void loadBuffers(GL10 gl) {
+		
+		if (sSharedBuffersInitialized) {
+			return;
+		}
+		Log.v(Pax.TAG, "initializing shared buffers");
+		sSharedBuffersInitialized = true;
+
+		ByteBuffer byteBuffer;
+		byteBuffer = ByteBuffer.allocateDirect(vertices.length * Short.SIZE);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		sVertexBuffer = byteBuffer.asShortBuffer();
+		sVertexBuffer.put(vertices);
+		sVertexBuffer.position(0);
+		
+		byteBuffer = ByteBuffer.allocateDirect(texture.length * Short.SIZE);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		sTextureBuffer = byteBuffer.asShortBuffer();
+		sTextureBuffer.put(texture);
+		sTextureBuffer.position(0);
+		
+		if (mVBOSupport) {
+			GL11 gl11 = (GL11) gl;
+			
+			// Generate buffer IDs.
+			int[] bufferIDs = new int[2];
+			gl11.glGenBuffers(bufferIDs.length, bufferIDs, 0);
+			sVertexBufferObjectID = bufferIDs[0];
+			sTextureBufferObjectID = bufferIDs[1];
+
+			// Upload the vertex data
+			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sVertexBufferObjectID);
+			sVertexBuffer.position(0);
+			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, sVertexBuffer.capacity(), sVertexBuffer, GL11.GL_STATIC_DRAW);
+            
+			// Upload the texture vertices
+			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sTextureBufferObjectID);
+			sTextureBuffer.position(0);
+			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, sTextureBuffer.capacity(), sTextureBuffer, GL11.GL_STATIC_DRAW);
+		}
 	}
 	
 	public void draw(GL10 gl, Entity entity) {
@@ -85,6 +123,8 @@ public class Painter {
 	}
 	
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {
+		
+		initialize(gl);
 		
         // Make sure we're not using any transformations left over from the
 		// last draw().
@@ -106,15 +146,15 @@ public class Painter {
 			if (mVBOSupport) {
 				GL11 gl11 = (GL11) gl;
 				
-				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mVertexBufferObjectID);
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sVertexBufferObjectID);
 				gl11.glVertexPointer(2, GL10.GL_SHORT, 0, 0);
 				
-				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mTextureBufferObjectID);
+				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sTextureBufferObjectID);
 				gl11.glTexCoordPointer(2, GL10.GL_SHORT, 0, 0);
 			}
 			else {
-				gl.glVertexPointer(2, GL10.GL_SHORT, 0, mVertexBuffer);
-				gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
+				gl.glVertexPointer(2, GL10.GL_SHORT, 0, sVertexBuffer);
+				gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, sTextureBuffer);
 			}
 		}
 		
@@ -133,6 +173,8 @@ public class Painter {
 	}
 	
 	public void drawTrail(GL10 gl, ShortBuffer trailVertices, FloatBuffer vertexColors) {
+		
+		initialize(gl);
 			
 		float sizeX = 2f;
 		float sizeY = 2f;
@@ -178,7 +220,7 @@ public class Painter {
 		trailVertices.limit(i + 2);
 	
 		gl.glVertexPointer(2, GL10.GL_SHORT, 0, trailVertices);
-		gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, mTextureBuffer);
+		gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, sTextureBuffer);
 		
 		gl.glTranslatef(moveX, moveY, 0f);
 		
@@ -197,6 +239,12 @@ public class Painter {
 		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 	}
 	
+	private Bitmap loadBitmap(int resourceID) {
+		Resources resources = mContext.getResources();
+		InputStream is = resources.openRawResource(resourceID);
+		return BitmapFactory.decodeStream(is);
+	}
+	
 	private short vertices[] = {
 			-1, -1, // bottom-left    2     4
 			-1,  1, // top-left
@@ -211,11 +259,15 @@ public class Painter {
 			 1,  0, // bottom right (vertex 3)
 	};
 	
-	private int mVertexBufferObjectID;
-	private int mTextureBufferObjectID;
+	private static int sVertexBufferObjectID;
+	private static int sTextureBufferObjectID;
+	private static ShortBuffer sVertexBuffer;
+	private static ShortBuffer sTextureBuffer;
+	
 	private int mTextureID;
 	private boolean mVBOSupport;
-	
-	private ShortBuffer mVertexBuffer;
-	private ShortBuffer mTextureBuffer;
+
+	private Context mContext;
+
+	private int mResourceID;
 }

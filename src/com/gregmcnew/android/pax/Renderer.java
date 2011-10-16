@@ -1,6 +1,5 @@
 package com.gregmcnew.android.pax;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +7,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
@@ -46,7 +42,8 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		
     	// If the surface has been recreated, all textures will need to be
-    	// reloaded. This means we should start over with new painters. 
+    	// reloaded. This means we should start over with new painters.
+		Painter.resetSharedBuffers();
     	mPainters.clear();
 		
     	gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -91,20 +88,17 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
     
     // Returns a Painter for a resource (creating a new one if necessary).
     protected Painter getPainter(GL10 gl, int resourceID) {
-    	if (!mPainters.containsKey(resourceID)) {
-    		Bitmap bitmap = loadBitmap(resourceID);
-    		mPainters.put(resourceID, new Painter(gl, mVBOSupport, bitmap));
-    		bitmap.recycle();
+    	
+    	Painter painter = mPainters.get(resourceID);
+    	
+    	if (painter == null) {
+    		painter = new Painter(gl, mContext, mVBOSupport, resourceID);
+    		
+    		mPainters.put(resourceID, painter);
     	}
     	
-    	return mPainters.get(resourceID);
+    	return painter;
     }
-	
-	protected Bitmap loadBitmap(int resourceID) {
-		Resources resources = mContext.getResources();
-		InputStream is = resources.openRawResource(resourceID);
-		return BitmapFactory.decodeStream(is);
-	}
 	
 	public void drawStars(GL10 gl, StarField stars, Painter starPainter, float width, float height) {
 		float scale = Math.max(width, height);
