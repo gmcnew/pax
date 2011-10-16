@@ -2,8 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.util.Random;
 
-import javax.microedition.khronos.opengles.GL10;
-
 public class StarField {
 	
 	public static final int NUM_STARS = 100;
