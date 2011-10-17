@@ -114,16 +114,16 @@ public class GameRenderer extends Renderer {
 		mHighlight = getPainter(gl, R.drawable.white);
 		
 		mBuildTargetPaintersBlue = new Painter[4];
-		mBuildTargetPaintersBlue[0] = getPainter(gl, R.drawable.fighter_outline);
-		mBuildTargetPaintersBlue[1] = getPainter(gl, R.drawable.bomber_outline);
-		mBuildTargetPaintersBlue[2] = getPainter(gl, R.drawable.frigate_outline);
-		mBuildTargetPaintersBlue[3] = getPainter(gl, R.drawable.upgrade_outline);
+		mBuildTargetPaintersBlue[0] = getPainter(gl, R.drawable.fighter_icon_blue);
+		mBuildTargetPaintersBlue[1] = getPainter(gl, R.drawable.bomber_icon_blue);
+		mBuildTargetPaintersBlue[2] = getPainter(gl, R.drawable.frigate_icon_blue);
+		mBuildTargetPaintersBlue[3] = getPainter(gl, R.drawable.upgrade_icon_blue);
 		
 		mBuildTargetPaintersRed = new Painter[4];
-		mBuildTargetPaintersRed[0] = getPainter(gl, R.drawable.fighter_outline_red);
-		mBuildTargetPaintersRed[1] = getPainter(gl, R.drawable.bomber_outline_red);
-		mBuildTargetPaintersRed[2] = getPainter(gl, R.drawable.frigate_outline_red);
-		mBuildTargetPaintersRed[3] = getPainter(gl, R.drawable.upgrade_outline_red);
+		mBuildTargetPaintersRed[0] = getPainter(gl, R.drawable.fighter_icon_red);
+		mBuildTargetPaintersRed[1] = getPainter(gl, R.drawable.bomber_icon_red);
+		mBuildTargetPaintersRed[2] = getPainter(gl, R.drawable.frigate_icon_red);
+		mBuildTargetPaintersRed[3] = getPainter(gl, R.drawable.upgrade_icon_red);
 
         // Initialize the background image.
 		if (Pax.BACKGROUND_IMAGE) {
