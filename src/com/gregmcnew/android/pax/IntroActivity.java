@@ -207,7 +207,7 @@ public class IntroActivity extends ActivityWithMenu {
 					countdownAlpha = ((float) (msLeft % 1000)) / 1000;
 					secondsLeft = (int) Math.ceil(((float) msLeft) / 1000);
 					
-					if (secondsLeft <= 1) {
+					if (msLeft < 1000) {
 						fadeAlpha = countdownAlpha;
 					}
 				}
