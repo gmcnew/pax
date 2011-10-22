@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +43,14 @@ public class ActivityWithMenu extends Activity {
 	public static boolean sShowFPS;
 	public static boolean sShowHealthForAllShipTypes;
 	public static boolean sFadeOutIntro;
+
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+    }
 	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,8 +65,6 @@ public class ActivityWithMenu extends Activity {
 		editor.clear();
 		editor.commit();
 		*/
-        
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         
         return true;
     }
@@ -89,7 +96,7 @@ public class ActivityWithMenu extends Activity {
 			sAIDifficulties.put(res.getString(R.string.ai_difficulty_cheater),   AI.Difficulty.CHEATER);
 		}
 		
-    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	
     	sAIDifficulty = sAIDifficulties.get(settings.getString(getString(R.string.ai_difficulty), null));
     	if (sAIDifficulty == null) {
@@ -98,7 +105,7 @@ public class ActivityWithMenu extends Activity {
     	
     	String gameSpeedString = settings.getString(getString(R.string.game_speed), null);
     	Float gameSpeed = sGameSpeeds.get(gameSpeedString);
-    	sGameSpeed = (gameSpeed == null) ? 0 : gameSpeed;
+    	sGameSpeed = (gameSpeed == null) ? GAME_SPEED_NORMAL : gameSpeed;
     	sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
     	sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
     	sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);

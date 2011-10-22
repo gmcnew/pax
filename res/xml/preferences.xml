@@ -8,9 +8,7 @@
 		    android:title="@string/about"
 		    android:summary="@string/about_summary">
 			<intent
-			    android:action="android.intent.action.MAIN"
-			    android:targetPackage="com.gregmcnew.android.pax"
-			    android:targetClass="com.gregmcnew.android.pax.AboutActivity" />
+			    android:targetClass="com.gregmcnew.android.pax.AboutActivity" android:targetPackage="com.gregmcnew.android.pax" android:action="android.intent.action.MAIN"/>
 		</PreferenceScreen>
 	</PreferenceCategory>
 
@@ -19,24 +17,24 @@
         <CheckBoxPreference android:key="@string/benchmark_mode"
                 			android:title="@string/benchmark_mode"
                 			android:summary="@string/benchmark_mode_summary"
-                			android:defaultValue="false" />
+                			android:defaultValue="false" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/sound"
                 			android:title="@string/sound"
                 			android:summary="@string/sound_summary"
-                			android:defaultValue="false"/>
+                			android:defaultValue="false" android:persistent="true"/>
 
     	<ListPreference android:key="@string/ai_difficulty"
     					android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"
                         android:title="@string/ai_difficulty"
-                        android:defaultValue="@string/ai_difficulty_easy"/>
+                        android:defaultValue="@string/ai_difficulty_easy" android:persistent="true"/>
 
     	<ListPreference android:key="@string/game_speed"
     					android:title="@string/game_speed"
                         android:entries="@array/game_speed_array"
                         android:entryValues="@array/game_speed_array"
-                        android:defaultValue="@string/game_speed_normal"/>
+                        android:defaultValue="@string/game_speed_normal" android:persistent="true"/>
 
 	</PreferenceCategory>
 
@@ -45,30 +43,30 @@
         <CheckBoxPreference android:key="@string/show_ships"
                 			android:title="@string/show_ships"
                 			android:summary="@string/show_ships_summary"
-                			android:defaultValue="true" />
+                			android:defaultValue="true" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_particles"
                 			android:title="@string/show_particles"
-                			android:defaultValue="true" />
+                			android:defaultValue="true" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_fps"
                 			android:title="@string/show_fps"
                 			android:summary="@string/show_fps_summary"
-                			android:defaultValue="true" />
+                			android:defaultValue="true" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_all_health"
                 			android:title="@string/show_all_health"
                 			android:summary="@string/show_all_health_summary"
-                			android:defaultValue="false" />
+                			android:defaultValue="false" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_collision_boxes"
                 			android:title="@string/show_collision_boxes"
                 			android:summary="@string/show_collision_boxes_summary"
-                			android:defaultValue="false" />
+                			android:defaultValue="false" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/fade_out_intro"
                 			android:title="@string/fade_out_intro"
-                			android:defaultValue="true" />
+                			android:defaultValue="true" android:persistent="true"/>
 
 	</PreferenceCategory>
 
