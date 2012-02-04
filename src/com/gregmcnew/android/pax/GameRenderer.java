@@ -98,6 +98,8 @@ public class GameRenderer extends Renderer {
 		mParticlePainters[Emitter.MISSILE_HIT] 		= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.BOMB_HIT]    		= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.SHIP_EXPLOSION] 	= getPainter(gl, R.drawable.bomb);
+		mParticlePainters[Emitter.UPGRADE_EFFECT] 	= getPainter(gl, R.drawable.upgrade_effect);
+		
 		
 		mDigitPainters = new Painter[10];
 		mDigitPainters[0] = getPainter(gl, R.drawable.char_0);
@@ -226,6 +228,7 @@ public class GameRenderer extends Renderer {
 	    	drawParticles(gl, Emitter.MISSILE_HIT);
 	    	drawParticles(gl, Emitter.BOMB_HIT);
 	    	drawParticles(gl, Emitter.SHIP_EXPLOSION);
+	    	drawParticles(gl, Emitter.UPGRADE_EFFECT);
 		}
         
         if (mGame.getState() == Game.State.IN_PROGRESS) { 

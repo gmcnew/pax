@@ -272,6 +272,25 @@ public class Player {
 				break;
 			case UPGRADE:
 				GameSounds.play(GameSounds.Sound.UPGRADE);
+				Ship factory = (Ship) mEntities[Entity.FACTORY].get(0);
+				
+				// An upgrade might finish right after the factory is destroyed,
+				// oddly enough.
+				if (factory != null) {
+					float x = factory.body.center.x;
+					float y = factory.body.center.y;
+					float dx = (Game.sRandom.nextFloat() - 0.5f) * factory.radius / 6;
+					float dy = (Game.sRandom.nextFloat() - 0.5f) * factory.radius / 6;
+					float vx = Game.sRandom.nextFloat() - 0.5f;
+					float vy = Game.sRandom.nextFloat() - 0.5f;
+					mEmitters[Emitter.UPGRADE_EFFECT].add(
+							factory.radius,
+							x + dx,
+							y + dy,
+							vx * factory.radius / 6,
+							vy * factory.radius / 6
+							);
+				}
 				mNumProductionSteps++;
 				break;
 		}

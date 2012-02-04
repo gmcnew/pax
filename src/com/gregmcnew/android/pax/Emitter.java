@@ -8,9 +8,10 @@ public class Emitter {
 	public static final int MISSILE_HIT = 3;
 	public static final int BOMB_HIT = 4;
 	public static final int SHIP_EXPLOSION = 5;
+	public static final int UPGRADE_EFFECT = 6;
 	
-	public static final int[] TYPES = { SMOKE, SPARK, LASER_HIT, MISSILE_HIT, BOMB_HIT, SHIP_EXPLOSION };
-	public static final long[] AGES = { 500, 100, 100, 100, 500, 1250 };
+	public static final int[] TYPES = { SMOKE, SPARK, LASER_HIT, MISSILE_HIT, BOMB_HIT, SHIP_EXPLOSION, UPGRADE_EFFECT };
+	public static final long[] AGES = { 500, 100, 100, 100, 500, 1250, 1000 };
 	
 	
 	private static final int NO_THROTTLE = -1;
@@ -47,7 +48,7 @@ public class Emitter {
 		mStart = 0;
 		mEnd = 0;
 		
-		if (Pax.SELF_BENCHMARK || type == SHIP_EXPLOSION) {
+		if (Pax.SELF_BENCHMARK || type == SHIP_EXPLOSION || type == UPGRADE_EFFECT) {
 			mThrottleStartFps = NO_THROTTLE;
 			mThrottleMinFps = NO_THROTTLE;
 			mIgnoreAddFps = NO_THROTTLE;
