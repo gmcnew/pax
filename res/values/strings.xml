@@ -8,6 +8,9 @@
     <string name="about">About Pax</string>
     <string name="about_summary">Would you like to know more?</string>
     
+    <string name="upgrade">Upgrade</string>
+    <string name="upgrade_summary">Download and install the latest version</string>
+    
     
     <!-- "About" screen strings -->
     

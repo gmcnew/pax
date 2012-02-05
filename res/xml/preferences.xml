@@ -10,6 +10,15 @@
 			<intent
 			    android:targetClass="com.gregmcnew.android.pax.AboutActivity" android:targetPackage="com.gregmcnew.android.pax" android:action="android.intent.action.MAIN"/>
 		</PreferenceScreen>
+		
+        <PreferenceScreen
+		    android:title="@string/upgrade"
+		    android:summary="@string/upgrade_summary">
+			<intent
+			    android:targetClass="com.gregmcnew.android.pax.UpgradeActivity"
+			    android:targetPackage="com.gregmcnew.android.pax"
+			    android:action="android.intent.action.VIEW"/>
+		</PreferenceScreen>
 	</PreferenceCategory>
 
     <PreferenceCategory android:title="@string/general_settings">
