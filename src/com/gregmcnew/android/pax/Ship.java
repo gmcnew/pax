@@ -1,5 +1,6 @@
 package com.gregmcnew.android.pax;
 
+
 public abstract class Ship extends Entity {
 	
 	public long reloadTimeMs;
@@ -9,7 +10,6 @@ public abstract class Ship extends Entity {
 	public int clipSize;
 	public int shotsLeft;
 	
-	@SuppressWarnings("hiding")
 	public static final int[] TYPES = { Entity.FIGHTER, Entity.BOMBER, Entity.FRIGATE, Entity.FACTORY };
 	
 	public static final int[] TYPES_LARGEST_FIRST = { Entity.FACTORY, Entity.FRIGATE, Entity.BOMBER, Entity.FIGHTER };
