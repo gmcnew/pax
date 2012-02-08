@@ -188,12 +188,16 @@ public class GameRenderer extends Renderer {
 		}
 		
 		if (Pax.sShowShips) {
+			
+			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
+			mPrimitivePainter.setFillColor(1, 1, 1, 0);
+			
 			for (int entityType : ENTITY_LAYERS) {
 				for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 					
 					Player player = mGame.mPlayers[i];
 					Painter[] painters = mPlayerEntityPainters.get(player);
-				
+					
 					for (Entity entity : player.mEntities[entityType]) {
 
 						if (entityType == Entity.FACTORY
@@ -213,11 +217,18 @@ public class GameRenderer extends Renderer {
 							mShipUnhealth[i].draw(gl, entity);
 							mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
 							mShipOutlinePainter.draw(gl, entity);
+							
 						}
 						else {
 							painters[entityType].draw(gl, entity);
 						}
 					}
+					
+					/*
+					for (Entity entity : player.mEntities[entityType]) {
+						mPrimitivePainter.drawCircle(gl, entity.body.center.x, entity.body.center.y, entity.radius);
+					}
+					*/
 				}
 			}
 		}

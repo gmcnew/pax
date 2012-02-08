@@ -18,18 +18,21 @@ import android.util.Log;
 
 public class Painter {
 	
-	private static Painter sLastPainter = null;
+	private static boolean sSharedBuffersInitialized = false;
 	private static float sCameraRotationDegrees = 0;
 	
 	public static void setCameraRotationDegrees(float degrees) {
 		sCameraRotationDegrees = degrees;
 	}
 	
-	public Painter(GL10 gl, Context context, boolean vboSupport, int resourceID) {
+	public Painter(GL10 gl, Renderer renderer, Context context, boolean vboSupport, int resourceID) {
+		mRenderer = renderer;
 		mContext = context;
 		mVBOSupport = vboSupport;
 		mResourceID = resourceID;
 		mInitialized = false;
+		
+		mRendererStateID = mRenderer.getStateID();
 		
 		initialize(gl);
 	}
@@ -63,11 +66,9 @@ public class Painter {
 		bitmap.recycle();
 	}
 	
-	public static void resetSharedBuffers() {
+	public static void invalidateSharedBuffers() {
 		sSharedBuffersInitialized = false;
 	}
-	
-	private static boolean sSharedBuffersInitialized = false;
 	
 	private void loadBuffers(GL10 gl) {
 		
@@ -134,10 +135,7 @@ public class Painter {
 
 		gl.glColor4f(1f, 1f, 1f, alpha);
 
-		// We don't need to rebind everything if we were the last painter to
-		// draw.
-		if (sLastPainter != this) {
-			sLastPainter = this;
+		if (mRenderer.stateLost(mRendererStateID)) {
 			
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 			
@@ -191,7 +189,7 @@ public class Painter {
 		gl.glColor4f(1f, 1f, 1f, alpha);
 
 		// Force the next painter to rebind.
-		sLastPainter = null;
+		mRenderer.loseAllState();
 		
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 		
@@ -265,6 +263,8 @@ public class Painter {
 	private int mTextureID;
 	private boolean mVBOSupport;
 
+	private Renderer mRenderer;
+	private int mRendererStateID;
 	private Context mContext;
 
 	private int mResourceID;
