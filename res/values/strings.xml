@@ -76,14 +76,14 @@
     <string name="graphics_settings">Graphics</string>
     
     <string name="show_ships">Show ships</string>
-    <string name="show_ships_summary">... and projectiles</string>
+    <string name="show_ships_summary">&#8230; and projectiles</string>
     <string name="show_particles">Show particles</string>
     <string name="show_fps">Show framerate</string>
-    <string name="show_fps_summary">... and jitter (in darker text)</string>
+    <string name="show_fps_summary">&#8230; and jitter (in darker text)</string>
     <string name="show_all_health">Show health for all ships</string>
-    <string name="show_all_health_summary">... not just factories</string>
+    <string name="show_all_health_summary">&#8230; not just factories</string>
     <string name="show_collision_boxes">Show collision boxes</string>
-    <string name="show_collision_boxes_summary">... for fighters only</string>
+    <string name="show_collision_boxes_summary">&#8230; for fighters only</string>
     <string name="fade_out_intro">Fade out intro</string>
     
 </resources>
