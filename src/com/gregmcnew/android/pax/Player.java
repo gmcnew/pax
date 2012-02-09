@@ -215,6 +215,7 @@ public class Player {
 	
 	public void setAI(boolean ai) {
 		mIsAI = ai;
+		mAI.reset();
 	}
 	
 	public AIWeights getAIWeights() {

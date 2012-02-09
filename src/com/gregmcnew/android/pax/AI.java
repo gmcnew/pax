@@ -143,6 +143,10 @@ public class AI {
 		mBuilds++;
 	}
 	
+	public void reset() {
+		mBuilds = 0;
+	}
+	
 	public void update(Player[] allPlayers) {
 		
 		countEnemyEntities(allPlayers);
