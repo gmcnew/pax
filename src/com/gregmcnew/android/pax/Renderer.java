@@ -60,26 +60,31 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-		String version = gl.glGetString(GL10.GL_VERSION);
-		String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
-		String renderer = gl.glGetString(GL10.GL_RENDERER);
-		
-		// Print information about the OpenGL driver.
-		{
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL version: " + version);
+		if (Pax.sVertexBufferObjects) {
+			String version = gl.glGetString(GL10.GL_VERSION);
+			String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
+			String renderer = gl.glGetString(GL10.GL_RENDERER);
 			
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL extensions:");
-			for (String extension : extensions.split(" ")) {
-				Log.v("GameViewGL.onSurfaceCreated", "  " + extension);
+			// Print information about the OpenGL driver.
+			{
+				Log.v("GameViewGL.onSurfaceCreated", "OpenGL version: " + version);
+				
+				Log.v("GameViewGL.onSurfaceCreated", "OpenGL extensions:");
+				for (String extension : extensions.split(" ")) {
+					Log.v("GameViewGL.onSurfaceCreated", "  " + extension);
+				}
+				
+				Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + renderer);
 			}
-			
-			Log.v("GameViewGL.onSurfaceCreated", "OpenGL renderer: " + renderer);
+		    
+			// The device supports VBOs if (1) its version isn't 1.0 (since VBOs are
+			// standard in 1.1 and above) or (2) its extensions list includes
+			// "vertex_buffer_object".
+			mVBOSupport = (!version.contains("1.0")) || extensions.contains("vertex_buffer_object");
 		}
-	    
-		// The device supports VBOs if (1) its version isn't 1.0 (since VBOs are
-		// standard in 1.1 and above) or (2) its extensions list includes
-		// "vertex_buffer_object".
-		mVBOSupport = (!version.contains("1.0")) || extensions.contains("vertex_buffer_object");
+		else {
+			mVBOSupport = false;
+		}
 		Log.v(Pax.TAG, mVBOSupport ? "device supports VBOs" : "device doesn't support VBOs");
 		
 		mPrimitivePainter = new PrimitivePainter(gl, this, mVBOSupport);

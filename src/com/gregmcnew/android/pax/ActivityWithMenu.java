@@ -42,6 +42,7 @@ public class ActivityWithMenu extends Activity {
 	public static boolean sShowCollisionBoxes;
 	public static boolean sShowFPS;
 	public static boolean sShowHealthForAllShipTypes;
+	public static boolean sVertexBufferObjects;
 	public static boolean sFadeOutIntro;
 
     /** Called when the activity is first created. */
@@ -114,6 +115,7 @@ public class ActivityWithMenu extends Activity {
     	sFadeOutIntro = settings.getBoolean(getString(R.string.fade_out_intro), true);
     	sSound = settings.getBoolean(getString(R.string.sound), false);
     	sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
+    	sVertexBufferObjects = settings.getBoolean(getString(R.string.vertex_buffer_objects), true);
     }
     
     @Override

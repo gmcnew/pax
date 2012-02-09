@@ -73,6 +73,10 @@
                 			android:summary="@string/show_collision_boxes_summary"
                 			android:defaultValue="false" android:persistent="true"/>
 
+        <CheckBoxPreference android:key="@string/vertex_buffer_objects"
+                			android:title="@string/vertex_buffer_objects"
+                			android:defaultValue="true" android:persistent="true"/>
+
         <CheckBoxPreference android:key="@string/fade_out_intro"
                 			android:title="@string/fade_out_intro"
                 			android:defaultValue="true" android:persistent="true"/>
