@@ -1,5 +1,7 @@
 package com.gregmcnew.android.pax;
 
+import com.gregmcnew.android.pax.Player.BuildTarget;
+
 public class AI {
 	
 	/**
@@ -95,40 +97,18 @@ public class AI {
 	
 	public enum Difficulty { BRAINDEAD, EASY, MEDIUM, HARD, VERY_HARD, INSANE, CHEATER }
 	
-	// These weights were determined through experimentation. Over 3000 games
-	// were played between the null AI (with weights of 0) and an AI with random
-	// weights (re-randomized in each round). After each round, the random AI
-	// was assigned a score: if they won, their score was the percentage of
-	// health their factory had left. If they lost, their score was the
-	// percentage of health the enemy's factory had left, negated. The resulting
-	// scores and weights were run through linear regression to come up with the
-	// following optimal weights.
-	
-	// The final weight [0..1] indicates the importance of enemy health. 0 means
-	// a nearly-dead enemy is treated as equal to a full-health enemy. 1 means a
-	// nearly-dead enemy is almost ignored.
-	public static final float OPTIMAL_WEIGHTS[] = {
-			0.6277f, -0.2779f,
-			1.1031f, -0.1376f,
-			1.0f,	 0f,
-			};
-	
 	private static final int RELEVANT_ENEMY_ENTITY_TYPES[] = { Ship.FIGHTER, Ship.BOMBER, Ship.FRIGATE };
-	
-	public float mWeights[];
 	
 	public AI(Player player) {
 		mPlayer = player;
-		mWeights = new float[OPTIMAL_WEIGHTS.length];
+		mWeights = new AIWeights();
 		setDifficulty(Difficulty.EASY);
 	}
 	
 	public void setDifficulty(Difficulty difficulty) {
 		mIntelligence = 0f;
 		
-		for (int i = 0; i < OPTIMAL_WEIGHTS.length; i++) {
-			mWeights[i] = OPTIMAL_WEIGHTS[i];
-		}
+		mWeights.reset();
 		
 		// The insane AI beats the medium AI about 93.6% of the time.
 		// Difficulties between medium and insane are intended to be geometric
@@ -145,29 +125,22 @@ public class AI {
 				mIntelligence =  1f;
 				
 				// Pay attention to the health of enemy units.
-				mWeights[mWeights.length - 1] = 0.5f;
+				mWeights.w[AIWeights.ENEMY_HEALTH] = 0.5f;
 				break;
 		}
 	}
 	
-	private void countEnemyEntities(Player[] allPlayers) {
-		// Count enemy entities by type.
-		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
-			mNumEnemyEntities[type] = 0;
-			for (Player player : allPlayers) {
-				if (player != mPlayer) {
-					if (mWeights[5] == 0) {
-						mNumEnemyEntities[type] += player.mEntities[type].size();
-					}
-					else {
-						for (Entity e : player.mEntities[type]) {
-							float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
-							mNumEnemyEntities[type] += 1f - percentHealthLost * mWeights[5];
-						}
-					}
-				}
-			}
-		}
+	public AIWeights getWeights() {
+		return mWeights.clone();
+	}
+	
+	public void randomizeWeights() {
+		mWeights.randomize();
+	}
+	
+	public void buildFinished() {
+		mPlayer.mBuildTarget = Player.BuildTarget.NONE;
+		mBuilds++;
 	}
 	
 	public void update(Player[] allPlayers) {
@@ -177,6 +150,13 @@ public class AI {
 		if (mPlayer.mBuildTarget == Player.BuildTarget.NONE) {
 			resetDistortion();
 		}
+		
+		/*
+		if (mBuilds == 10 && mPlayer.playerNo == 0) {
+			mPlayer.mBuildTarget = BuildTarget.UPGRADE;
+			return;
+		}
+		*/
 
 		setShipBuildScores();
 		
@@ -203,6 +183,32 @@ public class AI {
 		
 		pickBuildTarget(mShipBuildScores, maxScore);
 	}
+	
+	
+	//
+	// Private methods
+	//
+	
+	private void countEnemyEntities(Player[] allPlayers) {
+		// Count enemy entities by type.
+		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
+			mNumEnemyEntities[type] = 0;
+			for (Player player : allPlayers) {
+				if (player != mPlayer) {
+					float enemyHealthWeight = mWeights.w[AIWeights.ENEMY_HEALTH];
+					if (enemyHealthWeight == 0) {
+						mNumEnemyEntities[type] += player.mEntities[type].size();
+					}
+					else {
+						for (Entity e : player.mEntities[type]) {
+							float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
+							mNumEnemyEntities[type] += 1f - percentHealthLost * enemyHealthWeight;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	// Randomly pick a build target with the maximum score. (There's usually
 	// only one, but ties are possible.) Weigh by cost so expensive ships
@@ -227,8 +233,6 @@ public class AI {
 			}
 		}
 	}
-	
-	private boolean mDistorted = false;
 	
 	private void resetDistortion() {
 		float threshold = (mIntelligence < 0) ? -mIntelligence : mIntelligence;
@@ -265,20 +269,34 @@ public class AI {
 		// more bombers enemies have, the more fighters we should build.
 		// However, fighters lose to frigates, so the more frigates enemies
 		// have, the fewer fighters we should build.
-		mShipBuildScores[Ship.FIGHTER] 	= ((enemyBomberMoney
-		       							- enemyFrigateMoney) * mWeights[0]) + mWeights[1];
-		mShipBuildScores[Ship.BOMBER]  	= ((enemyFrigateMoney
-			   							- enemyFighterMoney) * mWeights[2]) + mWeights[3];
-		mShipBuildScores[Ship.FRIGATE] 	= ((enemyFighterMoney
-										- enemyBomberMoney)  * mWeights[4]);
+		mShipBuildScores[Ship.FIGHTER] 	= ( (enemyBomberMoney - enemyFrigateMoney)
+											* mWeights.w[AIWeights.FIGHTER_X]
+										  )	+ mWeights.w[AIWeights.FIGHTER_C];
+		mShipBuildScores[Ship.BOMBER]  	= ( (enemyFrigateMoney - enemyFighterMoney)
+											* mWeights.w[AIWeights.BOMBER_X]
+										  ) + mWeights.w[AIWeights.BOMBER_C];
+		mShipBuildScores[Ship.FRIGATE] 	= ( (enemyFighterMoney - enemyBomberMoney)
+											* mWeights.w[AIWeights.FRIGATE_X]
+										  ) + mWeights.w[AIWeights.FRIGATE_C];
 		
-		// If intelligence is negative, negate all weights.
+		// If intelligence is negative, negate all scores.
 		if (mIntelligence < 0) {
 			for (int i = 0; i < mShipBuildScores.length; i++) {
 				mShipBuildScores[i] *= -1;
 			}
 		}
 	}
+	
+	
+	//
+	// Private members
+	//
+	
+	private boolean mDistorted = false;
+	
+	private int mBuilds = 0;
+	
+	private AIWeights mWeights;
 	
 	// Intelligence ranges from -1 to 1:
 	//    -1: build ships that will lose to enemy ships

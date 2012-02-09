@@ -31,6 +31,9 @@ public class Pax extends ActivityWithMenu {
 	
 	public static final String PLAYER_ONE_AI = "playerOneAI";
 	public static final String PLAYER_TWO_AI = "playerTwoAI";
+    
+    // To be used for log messages.
+    public static final String TAG = "Pax";
 
     static {
     	if (SELF_BENCHMARK) {
@@ -247,16 +250,13 @@ public class Pax extends ActivityWithMenu {
     			}
     		}
     		else if (AI_TRAINING_MODE) {
-    			float[] w = mGame.mPlayers[0].getAIWeightParameters();
-    			float[] f = { 0f, 0f, 0f, 0f, 0f };
-    			
     			for (Player player : mGame.mPlayers) {
     				player.setAI(true);
     			}
 				mGame.mPlayers[1].setAIDifficulty(AI.Difficulty.MEDIUM);
     			
-    			float[] x = mGame.mPlayers[1].getAIWeightParameters();
-    			Log.v(TAG, String.format("other AI is using weights %f, %f, %f, %f, %f", x[0], x[1], x[2], x[3], x[4]));
+    			AIWeights x = mGame.mPlayers[1].getAIWeights();
+    			Log.v(TAG, String.format("other AI is using weights %f, %f, %f, %f, %f", x.w[0], x.w[1], x.w[2], x.w[3], x.w[4]));
     			
     			//new FileOutputStream(
     			FileWriter fw;
@@ -270,18 +270,7 @@ public class Pax extends ActivityWithMenu {
     			
     			while (true) {//for (int i = 0; i < 1000; i++) {
     				
-    				// Randomize the AI's weights, making sure that weights
-    				// 0, 2 and 4 are positive.
-    				w[0] = Game.sRandom.nextFloat();
-    				w[2] = Game.sRandom.nextFloat();
-    				w[4] = Game.sRandom.nextFloat();
-    				w[1] = (Game.sRandom.nextFloat() - 0.5f) * 2;
-    				w[3] = (Game.sRandom.nextFloat() - 0.5f) * 2;
-    				/*
-    				for (int j = 0; j < w.length; j++) {
-    					w[j] = (sRandom.nextFloat() - 0.5f) * 2;
-    				}
-    				*/
+    				mGame.mPlayers[0].randomizeAIWeights();
     				
     				Game.State state = Game.State.IN_PROGRESS;
 					while (state == Game.State.IN_PROGRESS) {
@@ -303,8 +292,11 @@ public class Pax extends ActivityWithMenu {
 	    					break;
 	    			}
 
+	    			AIWeights weights = mGame.mPlayers[0].getAIWeights();
 
-	    			String outString = String.format("score %f with weights %f, %f, %f, %f, %f\n", score, w[0], w[1], w[2], w[3], w[4]);
+	    			String outString = String.format("score %f with weights %f, %f, %f, %f, %f\n", score,
+	    					weights.w[0], weights.w[1], weights.w[2], weights.w[3], weights.w[4]);
+	    			
 	    			Log.v(TAG, outString);
 	    		    try {
 	    		    	fw.write(outString);
@@ -315,27 +307,8 @@ public class Pax extends ActivityWithMenu {
 						e.printStackTrace();
 					}
 	    			
-					/*
-	    			// Adjust weights based on the score.
-	    			float delta = 0.01f;
-	    			float predictedScore = predictScore(w, f);
-	    			Log.v(TAG, String.format("predicted score %f (delta: %f)", predictedScore, score - predictedScore));
-	    			for (int j = 0; j < w.length; j++) {
-	    				f[j] += delta * (score - predictedScore) * w[j];
-	    			}
-	    			Log.v(TAG, String.format("new feature weights [%f, %f, %f, %f, %f, %f]", f[0], f[1], f[2], f[3], f[4], f[5]));
-	    			*/
-	    			
 	    			mGame.restart();
     			}
-    			/*
-    			try {
-					fw.close();
-				} catch (IOException e) {
-					Log.v(TAG, "error closing files");
-				}
-        		updateState(Game.State.TIE);
-				*/
     		}
     		else {
     			// Actual game updates are performed by the rendering thread.
@@ -393,9 +366,6 @@ public class Pax extends ActivityWithMenu {
     private void setScreenPowerState(Game.State state) {
     	mView.setKeepScreenOn(Game.State.IN_PROGRESS == state);
     }
-    
-    // To be used for log messages.
-    public static final String TAG = "Pax";
     
     private boolean mPlayerIsAI[] = { false, false };
     

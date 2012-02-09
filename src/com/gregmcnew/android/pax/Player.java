@@ -9,45 +9,15 @@ public class Player {
 	
 	public static final int[] BuildCosts = { 50, 170, 360, 1080, 0 };
 
-	
 	// Production is measured in money per second and is determined by the
-	// equation: mProductionStepSize * mNumProductionSteps * mProductionMultiplier
-	
-	// mNumProductionSteps is incremented every time the player upgrades.
-	private float mNumProductionSteps;
-	
-	// mProductionMultiplier changes in response to the AI difficulty setting.
-	private float mProductionMultiplier;
+	// equation: PRODUCTION_STEP_SIZE * mNumProductionSteps * mProductionMultiplier
 	
 	private static final int PRODUCTION_STEP_SIZE = 20;
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
-	public float[] getAIWeightParameters() {
-		return mAI.mWeights;
-	}
-	
-	private AI mAI;
-	
-	public void setAIDifficulty(AI.Difficulty difficulty) {
-		mAI.setDifficulty(difficulty);
-	}
-	
-	public void updateAI(Player[] allPlayers) {
-		if (mIsAI) {
-			mAI.update(allPlayers);
-		}
-	}
-	
-	private boolean mIsAI;
-	
-	// Public methods
-	
-	public boolean isAI() {
-		return mIsAI;
-	}
-	
 	public Player(int playerNumber, int players) {
-		
+
+		mBuildTarget = BuildTarget.UPGRADE;
 		mEntities = new EntityPool[Entity.TYPES.length];
 		
 		mRetargetQueue = new EntityVector();
@@ -71,11 +41,6 @@ public class Player {
 		reset();
 	}
 	
-	public void setAI(boolean ai) {
-		mIsAI = ai;
-	}
-	
-	/**Removes all of a player's ships and projectiles and generates a new factory for that player.**/
 	public void reset() {
 		for (int type : Entity.TYPES) {
 			mEntities[type].clear();
@@ -187,8 +152,6 @@ public class Player {
 		mShooterQueue.clear();
 	}
 	
-	private static CollisionHandler sCH = new CollisionHandler();
-	
 	public void attack(Player victim) {
 		for (int shipType : Ship.TYPES_LARGEST_FIRST) {
 			for (int projectileType : Projectile.TYPES) {
@@ -205,19 +168,6 @@ public class Player {
 				else {
 					shipPool.collide(projectilePool, sCH);
 				}
-				
-				/*
-			         		for (int type : Projectile.TYPES) {
-			for (Entity entity : mEntities[type]) {
-				
-				Projectile projectile = (Projectile) entity;
-				
-				if (projectile.health >= 0) {
-					// This projectile may be dead (from a previous attack),
-					// in which case it will be removed later.
-					projectile.attack(victim);
-				}
-				*/
 			}
 		}
 	}
@@ -257,7 +207,38 @@ public class Player {
 	}
 	
 	
+	// AI-related methods
+	
+	public boolean isAI() {
+		return mIsAI;
+	}
+	
+	public void setAI(boolean ai) {
+		mIsAI = ai;
+	}
+	
+	public AIWeights getAIWeights() {
+		return mAI.getWeights();
+	}
+	
+	public void randomizeAIWeights() {
+		mAI.randomizeWeights();
+	}
+	
+	public void setAIDifficulty(AI.Difficulty difficulty) {
+		mAI.setDifficulty(difficulty);
+	}
+	
+	public void updateAI(Player[] allPlayers) {
+		if (mIsAI) {
+			mAI.update(allPlayers);
+		}
+	}
+	
+	
+	//
 	// Private methods
+	//
 	
 	private void build(BuildTarget buildTarget) {
 		switch (buildTarget) {
@@ -296,8 +277,8 @@ public class Player {
 		}
 		
 		if (mIsAI) {
-			// This triggers the AI to determine a new build target. 
-			mBuildTarget = BuildTarget.NONE;
+			// This triggers the AI to determine a new build target.
+			mAI.buildFinished();
 		}
 	}
 	
@@ -383,6 +364,11 @@ public class Player {
 		return projectile;
 	}
 	
+	
+	//
+	// Public members
+	//
+	
 	public EntityPool[] mEntities;
 	public Emitter[] mEmitters;
 	
@@ -400,4 +386,26 @@ public class Player {
 	public BuildTarget mBuildTarget;
 	public final int playerNo;
 	public final int totalPlayers;
+	
+	
+	//
+	// Private static members
+	//
+	
+	private static CollisionHandler sCH = new CollisionHandler();
+	
+	
+	//
+	// Private members
+	//
+	
+	private boolean mIsAI;
+	
+	private AI mAI;
+	
+	// mNumProductionSteps is incremented every time the player upgrades.
+	private float mNumProductionSteps;
+	
+	// mProductionMultiplier changes in response to the AI difficulty setting.
+	private float mProductionMultiplier;
 }
