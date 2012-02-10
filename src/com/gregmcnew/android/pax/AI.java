@@ -103,12 +103,15 @@ public class AI {
 		mPlayer = player;
 		mWeights = new AIWeights();
 		setDifficulty(Difficulty.EASY);
+		mCanUpgrade = false;
 	}
 	
 	public void setDifficulty(Difficulty difficulty) {
 		mIntelligence = 0f;
 		
 		mWeights.reset();
+		
+		mCanUpgrade = false;
 		
 		// The insane AI beats the medium AI about 93.6% of the time.
 		// Difficulties between medium and insane are intended to be geometric
@@ -143,13 +146,21 @@ public class AI {
 		mBuilds++;
 	}
 	
+	public void enableUpgrades() {
+		mCanUpgrade = true;
+	}
+	
+	public void disableUpgrades() {
+		mCanUpgrade = false;
+	}
+	
 	public void reset() {
 		mBuilds = 0;
 	}
 	
 	public void update(Player[] allPlayers) {
 		
-		countEnemyEntities(allPlayers);
+		countEntities(allPlayers);
 
 		if (mPlayer.mBuildTarget == Player.BuildTarget.NONE) {
 			resetDistortion();
@@ -167,16 +178,16 @@ public class AI {
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 
 		// Find the maximum build weight value.
-		float maxScore = mShipBuildScores[0];
-		for (int i = 1; i < mShipBuildScores.length; i++) {
-			if (mShipBuildScores[i] > maxScore) {
-				maxScore = mShipBuildScores[i];
+		float maxScore = mBuildScores[0];
+		for (int i = 1; i < mBuildScores.length; i++) {
+			if (mBuildScores[i] > maxScore) {
+				maxScore = mBuildScores[i];
 			}
 		}
 		
 		int playerBuildTarget = mPlayer.mBuildTarget.ordinal();
-		if (playerBuildTarget < mShipBuildScores.length
-				&& mShipBuildScores[playerBuildTarget] >= maxScore) {
+		if (playerBuildTarget < mBuildScores.length
+				&& mBuildScores[playerBuildTarget] >= maxScore) {
 			// If the player's current build target is tied for the highest
 			// score (or has the highest score outright), keep it. This prevents
 			// the AI from rapidly switching between randomly-selected build
@@ -185,7 +196,7 @@ public class AI {
 			return;
 		}
 		
-		pickBuildTarget(mShipBuildScores, maxScore);
+		pickBuildTarget(mBuildScores, maxScore);
 	}
 	
 	
@@ -193,22 +204,28 @@ public class AI {
 	// Private methods
 	//
 	
-	private void countEnemyEntities(Player[] allPlayers) {
-		// Count enemy entities by type.
+	private void countEntities(Player[] allPlayers) {
+		// Count entities by type.
 		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
 			mNumEnemyEntities[type] = 0;
 			for (Player player : allPlayers) {
+				float healthWeight = mWeights.w[AIWeights.ENEMY_HEALTH];
+				float count = 0;
+				if (healthWeight == 0) {
+					count += player.mEntities[type].size();
+				}
+				else {
+					for (Entity e : player.mEntities[type]) {
+						float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
+						count += 1f - percentHealthLost * healthWeight;
+					}
+				}
+				
 				if (player != mPlayer) {
-					float enemyHealthWeight = mWeights.w[AIWeights.ENEMY_HEALTH];
-					if (enemyHealthWeight == 0) {
-						mNumEnemyEntities[type] += player.mEntities[type].size();
-					}
-					else {
-						for (Entity e : player.mEntities[type]) {
-							float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
-							mNumEnemyEntities[type] += 1f - percentHealthLost * enemyHealthWeight;
-						}
-					}
+					mNumEnemyEntities[type] += count;
+				}
+				else {
+					mNumOwnEntities[type] += count;
 				}
 			}
 		}
@@ -217,18 +234,18 @@ public class AI {
 	// Randomly pick a build target with the maximum score. (There's usually
 	// only one, but ties are possible.) Weigh by cost so expensive ships
 	// aren't built too often.
-	private void pickBuildTarget(float[] shipBuildScores, float maxScore) {
+	private void pickBuildTarget(float[] buildScores, float maxScore) {
 		float sumCostFactors = 0;
-		for (int i = 0; i < shipBuildScores.length; i++) {
-			if (shipBuildScores[i] >= maxScore) {
+		for (int i = 0; i < buildScores.length; i++) {
+			if (buildScores[i] >= maxScore) {
 				sumCostFactors += 1f / (float) Player.BuildCosts[i];
 			}
 		}
 		
 		float costFactors = 0;
 		float r = Game.sRandom.nextFloat() * sumCostFactors;
-		for (int i = 0; i < shipBuildScores.length; i++) {
-			if (shipBuildScores[i] >= maxScore) {
+		for (int i = 0; i < buildScores.length; i++) {
+			if (buildScores[i] >= maxScore) {
 				costFactors += 1f / (float) Player.BuildCosts[i];
 				if (r <= costFactors) {
 					mPlayer.mBuildTarget = Player.sBuildTargetValues[i];
@@ -245,11 +262,14 @@ public class AI {
 	
 	private void setShipBuildScores() {
 		
-		for (int i = 0; i < mShipBuildScores.length; i++) {
-			mShipBuildScores[i] = 0;
+		for (int i = 0; i < mBuildScores.length; i++) {
+			mBuildScores[i] = 0;
 		}
 
-		// If we're blinded, leave weights alone. 
+		// For now, make sure the upgrade score isn't the highest.
+		mBuildScores[3] = mBuildScores[0] - 1;
+
+		// If we're blinded, leave weights alone.
 		if (mDistorted) {
 			return;
 		}
@@ -257,36 +277,50 @@ public class AI {
 		float numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
 		                          + mNumEnemyEntities[Ship.BOMBER]
 		                          + mNumEnemyEntities[Ship.FRIGATE];
-
+		
 		// Special-case when there are no enemy attack ships: just build something
 		// at random (by leaving all weights equal).
-		if (numEnemyAttackShips == 0) {
-			return;
-		}
-
-		int enemyFighterMoney = Player.BuildCosts[Ship.FIGHTER] * mNumEnemyEntities[Ship.FIGHTER];
-		int enemyBomberMoney  = Player.BuildCosts[Ship.BOMBER]  * mNumEnemyEntities[Ship.BOMBER];
-		int enemyFrigateMoney = Player.BuildCosts[Ship.FRIGATE] * mNumEnemyEntities[Ship.FRIGATE];
-
-		// Set weights based on (1) what would beat enemy ships and (2) what
-		// would lose to enemy ships. For example, fighters beat bombers, so the
-		// more bombers enemies have, the more fighters we should build.
-		// However, fighters lose to frigates, so the more frigates enemies
-		// have, the fewer fighters we should build.
-		mShipBuildScores[Ship.FIGHTER] 	= ( (enemyBomberMoney - enemyFrigateMoney)
-											* mWeights.w[AIWeights.FIGHTER_X]
+		if (numEnemyAttackShips > 0) {
+	
+			int ownFighterMoney   = Player.BuildCosts[Ship.FIGHTER] * mNumOwnEntities[Ship.FIGHTER];
+			int ownBomberMoney    = Player.BuildCosts[Ship.BOMBER]  * mNumOwnEntities[Ship.BOMBER];
+			int ownFrigateMoney   = Player.BuildCosts[Ship.FRIGATE] * mNumOwnEntities[Ship.FRIGATE];
+	
+			int enemyFighterMoney = Player.BuildCosts[Ship.FIGHTER] * mNumEnemyEntities[Ship.FIGHTER];
+			int enemyBomberMoney  = Player.BuildCosts[Ship.BOMBER]  * mNumEnemyEntities[Ship.BOMBER];
+			int enemyFrigateMoney = Player.BuildCosts[Ship.FRIGATE] * mNumEnemyEntities[Ship.FRIGATE];
+			
+			int ownShipMoney   = ownFighterMoney   + ownBomberMoney   + ownFrigateMoney;
+			int enemyShipMoney = enemyFighterMoney + enemyBomberMoney + enemyFrigateMoney;
+	
+			// Set scores based on (1) what would beat enemy ships and (2) what
+			// would lose to enemy ships. For example, fighters beat bombers, so the
+			// more bombers enemies have, the more fighters we should build.
+			// However, fighters lose to frigates, so the more frigates enemies
+			// have, the fewer fighters we should build.
+			mBuildScores[Ship.FIGHTER] 	= ( (enemyBomberMoney - enemyFrigateMoney)
+										    * mWeights.w[AIWeights.FIGHTER_X]
 										  )	+ mWeights.w[AIWeights.FIGHTER_C];
-		mShipBuildScores[Ship.BOMBER]  	= ( (enemyFrigateMoney - enemyFighterMoney)
-											* mWeights.w[AIWeights.BOMBER_X]
+			mBuildScores[Ship.BOMBER]  	= ( (enemyFrigateMoney - enemyFighterMoney)
+										    * mWeights.w[AIWeights.BOMBER_X]
 										  ) + mWeights.w[AIWeights.BOMBER_C];
-		mShipBuildScores[Ship.FRIGATE] 	= ( (enemyFighterMoney - enemyBomberMoney)
-											* mWeights.w[AIWeights.FRIGATE_X]
+			mBuildScores[Ship.FRIGATE] 	= ( (enemyFighterMoney - enemyBomberMoney)
+										    * mWeights.w[AIWeights.FRIGATE_X]
 										  ) + mWeights.w[AIWeights.FRIGATE_C];
-		
-		// If intelligence is negative, negate all scores.
-		if (mIntelligence < 0) {
-			for (int i = 0; i < mShipBuildScores.length; i++) {
-				mShipBuildScores[i] *= -1;
+			
+			if (mCanUpgrade) {
+				// The build score for an upgrade should take into account the total
+				// amount of money represented by (1) enemy ships and (2) our own ships. 
+				mBuildScores[3] 			= ( ( enemyShipMoney - ownShipMoney)
+											    * mWeights.w[AIWeights.UPGRADE_X]
+											  ) + mWeights.w[AIWeights.UPGRADE_C];
+			}
+			
+			// If intelligence is negative, negate all scores.
+			if (mIntelligence < 0) {
+				for (int i = 0; i < mBuildScores.length; i++) {
+					mBuildScores[i] *= -1;
+				}
 			}
 		}
 	}
@@ -302,6 +336,8 @@ public class AI {
 	
 	private AIWeights mWeights;
 	
+	private boolean mCanUpgrade;
+	
 	// Intelligence ranges from -1 to 1:
 	//    -1: build ships that will lose to enemy ships
 	//     0: ignore what enemies have built
@@ -309,6 +345,7 @@ public class AI {
 	private float mIntelligence;
 
 	private Player mPlayer;
+	private int mNumOwnEntities[]   = new int[Entity.TYPES.length];
 	private int mNumEnemyEntities[] = new int[Entity.TYPES.length];
-	private float mShipBuildScores[] = new float[3];
+	private float mBuildScores[] = new float[BuildTarget.values().length - 1];
 }

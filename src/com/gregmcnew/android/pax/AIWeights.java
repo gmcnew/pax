@@ -17,8 +17,9 @@ public class AIWeights {
 	private static final float OPTIMAL_WEIGHTS[] = {
 			0.6277f, -0.2779f,
 			1.1031f, -0.1376f,
-			1.0f,	 0f,
-			0f,
+			1.0f,	  0f,
+			0.85f,    0f,
+			0f
 			};
 
 	private static final int NUM_WEIGHTS = OPTIMAL_WEIGHTS.length;
@@ -34,7 +35,9 @@ public class AIWeights {
 	public static final int BOMBER_C     = 3;
 	public static final int FRIGATE_X    = 4;
 	public static final int FRIGATE_C    = 5;
-	public static final int ENEMY_HEALTH = 6;
+	public static final int UPGRADE_X    = 6;
+	public static final int UPGRADE_C    = 7;
+	public static final int ENEMY_HEALTH = 8;
 	
 	public void reset() {
 		for (int i = 0; i < NUM_WEIGHTS; i++) {
