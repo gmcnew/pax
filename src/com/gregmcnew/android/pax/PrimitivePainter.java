@@ -143,7 +143,7 @@ public class PrimitivePainter {
 	private float mFillRed, mFillGreen, mFillBlue, mFillAlpha;
 	private float mStrokeRed, mStrokeGreen, mStrokeBlue, mStrokeAlpha;
 	
-	private static final int CIRCLE_POINTS = 6;
+	private static final int CIRCLE_POINTS = 60;
 	
 	private Renderer mRenderer;
 	private int mRendererStateID;
