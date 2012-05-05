@@ -21,7 +21,7 @@ import android.view.MotionEvent;
 
 public class IntroActivity extends ActivityWithMenu {
 	
-	private static final int COUNTDOWN_SECONDS = Pax.SELF_BENCHMARK ? 0 : 3;
+	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 1;
 	
     public void onCreate(Bundle savedInstanceState)
     {
@@ -216,7 +216,7 @@ public class IntroActivity extends ActivityWithMenu {
 				}
 			}
 			
-			if (!sFadeOutIntro) {
+			if (!Constants.sFadeOutIntro) {
 				fadeAlpha = 1f;
 			}
 			

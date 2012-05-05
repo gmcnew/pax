@@ -15,7 +15,7 @@ public class StarField {
 	}
 		
 	public void update(long dt) {
-		float movement = (((float) dt) / 20000) * Pax.sGameSpeed;
+		float movement = (((float) dt) / 20000) * Constants.sGameSpeed;
 		
 		for (Star star : mStars) {
 			star.mAge += dt;

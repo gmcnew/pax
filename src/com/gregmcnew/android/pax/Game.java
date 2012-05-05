@@ -68,7 +68,7 @@ public class Game {
 		
 		int updateLogInterval = Pax.LOG_FRAMERATE_INTERVAL_UPDATES;
 		
-		if (Pax.SIMPLE_BALANCE_TEST) {
+		if (Constants.SIMPLE_BALANCE_TEST) {
 			dt = Pax.UPDATE_INTERVAL_MS;
 			updateLogInterval = 500;
 		}
@@ -137,7 +137,7 @@ public class Game {
 			}
 			
 			if (mState != State.IN_PROGRESS) {
-				mEndedTime = SystemClock.uptimeMillis();
+				mEndedTime = mTimeElapsed;
 			}
 		}
 		
@@ -151,6 +151,10 @@ public class Game {
 		}
 	}
 	
+	public long getMsSinceEnd() {
+		return mTimeElapsed - mEndedTime;
+	}
+	
 	
 	// Private methods
 	
@@ -159,7 +163,7 @@ public class Game {
 			player.reset();
 		}
 		
-		if (Pax.sBenchmarkMode) { 
+		if (Constants.sBenchmarkMode) {
 			sRandom.setSeed(0);
 		}
 		
@@ -208,7 +212,8 @@ public class Game {
 	private boolean mIsPaused;
 	
 	public Player[] mPlayers;
-	public long mEndedTime;
+	
+	private long mEndedTime;
 	
 	private Game.State mState;
 	

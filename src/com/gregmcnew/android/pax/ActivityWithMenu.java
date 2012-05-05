@@ -19,31 +19,9 @@ import android.widget.Toast;
  * Implements menu behavior common to IntroActivity and Pax.
  */
 public class ActivityWithMenu extends Activity {
-	
-	// General settings
-	
-	public static final float GAME_SPEED_NORMAL = 1f;
-	public static final float GAME_SPEED_FAST   = 3f;
-	public static final float GAME_SPEED_INSANE = 6f;
-	public static float sGameSpeed;
-	
-	public static AI.Difficulty sAIDifficulty;
-	public static boolean sSound;
-	public static boolean sBenchmarkMode;
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
 	private static Map<String, Float> sGameSpeeds = null;
-
-	
-	// Graphics settings
-	
-	public static boolean sShowShips;
-	public static boolean sShowParticles;
-	public static boolean sShowCollisionBoxes;
-	public static boolean sShowFPS;
-	public static boolean sShowHealthForAllShipTypes;
-	public static boolean sVertexBufferObjects;
-	public static boolean sFadeOutIntro;
 
     /** Called when the activity is first created. */
     @Override
@@ -81,9 +59,9 @@ public class ActivityWithMenu extends Activity {
 		Resources res = getResources();
 		if (sGameSpeeds == null) {
 			sGameSpeeds = new HashMap<String, Float>();
-			sGameSpeeds.put(res.getString(R.string.game_speed_normal), GAME_SPEED_NORMAL);
-			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   GAME_SPEED_FAST);
-			sGameSpeeds.put(res.getString(R.string.game_speed_insane), GAME_SPEED_INSANE);
+			sGameSpeeds.put(res.getString(R.string.game_speed_normal), Constants.GAME_SPEED_NORMAL);
+			sGameSpeeds.put(res.getString(R.string.game_speed_fast),   Constants.GAME_SPEED_FAST);
+			sGameSpeeds.put(res.getString(R.string.game_speed_insane), Constants.GAME_SPEED_INSANE);
 		}
 		
 		if (sAIDifficulties == null) {
@@ -99,23 +77,23 @@ public class ActivityWithMenu extends Activity {
 		
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	
-    	sAIDifficulty = sAIDifficulties.get(settings.getString(getString(R.string.ai_difficulty), null));
-    	if (sAIDifficulty == null) {
-    		sAIDifficulty = AI.Difficulty.EASY;
+    	Constants.sAIDifficulty = sAIDifficulties.get(settings.getString(getString(R.string.ai_difficulty), null));
+    	if (Constants.sAIDifficulty == null) {
+    		Constants.sAIDifficulty = AI.Difficulty.EASY;
     	}
     	
     	String gameSpeedString = settings.getString(getString(R.string.game_speed), null);
     	Float gameSpeed = sGameSpeeds.get(gameSpeedString);
-    	sGameSpeed = (gameSpeed == null) ? GAME_SPEED_NORMAL : gameSpeed;
-    	sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
-    	sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
-    	sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);
-    	sShowHealthForAllShipTypes = settings.getBoolean(getString(R.string.show_all_health), false);
-    	sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);
-    	sFadeOutIntro = settings.getBoolean(getString(R.string.fade_out_intro), true);
-    	sSound = settings.getBoolean(getString(R.string.sound), false);
-    	sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
-    	sVertexBufferObjects = settings.getBoolean(getString(R.string.vertex_buffer_objects), true);
+    	Constants.sGameSpeed = (gameSpeed == null) ? Constants.GAME_SPEED_NORMAL : gameSpeed;
+    	Constants.sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
+    	Constants.sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
+    	Constants.sShowFPS = settings.getBoolean(getString(R.string.show_fps), false);
+    	Constants.sShowHealthForAllShipTypes = settings.getBoolean(getString(R.string.show_all_health), false);
+    	Constants.sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);
+    	Constants.sFadeOutIntro = settings.getBoolean(getString(R.string.fade_out_intro), true);
+    	Constants.sSound = settings.getBoolean(getString(R.string.sound), false);
+    	Constants.sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
+    	Constants.sVertexBufferObjects = settings.getBoolean(getString(R.string.vertex_buffer_objects), true);
     }
     
     @Override

@@ -48,7 +48,7 @@ public class GameView extends GLSurfaceView {
     		else {
     			// The game is over, but we may need to wait before starting
     			// the next one.
-    			if (mGame.mEndedTime + WAIT_BETWEEN_GAMES_MS <= SystemClock.uptimeMillis()) {
+    			if (mGame.getMsSinceEnd() < WAIT_BETWEEN_GAMES_MS) {
     				mGame.restart();
     			}
     		}
@@ -71,7 +71,7 @@ public class GameView extends GLSurfaceView {
 	private void handleGameTouchEvent(float x, float y) {
 		
     	// Ignore touches in benchmark mode.
-    	if (Pax.sBenchmarkMode) {
+    	if (Constants.sBenchmarkMode) {
     		return;
     	}
     	

@@ -39,7 +39,7 @@ public class GameSounds {
 	}
 	
 	public static void play(Sound sound) {
-		if (Pax.sSound) {
+		if (Constants.sSound) {
 			if (sSoundPool == null) {
 				lazyInitialize();
 			}

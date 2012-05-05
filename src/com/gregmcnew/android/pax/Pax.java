@@ -18,14 +18,6 @@ import android.widget.Toast;
 
 public class Pax extends ActivityWithMenu {
     
-    public static final boolean SELF_BENCHMARK = false;
-    public static final boolean SIMPLE_BALANCE_TEST = false;
-    public static final boolean BACKGROUND_IMAGE = false;
-    public static final boolean FIGHTER_SPAM_TEST = false;
-    public static final boolean MUSIC = false;
-    public static final boolean PARTICLES = true;
-    public static final boolean AI_TRAINING_MODE = false;
-    
     public static final int LOG_FRAMERATE_INTERVAL_UPDATES = -1; // in ms; make negative to disable
 	public static final int UPDATE_INTERVAL_MS = 40;
 	
@@ -36,7 +28,7 @@ public class Pax extends ActivityWithMenu {
     public static final String TAG = "Pax";
 
     static {
-    	if (SELF_BENCHMARK) {
+    	if (Constants.SELF_BENCHMARK) {
     		// Make randomness deterministic in benchmark mode.
     		Game.sRandom.setSeed(0);
     	}
@@ -57,7 +49,7 @@ public class Pax extends ActivityWithMenu {
         mGameResultStrings.put(Game.State.RED_WINS,  "Red wins!");
         mGameResultStrings.put(Game.State.BLUE_WINS, "Blue wins!");
         
-        if (SELF_BENCHMARK) {
+        if (Constants.SELF_BENCHMARK) {
         	Debug.startMethodTracing("dmtrace.trace", 64 * 1024 * 1024);
         }
         
@@ -73,7 +65,7 @@ public class Pax extends ActivityWithMenu {
         
         mNumUpdates = 0;
 
-        if (SELF_BENCHMARK) {
+        if (Constants.SELF_BENCHMARK) {
         	for (Player player : mGame.mPlayers) {
         		player.setAI(true);
         	}
@@ -95,7 +87,7 @@ public class Pax extends ActivityWithMenu {
             mView.requestFocus();
             mView.setFocusableInTouchMode(true);
             
-            if (MUSIC) {
+            if (Constants.MUSIC) {
             	//mMusic = MediaPlayer.create(this, R.raw.music);
             }
         }
@@ -103,55 +95,55 @@ public class Pax extends ActivityWithMenu {
     	mRedWins = mBlueWins = mTies = 0;
     }
     
-    @Override
-    public void onResume() {
+	@Override
+	public void onResume() {
     	super.onResume();
-    	
-    	if (sBenchmarkMode || sBenchmarkMode != mLastBenchmarkMode) {
-    		mLastBenchmarkMode = sBenchmarkMode;
-    		mGame.restart();
-    	}
-    	
-    	if (sBenchmarkMode) {
-    		FramerateCounter.start();
-    		mGame.mPlayers[0].setAI(true);
-    		mGame.mPlayers[1].setAI(true);
 
-    		// Preferences are reapplied in every call to onResume() in
-    		// ActivityWithMenu (our superclass), so it's okay to override them
-    		// here.
-    		sGameSpeed = GAME_SPEED_INSANE;
-    		sAIDifficulty = AI.Difficulty.MEDIUM;
-    		sSound = false;
-    		sShowFPS = true;
-    	}
-    	else {
-    		for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-    			mGame.mPlayers[i].setAI(mPlayerIsAI[i]);
-    		}
-    	}
-    	
-    	mGame.setAIDifficulty(sAIDifficulty);
-		
-    	if (!SELF_BENCHMARK) {
-    		if (MUSIC) {
-    	    	mMusic.start();
-    		}
-    		
-    		mView.onResume();
-        	setScreenPowerState(mGame.getState());
-    	}
-    	
-        mHandler.postDelayed(mUpdateViewTask, 0);
-    }
-    
+		if (Constants.sBenchmarkMode || Constants.sBenchmarkMode != mLastBenchmarkMode) {
+			mLastBenchmarkMode = Constants.sBenchmarkMode;
+			mGame.restart();
+		}
+
+		if (Constants.sBenchmarkMode) {
+			FramerateCounter.start();
+			mGame.mPlayers[0].setAI(true);
+			mGame.mPlayers[1].setAI(true);
+
+			// Preferences are reapplied in every call to onResume() in
+			// ActivityWithMenu (our superclass), so it's okay to override them
+			// here.
+			Constants.sGameSpeed = Constants.GAME_SPEED_INSANE;
+			Constants.sAIDifficulty = AI.Difficulty.MEDIUM;
+			Constants.sSound = false;
+			Constants.sShowFPS = true;
+		}
+		else {
+			for (int i = 0; i < Game.NUM_PLAYERS; i++) {
+				mGame.mPlayers[i].setAI(mPlayerIsAI[i]);
+			}
+		}
+
+		mGame.setAIDifficulty(Constants.sAIDifficulty);
+
+		if (!Constants.SELF_BENCHMARK) {
+			if (Constants.MUSIC) {
+				mMusic.start();
+			}
+
+			mView.onResume();
+			setScreenPowerState(mGame.getState());
+		}
+
+		mHandler.postDelayed(mUpdateViewTask, 0);
+	}
+
     @Override
     public void onPause() {
     	super.onPause();
         mHandler.removeCallbacks(mUpdateViewTask);
-    	if (!SELF_BENCHMARK) {
+    	if (!Constants.SELF_BENCHMARK) {
     		mView.onPause();
-        	if (MUSIC) {
+        	if (Constants.MUSIC) {
         		mMusic.pause();
         	}
     	}
@@ -213,7 +205,7 @@ public class Pax extends ActivityWithMenu {
     private Runnable mUpdateViewTask = new Runnable() {
     	public void run() {
     		
-    		if (SELF_BENCHMARK) {
+    		if (Constants.SELF_BENCHMARK) {
     			for (int frames = 0; frames < 1000; frames++) {
     				mGame.update(UPDATE_INTERVAL_MS);
     				
@@ -224,7 +216,7 @@ public class Pax extends ActivityWithMenu {
     			
         		updateState(Game.State.TIE);
     		}
-    		else if (SIMPLE_BALANCE_TEST) {
+    		else if (Constants.SIMPLE_BALANCE_TEST) {
     			for (int i = 0; i < 100; i++) {
     				mGame.mPlayers[0].mBuildTarget = Player.BuildTarget.FIGHTER;
     				mGame.mPlayers[1].mBuildTarget = Player.BuildTarget.FRIGATE;
@@ -249,7 +241,7 @@ public class Pax extends ActivityWithMenu {
 	    			mGame.restart();
     			}
     		}
-    		else if (AI_TRAINING_MODE) {
+    		else if (Constants.AI_TRAINING_MODE) {
     			for (Player player : mGame.mPlayers) {
     				player.setAI(true);
     			}
@@ -318,7 +310,7 @@ public class Pax extends ActivityWithMenu {
 	    		
 	    		updateState(mGame.getState());
 	    		
-	    		if (sBenchmarkMode) {
+	    		if (Constants.sBenchmarkMode) {
 	    			if (mNumUpdates > 1000) {
 	    				updateState(Game.State.TIE);
 	    				mGame.restart();
@@ -333,7 +325,7 @@ public class Pax extends ActivityWithMenu {
 
     @Override
     public void onDestroy() {
-    	if (SELF_BENCHMARK) {
+    	if (Constants.SELF_BENCHMARK) {
     		Debug.stopMethodTracing();
     	}
     	super.onDestroy();
@@ -349,14 +341,14 @@ public class Pax extends ActivityWithMenu {
 			if (resultString != null) {
     			Log.v(TAG, resultString);
     			
-    			String toastString = sBenchmarkMode
+    			String toastString = Constants.sBenchmarkMode
     					? String.format("Average framerate: %.2f", FramerateCounter.getTotalFPS())
     					: resultString;
     			
     			mToast.setText(toastString);
     			mToast.show();
     			
-    			if (SELF_BENCHMARK) {
+    			if (Constants.SELF_BENCHMARK) {
     				finish();
     			}
     		}

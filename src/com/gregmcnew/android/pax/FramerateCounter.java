@@ -47,7 +47,7 @@ public class FramerateCounter {
 	// tick(). (Returns 0 if start() hasn't been called.)
 	public static long tick() {
 		
-		if (Pax.SELF_BENCHMARK) {
+		if (Constants.SELF_BENCHMARK) {
 			return Pax.UPDATE_INTERVAL_MS;
 		}
 		

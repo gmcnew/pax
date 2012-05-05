@@ -61,7 +61,7 @@ public class CollisionHandler {
 		// the last game step, and if either will kill the ship, we're not
 		// guaranteed which laser will hit the ship and which will keep going.
 		// The collision code gets to decide.)
-		if (!Pax.sBenchmarkMode) {
+		if (!Constants.sBenchmarkMode) {
 			damage = projectile.health;
 			projectile.health = 0;
 		}

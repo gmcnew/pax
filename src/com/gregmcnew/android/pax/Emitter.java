@@ -48,7 +48,7 @@ public class Emitter {
 		mStart = 0;
 		mEnd = 0;
 		
-		if (Pax.SELF_BENCHMARK || type == SHIP_EXPLOSION || type == UPGRADE_EFFECT) {
+		if (Constants.SELF_BENCHMARK || type == SHIP_EXPLOSION || type == UPGRADE_EFFECT) {
 			mThrottleStartFps = NO_THROTTLE;
 			mThrottleMinFps = NO_THROTTLE;
 			mIgnoreAddFps = NO_THROTTLE;

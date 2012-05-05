@@ -68,8 +68,8 @@ public class Player {
 	}
 	
 	public void produce(long dt) {
-		float production = PRODUCTION_STEP_SIZE * Pax.sGameSpeed * mNumProductionSteps * mProductionMultiplier;
-		if (Pax.sBenchmarkMode) {
+		float production = PRODUCTION_STEP_SIZE * Constants.sGameSpeed * mNumProductionSteps * mProductionMultiplier;
+		if (Constants.sBenchmarkMode) {
 			production *= 100;
 		}
 		money += (production * dt) / 1000;
@@ -142,7 +142,7 @@ public class Player {
 			}
 		}
 		
-		if (Pax.PARTICLES) {
+		if (Constants.PARTICLES) {
 			for (int emitterType : Emitter.TYPES) {
 				mEmitters[emitterType].update(dt);
 			}
@@ -152,7 +152,7 @@ public class Player {
 	public void moveEntities(long dt) {
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
-				if (Pax.PARTICLES) {
+				if (Constants.PARTICLES) {
 					entity.emitParticles(mEmitters, dt);
 				}
 				

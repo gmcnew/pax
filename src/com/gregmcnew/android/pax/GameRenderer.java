@@ -128,7 +128,7 @@ public class GameRenderer extends Renderer {
 		mBuildTargetPaintersRed[3] = getPainter(gl, R.drawable.upgrade_icon_red);
 
         // Initialize the background image.
-		if (Pax.BACKGROUND_IMAGE) {
+		if (Constants.BACKGROUND_IMAGE) {
 			//mBackgroundPainter = getPainter(gl, R.drawable.background);
         }
 	}
@@ -156,7 +156,7 @@ public class GameRenderer extends Renderer {
 	public void onDrawFrame(GL10 gl) {
         
         long dt = FramerateCounter.tick();
-        if (Pax.sBenchmarkMode) {
+        if (Constants.sBenchmarkMode) {
         	dt = Pax.UPDATE_INTERVAL_MS;
         }
         mGame.update(dt);
@@ -169,7 +169,7 @@ public class GameRenderer extends Renderer {
         
         drawStars(gl, mStarField, mStarPainter, mGameWidth, mGameHeight);
         
-        if (Pax.sShowParticles) {
+        if (Constants.sShowParticles) {
 	        drawParticles(gl, Emitter.SMOKE);
         }
 		
@@ -182,12 +182,12 @@ public class GameRenderer extends Renderer {
 			}
 		}
 		
-		if (Pax.sShowCollisionBoxes) {
+		if (Constants.sShowCollisionBoxes) {
 			mGame.mPlayers[0].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, true, mRotation);
 			mGame.mPlayers[1].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, false, mRotation);
 		}
 		
-		if (Pax.sShowShips) {
+		if (Constants.sShowShips) {
 			
 			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
 			mPrimitivePainter.setFillColor(1, 1, 1, 0);
@@ -201,7 +201,7 @@ public class GameRenderer extends Renderer {
 					for (Entity entity : player.mEntities[entityType]) {
 
 						if (entityType == Entity.FACTORY
-							|| (Pax.sShowHealthForAllShipTypes
+							|| (Constants.sShowHealthForAllShipTypes
 								&& (entityType == Ship.FIGHTER
 									|| entityType == Ship.BOMBER
 									|| entityType == Ship.FRIGATE
@@ -233,7 +233,7 @@ public class GameRenderer extends Renderer {
 			}
 		}
 		
-        if (Pax.sShowParticles) {
+        if (Constants.sShowParticles) {
 	    	drawParticles(gl, Emitter.SPARK);
 	    	drawParticles(gl, Emitter.LASER_HIT);
 	    	drawParticles(gl, Emitter.MISSILE_HIT);
@@ -246,7 +246,7 @@ public class GameRenderer extends Renderer {
         	drawButtons(gl);
         }
 		
-		if (Pax.sShowFPS) {
+		if (Constants.sShowFPS) {
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
 			drawNumber(gl, x, y, (long) FramerateCounter.getFPS(), 0.2f);
@@ -267,7 +267,7 @@ public class GameRenderer extends Renderer {
 	}
 	
 	private void drawParticles(GL10 gl, int emitterType) {
-		if (Pax.PARTICLES) {
+		if (Constants.PARTICLES) {
 			Painter painter = mParticlePainters[emitterType];
 	    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 	    		Emitter emitter = mGame.mPlayers[player].mEmitters[emitterType];
@@ -286,7 +286,7 @@ public class GameRenderer extends Renderer {
     	
     	// Don't draw buttons in benchmark mode, since they change very quickly
     	// and can't be controlled anyway.
-    	if (Pax.sBenchmarkMode) {
+    	if (Constants.sBenchmarkMode) {
     		return;
     	}
     	for (int player = 0; player < Game.NUM_PLAYERS; player++) {

@@ -60,7 +60,7 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-		if (Pax.sVertexBufferObjects) {
+		if (Constants.sVertexBufferObjects) {
 			String version = gl.glGetString(GL10.GL_VERSION);
 			String extensions = gl.glGetString(GL10.GL_EXTENSIONS);
 			String renderer = gl.glGetString(GL10.GL_RENDERER);
