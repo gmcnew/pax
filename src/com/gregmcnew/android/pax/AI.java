@@ -139,6 +139,10 @@ public class AI {
 		mWeights.randomize();
 	}
 	
+	public void setWeights(AIWeights weights) {
+		mWeights = weights;
+	}
+	
 	public void buildFinished() {
 		mPlayer.mBuildTarget = Player.BuildTarget.NONE;
 		mBuilds++;
