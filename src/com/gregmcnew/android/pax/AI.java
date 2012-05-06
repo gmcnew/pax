@@ -109,8 +109,6 @@ public class AI {
 	public void setDifficulty(Difficulty difficulty) {
 		mIntelligence = 0f;
 		
-		mWeights.reset();
-		
 		mCanUpgrade = false;
 		
 		// The insane AI beats the medium AI about 93.6% of the time.

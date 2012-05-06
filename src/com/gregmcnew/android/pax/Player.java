@@ -240,6 +240,10 @@ public class Player {
 		mAI.randomizeWeights();
 	}
 	
+	public void setAIWeights(AIWeights weights) {
+		mAI.setWeights(weights);
+	}
+	
 	public void setAIDifficulty(AI.Difficulty difficulty) {
 		mAI.setDifficulty(difficulty);
 	}
@@ -248,6 +252,10 @@ public class Player {
 		if (mIsAI) {
 			mAI.update(allPlayers);
 		}
+	}
+	
+	public int numUpgrades() {
+		return mNumProductionSteps - INITIAL_NUM_PRODUCTION_STEPS;
 	}
 	
 	
