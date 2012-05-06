@@ -11,6 +11,8 @@
     <string name="upgrade">Upgrade</string>
     <string name="upgrade_summary">Download and install the latest version</string>
     
+    <string name="tutorial_prompt">It looks like this is your first time playing Pax! Would you like to see the tutorial?</string>
+    <string name="tutorial_prompt_setting">Show tutorial prompt</string>
     
     <!-- "About" screen strings -->
     

@@ -6,6 +6,8 @@ import java.util.TimerTask;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -18,11 +20,13 @@ import android.preference.PreferenceManager;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 public class IntroActivity extends ActivityWithMenu {
 	
 	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 1;
 	
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -226,7 +230,7 @@ public class IntroActivity extends ActivityWithMenu {
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
 			// Draw a glow behind each button that represents a human player.
-			float glowSize = (float) (buttonSize * 3);
+			float glowSize = (buttonSize * 3);
 			if (!mPlayerOneAI) {
 				mSmokePainter.draw(gl, -buttonXPos, -buttonYPos, glowSize, glowSize, 0, fadeAlpha);
 			}
@@ -284,54 +288,93 @@ public class IntroActivity extends ActivityWithMenu {
 			super.onResume();
 			updateRotation();
 		}
+
+		private void clearTutorialSetting(SharedPreferences settings) {
+			Editor editor = settings.edit();
+			editor.putBoolean(getString(R.string.tutorial_prompt_setting), false);
+			editor.commit();
+		}
+
+		private boolean showTutorial() {
+			final SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+			boolean tutorialPrompt = settings.getBoolean(getString(R.string.tutorial_prompt_setting), true);
+			if (!tutorialPrompt) {
+				return false;
+			}
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+			builder.setMessage(getString(R.string.tutorial_prompt));
+			builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					// TODO: Launch a tutorial activity.
+					Toast.makeText(mActivity, "Sorry, buddy, you're on your own!", Toast.LENGTH_LONG).show();
+					dialog.cancel();
+					clearTutorialSetting(settings);
+				}
+			});
+			builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+					clearTutorialSetting(settings);
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+
+			return true;
+		}
 		
 		@Override
-	    public boolean onTouchEvent(MotionEvent event) {
-			
-	    	// We don't care which pointer was pressed.
-	    	int action = event.getAction() & MotionEvent.ACTION_MASK;
-	    	
-	    	if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN)
-	    			&& !mActivity.mMenuOpen) {
-	    		
-		    	for (int i = 0; i < event.getPointerCount(); i++) {
-		    		
-		    		// Divide the screen into three sections.
-		    		// A touch in section 0 means player 2 should be human. 
-		    		// A touch in section 2 means player 1 should be human.
-		    		int xSection = (int) (event.getX(i) * 3 / getWidth());
-		    		int ySection = (int) (event.getY(i) * 3 / getHeight());
-		    		int section = (mRotation % 2 == 0 ? ySection : xSection);
-		    		
-		    		if (mRotation >= 2) {
-		    			section = 2 - section;
-		    		}
-		    		
-		    		if (section == 1) {
-		    			// The user clicked in the middle of the screen, even
-		    			// though that doesn't do anything. They must not know
-		    			// what they're doing -- maybe the options menu will
-		    			// help.
-		    			openOptionsMenu();
-		    		}
-		    		else {
-		    			if (section == 0) {
+		public boolean onTouchEvent(MotionEvent event) {
+
+			// We don't care which pointer was pressed.
+			int action = event.getAction() & MotionEvent.ACTION_MASK;
+
+			if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN)
+					&& !mActivity.mMenuOpen
+					&& !showTutorial()) {
+
+				for (int i = 0; i < event.getPointerCount(); i++) {
+
+					// Divide the screen into three sections.
+					// A touch in section 0 means player 2 should be human.
+					// A touch in section 2 means player 1 should be human.
+					int xSection = (int) (event.getX(i) * 3 / getWidth());
+					int ySection = (int) (event.getY(i) * 3 / getHeight());
+					int section = (mRotation % 2 == 0 ? ySection : xSection);
+
+					if (mRotation >= 2) {
+						section = 2 - section;
+					}
+
+					if (section == 1) {
+						// The user clicked in the middle of the screen, even
+						// though that doesn't do anything. They must not know
+						// what they're doing -- maybe the options menu will
+						// help.
+						openOptionsMenu();
+					}
+					else {
+						if (section == 0) {
 			    			mActivity.mPlayerTwoAI = false;
-		    			}
-		    			else {
+						}
+						else {
 			    			mActivity.mPlayerOneAI = false;
-		    			}
-			    		
+						}
+
 			    		mActivity.startTimer();
 						setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-		    		}
-		    	}
-	    	}
-	    	
-	    	// We consumed the event.
-	    	return true;
-	    }
-    	
+					}
+				}
+			}
+
+			// We consumed the event.
+			return true;
+		}
+
 		private int mRotation;
 		private final IntroRenderer mRenderer;
 		private final IntroActivity mActivity;
