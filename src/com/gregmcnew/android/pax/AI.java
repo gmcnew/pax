@@ -97,8 +97,6 @@ public class AI {
 	
 	public enum Difficulty { BRAINDEAD, EASY, MEDIUM, HARD, VERY_HARD, INSANE, CHEATER }
 	
-	private static final int RELEVANT_ENEMY_ENTITY_TYPES[] = { Ship.FIGHTER, Ship.BOMBER, Ship.FRIGATE };
-	
 	public AI(Player player) {
 		mPlayer = player;
 		mWeights = new AIWeights();
@@ -208,7 +206,7 @@ public class AI {
 	
 	private void countEntities(Player[] allPlayers) {
 		// Count entities by type.
-		for (int type : RELEVANT_ENEMY_ENTITY_TYPES) {
+		for (int type : Ship.TYPES) {
 			mNumEnemyEntities[type] = 0;
 			for (Player player : allPlayers) {
 				float healthWeight = mWeights.w[AIWeights.ENEMY_HEALTH];

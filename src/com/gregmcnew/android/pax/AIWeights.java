@@ -18,11 +18,12 @@ public class AIWeights {
 			0.6277f, -0.2779f,
 			1.1031f, -0.1376f,
 			1.0f,	  0f,
-			0.85f,    0f,
+			0f,       0f,
+			0f,       0f,
 			0f
 			};
 
-	private static final int NUM_WEIGHTS = OPTIMAL_WEIGHTS.length;
+	public static final int NUM_WEIGHTS = OPTIMAL_WEIGHTS.length;
 	
 	public AIWeights() {
 		w = new float[NUM_WEIGHTS];
@@ -36,8 +37,10 @@ public class AIWeights {
 	public static final int FRIGATE_X    = 4;
 	public static final int FRIGATE_C    = 5;
 	public static final int UPGRADE_X    = 6;
-	public static final int UPGRADE_C    = 7;
-	public static final int ENEMY_HEALTH = 8;
+	public static final int UPGRADE_Y    = 7;
+	public static final int UPGRADE_Z    = 8;
+	public static final int UPGRADE_C    = 9;
+	public static final int ENEMY_HEALTH = 10;
 	
 	public void reset() {
 		for (int i = 0; i < NUM_WEIGHTS; i++) {
@@ -46,14 +49,64 @@ public class AIWeights {
 	}
 	
 	public void randomize() {
-		// Make sure that all *X weights are positive.
+		for (int i = 0; i < ENEMY_HEALTH; i++) {
+			w[i] = Game.sRandom.nextFloat() * 2 - 1;
+		}
+		w[ENEMY_HEALTH] = Game.sRandom.nextFloat();
+		
+		// Make sure that all ship _X weights are positive.
+		/*
 		w[FIGHTER_X]    =  Game.sRandom.nextFloat();
 		w[FIGHTER_C]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
 		w[BOMBER_X]     =  Game.sRandom.nextFloat();
 		w[BOMBER_C]     = (Game.sRandom.nextFloat() - 0.5f) * 2;
 		w[FRIGATE_X]    =  Game.sRandom.nextFloat();
-		w[FRIGATE_C]    = 0;
-		w[ENEMY_HEALTH] = 0;
+		w[FRIGATE_C]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
+		*/
+		/*
+		w[UPGRADE_X]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
+		w[UPGRADE_Y]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
+		w[UPGRADE_Z]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
+		w[UPGRADE_C]    = (Game.sRandom.nextFloat() - 0.5f) * 2;
+		*/
+		//w[ENEMY_HEALTH] = 0;
+	}
+	
+	public AIWeights breed(AIWeights other) {
+		AIWeights child = clone();
+		
+		for (int i = 0; i < NUM_WEIGHTS; i++) {
+			float f = Game.sRandom.nextFloat();
+			child.w[i] = (f * w[i]) + ((1 - f) * other.w[i]);
+		}
+		
+		return child;
+	}
+	
+	public void mutate() {
+		int i = Game.sRandom.nextInt(NUM_WEIGHTS);
+		
+		// Randomize a random weight.
+		if (i == ENEMY_HEALTH) {
+			w[i] = Game.sRandom.nextFloat();
+		}
+		else {
+			w[i] = Game.sRandom.nextFloat() * 2 - 1;
+		}
+		
+		// Negate a random weight.
+		//w[i] *= -1;
+		
+		/*
+		// Swap two weights.
+		int j = Game.sRandom.nextInt(NUM_WEIGHTS - 1);
+		if (j == i) {
+			j = NUM_WEIGHTS - 1;
+		}
+		float temp = w[i];
+		w[i] = w[j];
+		w[j] = temp;
+		*/
 	}
 	
 	public AIWeights clone() {
