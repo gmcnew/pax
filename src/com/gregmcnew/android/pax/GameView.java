@@ -48,7 +48,7 @@ public class GameView extends GLSurfaceView {
     		else {
     			// The game is over, but we may need to wait before starting
     			// the next one.
-    			if (mGame.getMsSinceEnd() < WAIT_BETWEEN_GAMES_MS) {
+    			if (mGame.getMsSinceEnd() > WAIT_BETWEEN_GAMES_MS) {
     				mGame.restart();
     			}
     		}
