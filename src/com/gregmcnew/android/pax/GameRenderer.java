@@ -45,10 +45,10 @@ public class GameRenderer extends Renderer {
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		super.onSurfaceCreated(gl, config);
-		
-		mShipUnhealth = new Painter[Game.NUM_PLAYERS];
-		mShipHealth = new Painter[Game.NUM_PLAYERS];
+
 		mShipOutlinePainter = getPainter(gl, R.drawable.ship_outline);
+
+		mCircle = getPainter(gl, R.drawable.circle);
 		
 		float lineVertices[] = { -0.5f, 0, 0.5f, 0 };
 		
@@ -61,26 +61,6 @@ public class GameRenderer extends Renderer {
 		mPlayerEntityPainters = new HashMap<Player, Painter[]>();
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
 			Painter[] painters = new Painter[Entity.TYPES.length];
-			
-			switch (player) {
-				case 0:
-					painters[Entity.FIGHTER] = getPainter(gl, R.drawable.ohblue);
-					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohblue);
-					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohblue);
-					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohblue);
-					mShipUnhealth[player]    = getPainter(gl, R.drawable.blue_unhealth);
-					mShipHealth[player]      = getPainter(gl, R.drawable.blue_health);
-					break;
-				case 1:
-				default:
-					painters[Entity.FIGHTER] = getPainter(gl, R.drawable.ohred);
-					painters[Entity.BOMBER]  = getPainter(gl, R.drawable.ohred);
-					painters[Entity.FRIGATE] = getPainter(gl, R.drawable.ohred);
-					painters[Entity.FACTORY] = getPainter(gl, R.drawable.ohred);
-					mShipUnhealth[player]    = getPainter(gl, R.drawable.red_unhealth);
-					mShipHealth[player]      = getPainter(gl, R.drawable.red_health);
-					break;
-			}
 			
 			painters[Entity.LASER]   = getPainter(gl, R.drawable.laser);
 			painters[Entity.BOMB]    = getPainter(gl, R.drawable.bomb);
@@ -99,8 +79,7 @@ public class GameRenderer extends Renderer {
 		mParticlePainters[Emitter.BOMB_HIT]    		= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.SHIP_EXPLOSION] 	= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.UPGRADE_EFFECT] 	= getPainter(gl, R.drawable.upgrade_effect);
-		
-		
+
 		mDigitPainters = new Painter[10];
 		mDigitPainters[0] = getPainter(gl, R.drawable.char_0);
 		mDigitPainters[1] = getPainter(gl, R.drawable.char_1);
@@ -191,44 +170,32 @@ public class GameRenderer extends Renderer {
 			
 			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
 			mPrimitivePainter.setFillColor(1, 1, 1, 0);
-			
+
+			float[][] colors = {{0, .4f, .8f}, {.8f, 0, 0}};
+
 			for (int entityType : ENTITY_LAYERS) {
 				for (int i = 0; i < Game.NUM_PLAYERS; i++) {
-					
+
 					Player player = mGame.mPlayers[i];
 					Painter[] painters = mPlayerEntityPainters.get(player);
-					
-					for (Entity entity : player.mEntities[entityType]) {
 
-						if (entityType == Entity.FACTORY
-							|| (Constants.sShowHealthForAllShipTypes
-								&& (entityType == Ship.FIGHTER
-									|| entityType == Ship.BOMBER
-									|| entityType == Ship.FRIGATE
-									)
-								)
-							) {
-							
-							// The "unhealth" image is drawn first, followed by the
-							// "health" image, scaled according to the entity's
-							// health. Finally, the ship's outline is drawn on top.
-							
-							float scale = entity.diameter * 1.05f * entity.health / entity.originalHealth;
-							mShipUnhealth[i].draw(gl, entity);
-							mShipHealth[i].draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f);
-							mShipOutlinePainter.draw(gl, entity);
-							
+					for (Entity entity : player.mEntities[entityType]) {
+						if (  entityType == Ship.FACTORY
+							    || entityType == Ship.FIGHTER
+							    || entityType == Ship.BOMBER
+							    || entityType == Ship.FRIGATE
+							    ) {
+							float shrink = entity.diameter * 0.15f * ((float) entity.health) / entity.originalHealth;
+							float scale = entity.diameter - shrink;
+							float sx = (float) Math.cos(entity.heading) * shrink / 2;
+							float sy = (float) Math.sin(entity.heading) * shrink / 2;
+							mCircle.draw(gl, entity);
+							mCircle.draw(gl, entity.body.center.x - sx, entity.body.center.y - sy, scale, scale, 0f, 1f, colors[i][0], colors[i][1], colors[i][2]);
 						}
 						else {
 							painters[entityType].draw(gl, entity);
 						}
 					}
-					
-					/*
-					for (Entity entity : player.mEntities[entityType]) {
-						mPrimitivePainter.drawCircle(gl, entity.body.center.x, entity.body.center.y, entity.radius);
-					}
-					*/
 				}
 			}
 		}
@@ -366,10 +333,9 @@ public class GameRenderer extends Renderer {
 	private Painter[] mBuildTargetPaintersRed;
 	private Painter[] mParticlePainters;
 	private Painter[] mDigitPainters;
-	
-	private Painter[] mShipUnhealth;
-	private Painter[] mShipHealth;
+
 	private Painter mShipOutlinePainter;
+	private Painter mCircle;
 	
 	private float mButtonSize;
 }

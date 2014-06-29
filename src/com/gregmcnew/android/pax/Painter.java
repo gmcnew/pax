@@ -115,6 +115,10 @@ public class Painter {
 	public void draw(GL10 gl, Entity entity) {
 		draw(gl, entity.body.center.x, entity.body.center.y, entity.length, entity.diameter, (float) Math.toDegrees(entity.heading), 1f);
 	}
+
+	public void draw(GL10 gl, Entity entity, float r, float g, float b) {
+		draw(gl, entity.body.center.x, entity.body.center.y, entity.length, entity.diameter, (float) Math.toDegrees(entity.heading), 1f, r, g, b);
+	}
 	
 	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
 		float centerX = (maxX + minX) / 2;
@@ -123,8 +127,12 @@ public class Painter {
 		float sizeY = maxY - minY;
 		draw(gl, centerX, centerY, sizeX, sizeY, rotateDegrees, alpha);
 	}
-	
+
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {
+		draw(gl, moveX, moveY, sizeX, sizeY, rotateDegrees, alpha, 1f, 1f, 1f);
+	}
+
+	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha, float r, float g, float b) {
 		
         // Make sure we're not using any transformations left over from the
 		// last draw().
@@ -133,7 +141,7 @@ public class Painter {
 		// Rotate about the Z-axis.
 		gl.glRotatef(sCameraRotationDegrees, 0f, 0f, 1f);
 
-		gl.glColor4f(1f, 1f, 1f, alpha);
+		gl.glColor4f(r, g, b, alpha);
 
 		if (mRenderer.stateLost(mRendererStateID)) {
 			
