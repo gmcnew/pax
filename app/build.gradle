@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 8
+    buildToolsVersion '20.0.0'
+
+    defaultConfig {
+        applicationId "com.gregmcnew.android.pax"
+        minSdkVersion 8
+        targetSdkVersion 8
+        versionCode 1
+        versionName "0.3.8"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['../src']
+            res.srcDirs = ['../res']
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: '../libs')
+}
