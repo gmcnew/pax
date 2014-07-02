@@ -21,7 +21,7 @@ public class Painter {
 	private static boolean sSharedBuffersInitialized = false;
 	private static float sCameraRotationDegrees = 0;
 
-	public static float[][] TEAM_COLORS = {{0, .4f, .8f}, {0, .8f, 0}};
+	public static float[][] TEAM_COLORS = {{0, .4f, .8f}, {.8f, 0, 0}};
 	
 	public static void setCameraRotationDegrees(float degrees) {
 		sCameraRotationDegrees = degrees;
