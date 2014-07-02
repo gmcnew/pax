@@ -13,8 +13,8 @@
    height="600"
    id="svg4716"
    version="1.1"
-   inkscape:version="0.48.0 r9654"
-   sodipodi:docname="upgrade_icon.svg"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="icon_upgrade.svg"
    inkscape:export-xdpi="19.200001"
    inkscape:export-ydpi="19.200001">
   <defs
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -122,8 +122,8 @@
        id="rect4663"
        width="600"
        height="600"
-       x="-874.79211"
-       y="432.15912" />
+       x="-869.07782"
+       y="435.01627" />
     <path
        style="fill:none;stroke:#ffffff;stroke-width:30;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m -375.027,1165.5233 -78.79191,-2.0203 135.36044,-177.78687 123.72884,179.80717 -79.28213,0 -48.57142,193.9318 z"

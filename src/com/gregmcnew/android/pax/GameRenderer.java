@@ -80,7 +80,7 @@ public class GameRenderer extends Renderer {
 		mParticlePainters[Emitter.MISSILE_HIT] 		= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.BOMB_HIT]    		= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.SHIP_EXPLOSION] 	= getPainter(gl, R.drawable.bomb);
-		mParticlePainters[Emitter.UPGRADE_EFFECT] 	= getPainter(gl, R.drawable.upgrade_effect);
+		mParticlePainters[Emitter.UPGRADE_EFFECT] 	= getPainter(gl, R.drawable.icon_upgrade);
 
 		mDigitPainters = new Painter[10];
 		mDigitPainters[0] = getPainter(gl, R.drawable.char_0);
