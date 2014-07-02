@@ -95,18 +95,12 @@ public class GameRenderer extends Renderer {
 		mDigitPainters[9] = getPainter(gl, R.drawable.char_9);
 
 		mHighlight = getPainter(gl, R.drawable.white);
-		
-		mBuildTargetPaintersBlue = new Painter[4];
-		mBuildTargetPaintersBlue[0] = getPainter(gl, R.drawable.fighter_icon_blue);
-		mBuildTargetPaintersBlue[1] = getPainter(gl, R.drawable.bomber_icon_blue);
-		mBuildTargetPaintersBlue[2] = getPainter(gl, R.drawable.frigate_icon_blue);
-		mBuildTargetPaintersBlue[3] = getPainter(gl, R.drawable.upgrade_icon_blue);
-		
-		mBuildTargetPaintersRed = new Painter[4];
-		mBuildTargetPaintersRed[0] = getPainter(gl, R.drawable.fighter_icon_red);
-		mBuildTargetPaintersRed[1] = getPainter(gl, R.drawable.bomber_icon_red);
-		mBuildTargetPaintersRed[2] = getPainter(gl, R.drawable.frigate_icon_red);
-		mBuildTargetPaintersRed[3] = getPainter(gl, R.drawable.upgrade_icon_red);
+
+		mBuildTargetPainters = new Painter[4];
+		mBuildTargetPainters[0] = getPainter(gl, R.drawable.icon_fighter);
+		mBuildTargetPainters[1] = getPainter(gl, R.drawable.icon_bomber);
+		mBuildTargetPainters[2] = getPainter(gl, R.drawable.icon_frigate);
+		mBuildTargetPainters[3] = getPainter(gl, R.drawable.icon_upgrade);
 
         // Initialize the background image.
 		if (Constants.BACKGROUND_IMAGE) {
@@ -261,11 +255,18 @@ public class GameRenderer extends Renderer {
     	if (Constants.sBenchmarkMode) {
     		return;
     	}
-    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+
+		// Draw the build target icon.
+		float[][] c = Painter.TEAM_COLORS;
+		float[][] h = { { 0, 0, 0}, { 0, 0, 0 } };
+
+		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+
+			for (int j = 0; j < 3; j++) {
+				h[player][j] = (c[player][j] + 1) / 2;
+			}
 			
-			float buildIndicatorRotation = (player == 0) ? 0 : 180;
-			
-			Painter[] buildTargetPainters = (player == 0) ? mBuildTargetPaintersBlue : mBuildTargetPaintersRed;
+			float rot = (player == 0) ? 0 : 180;
 			
 			float flip = (player == 1) ? -1 : 1;
 
@@ -308,9 +309,9 @@ public class GameRenderer extends Renderer {
 							0,
 							0.2f);
 				}
-				
-				// Draw the build target icon.
-				buildTargetPainters[i].draw(gl, x, y, mButtonSize, mButtonSize, buildIndicatorRotation, 1f);
+
+				mBuildTargetPainters[i].draw(gl, x, y, mButtonSize, mButtonSize, rot, 1f);
+				mBuildTargetPainters[i].draw(gl, x, y, mButtonSize, mButtonSize, rot, .33f, c[player][0], c[player][1], c[player][2]);
 				
 				x += dx;
 				y += dy;
@@ -335,8 +336,7 @@ public class GameRenderer extends Renderer {
 	private Painter mStarPainter;
 	
 	private Painter mHighlight;
-	private Painter[] mBuildTargetPaintersBlue;
-	private Painter[] mBuildTargetPaintersRed;
+	private Painter[] mBuildTargetPainters;
 	private Painter[] mParticlePainters;
 	private Painter[] mDigitPainters;
 
