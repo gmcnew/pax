@@ -20,6 +20,8 @@ public class Painter {
 	
 	private static boolean sSharedBuffersInitialized = false;
 	private static float sCameraRotationDegrees = 0;
+
+	public static float[][] TEAM_COLORS = {{0, .4f, .8f}, {0, .8f, 0}};
 	
 	public static void setCameraRotationDegrees(float degrees) {
 		sCameraRotationDegrees = degrees;
@@ -111,6 +113,14 @@ public class Painter {
 			gl11.glBufferData(GL11.GL_ARRAY_BUFFER, sTextureBuffer.capacity(), sTextureBuffer, GL11.GL_STATIC_DRAW);
 		}
 	}
+
+	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
+		float centerX = (maxX + minX) / 2;
+		float centerY = (maxY + minY) / 2;
+		float sizeX = maxX - minX;
+		float sizeY = maxY - minY;
+		draw(gl, centerX, centerY, sizeX, sizeY, rotateDegrees, alpha);
+	}
 	
 	public void draw(GL10 gl, Entity entity) {
 		draw(gl, entity.body.center.x, entity.body.center.y, entity.length, entity.diameter, (float) Math.toDegrees(entity.heading), 1f);
@@ -119,13 +129,9 @@ public class Painter {
 	public void draw(GL10 gl, Entity entity, float r, float g, float b) {
 		draw(gl, entity.body.center.x, entity.body.center.y, entity.length, entity.diameter, (float) Math.toDegrees(entity.heading), 1f, r, g, b);
 	}
-	
-	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
-		float centerX = (maxX + minX) / 2;
-		float centerY = (maxY + minY) / 2;
-		float sizeX = maxX - minX;
-		float sizeY = maxY - minY;
-		draw(gl, centerX, centerY, sizeX, sizeY, rotateDegrees, alpha);
+
+	public void draw(GL10 gl, Entity entity, float scale, float r, float g, float b) {
+		draw(gl, entity.body.center.x, entity.body.center.y, scale, scale, (float) Math.toDegrees(entity.heading), 1f, r, g, b);
 	}
 
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha) {

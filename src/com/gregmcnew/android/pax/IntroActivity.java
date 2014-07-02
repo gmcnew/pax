@@ -147,8 +147,7 @@ public class IntroActivity extends ActivityWithMenu {
 			super.onSurfaceCreated(gl, config);
 			mStarPainter = getPainter(gl, R.drawable.star);
 			mTitlePainter = getPainter(gl, R.drawable.title);
-			mBlueButtonPainter = getPainter(gl, R.drawable.ohblue);
-			mRedButtonPainter = getPainter(gl, R.drawable.ohred);
+			mCirclePainter = getPainter(gl, R.drawable.circle);
 			mSmokePainter = getPainter(gl, R.drawable.smoke);
 			mNumberPainters = new Painter[10];
 			mNumberPainters[0] = getPainter(gl, R.drawable.char_gold_0);
@@ -250,8 +249,15 @@ public class IntroActivity extends ActivityWithMenu {
 			mNumberPainters[secondsLeft].draw(gl, numberXPos, numberYPos, numberSize, numberSize, rotationDegrees, countdownAlpha);
 			
 			// Draw buttons
-			mBlueButtonPainter.draw(gl, -buttonXPos, -buttonYPos, buttonSize, buttonSize, 180, fadeAlpha);
-			mRedButtonPainter.draw(gl, buttonXPos, buttonYPos, buttonSize, buttonSize, 0, fadeAlpha);
+			float[][] c = Painter.TEAM_COLORS;
+			for (int i = 0; i < 2; i++) {
+				int rot = (i == 1 ? 1 : -1);
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize, buttonSize, 180 * i, 1f);
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize * .85f, buttonSize * .85f, 180 * i, 1f, c[i][0], c[i][1], c[i][2]);
+
+				// Draw a black circle on top to fade the button out.
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize, buttonSize, 180 * i, 1 - fadeAlpha, 0, 0, 0);
+			}
 		}
 		
 		private StarField mStarField;
@@ -259,8 +265,7 @@ public class IntroActivity extends ActivityWithMenu {
 		private Painter mStarPainter;
 		private Painter mNumberPainters[];
 		private Painter mTitlePainter;
-		private Painter mBlueButtonPainter;
-		private Painter mRedButtonPainter;
+		private Painter mCirclePainter;
 		private Painter mSmokePainter;
     }
     

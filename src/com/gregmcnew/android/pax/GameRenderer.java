@@ -38,8 +38,10 @@ public class GameRenderer extends Renderer {
         // Make sure the largest screen dimension is equal to GAME_VIEW_SIZE
         // game units.
         float maxDimension = Math.max(mScreenWidth, mScreenHeight);
-        mGameWidth  *= GAME_VIEW_SIZE / maxDimension;
-        mGameHeight *= GAME_VIEW_SIZE / maxDimension;
+        mPixelSize = GAME_VIEW_SIZE / maxDimension;
+        mGameWidth  *= mPixelSize;
+        mGameHeight *= mPixelSize;
+
     }
     
 	@Override
@@ -171,7 +173,9 @@ public class GameRenderer extends Renderer {
 			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
 			mPrimitivePainter.setFillColor(1, 1, 1, 0);
 
-			float[][] colors = {{0, .4f, .8f}, {.8f, 0, 0}};
+			final float minShieldWidth = mPixelSize * 2;
+
+			float[][] c = Painter.TEAM_COLORS;
 
 			for (int entityType : ENTITY_LAYERS) {
 				for (int i = 0; i < Game.NUM_PLAYERS; i++) {
@@ -180,20 +184,21 @@ public class GameRenderer extends Renderer {
 					Painter[] painters = mPlayerEntityPainters.get(player);
 
 					for (Entity entity : player.mEntities[entityType]) {
-						if (  entityType == Ship.FACTORY
-							    || entityType == Ship.FIGHTER
-							    || entityType == Ship.BOMBER
-							    || entityType == Ship.FRIGATE
-							    ) {
-							float shrink = entity.diameter * 0.15f * ((float) entity.health) / entity.originalHealth;
-							float scale = entity.diameter - shrink;
-							float sx = (float) Math.cos(entity.heading) * shrink / 2;
-							float sy = (float) Math.sin(entity.heading) * shrink / 2;
-							mCircle.draw(gl, entity);
-							mCircle.draw(gl, entity.body.center.x - sx, entity.body.center.y - sy, scale, scale, 0f, 1f, colors[i][0], colors[i][1], colors[i][2]);
+						if (painters[entityType] != null) {
+							painters[entityType].draw(gl, entity);
 						}
 						else {
-							painters[entityType].draw(gl, entity);
+							float[] shieldColors = { 1, 1, 1 };
+							float shieldWidth = entity.diameter * 0.15f * ((float) entity.health) / entity.originalHealth;
+							if (shieldWidth < minShieldWidth) {
+								float shieldStrength = shieldWidth / minShieldWidth;
+								shieldWidth = minShieldWidth;
+								for (int j = 0; j < 3; j++) {
+									shieldColors[j] = c[i][j] * (1 - shieldStrength) + shieldStrength;
+								}
+							}
+							mCircle.draw(gl, entity, shieldColors[0], shieldColors[1], shieldColors[2]);
+							mCircle.draw(gl, entity, entity.diameter - shieldWidth, c[i][0], c[i][1], c[i][2]);
 						}
 					}
 				}
@@ -323,6 +328,7 @@ public class GameRenderer extends Renderer {
 	// These values will -not- change when the screen is rotated.
 	private float mGameWidth;
 	private float mGameHeight;
+	private float mPixelSize; // in game units
 
 	private Map<Player, Painter[]> mPlayerEntityPainters;
 
