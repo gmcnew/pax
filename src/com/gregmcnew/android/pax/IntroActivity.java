@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 public class IntroActivity extends ActivityWithMenu {
 	
-	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 1;
+	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 3;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -148,7 +148,6 @@ public class IntroActivity extends ActivityWithMenu {
 			mStarPainter = getPainter(gl, R.drawable.star);
 			mTitlePainter = getPainter(gl, R.drawable.title);
 			mCirclePainter = getPainter(gl, R.drawable.circle);
-			mSmokePainter = getPainter(gl, R.drawable.smoke);
 			mNumberPainters = new Painter[10];
 			mNumberPainters[0] = getPainter(gl, R.drawable.char_gold_0);
 			mNumberPainters[1] = getPainter(gl, R.drawable.char_gold_1);
@@ -228,15 +227,6 @@ public class IntroActivity extends ActivityWithMenu {
 			float buttonXPos = 0;
 			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
 			
-			// Draw a glow behind each button that represents a human player.
-			float glowSize = (buttonSize * 3);
-			if (!mPlayerOneAI) {
-				mSmokePainter.draw(gl, -buttonXPos, -buttonYPos, glowSize, glowSize, 0, fadeAlpha);
-			}
-			if (!mPlayerTwoAI) {
-				mSmokePainter.draw(gl, buttonXPos, buttonYPos, glowSize, glowSize, 0, fadeAlpha);
-			}
-			
 			// Draw the title text
 			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, fadeAlpha);
 
@@ -252,11 +242,12 @@ public class IntroActivity extends ActivityWithMenu {
 			float[][] c = Painter.TEAM_COLORS;
 			for (int i = 0; i < 2; i++) {
 				int rot = (i == 1 ? 1 : -1);
-				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize, buttonSize, 180 * i, 1f);
-				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize * .85f, buttonSize * .85f, 180 * i, 1f, c[i][0], c[i][1], c[i][2]);
+				float bs = ((i == 0 && !mPlayerOneAI) || (i == 1 && !mPlayerTwoAI)) ? buttonSize * 1.25f : buttonSize;
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, bs, bs, 180 * i, 1f);
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, bs * .85f, bs * .85f, 180 * i, 1f, c[i][0], c[i][1], c[i][2]);
 
 				// Draw a black circle on top to fade the button out.
-				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, buttonSize, buttonSize, 180 * i, 1 - fadeAlpha, 0, 0, 0);
+				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, bs, bs, 180 * i, 1 - fadeAlpha, 0, 0, 0);
 			}
 		}
 		
@@ -266,7 +257,6 @@ public class IntroActivity extends ActivityWithMenu {
 		private Painter mNumberPainters[];
 		private Painter mTitlePainter;
 		private Painter mCirclePainter;
-		private Painter mSmokePainter;
     }
     
     private class IntroView extends GLSurfaceView {
