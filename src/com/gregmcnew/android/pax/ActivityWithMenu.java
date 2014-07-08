@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,11 +24,17 @@ public class ActivityWithMenu extends Activity {
 
 	private static Map<String, AI.Difficulty> sAIDifficulties = null;
 	private static Map<String, Float> sGameSpeeds = null;
+	public boolean mLandscapeDevice;
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        int rot = display.getOrientation();
+        mLandscapeDevice = (display.getWidth() > display.getHeight() ^ (rot % 2 != 0));
+        Log.v(Pax.TAG, String.format("display width %d, height %d, orientation %d, landscape %b", display.getWidth(), display.getHeight(), rot, mLandscapeDevice));
         
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     }

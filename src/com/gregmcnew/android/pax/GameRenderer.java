@@ -23,9 +23,10 @@ public class GameRenderer extends Renderer {
 			Entity.LASER, Entity.BOMB, Entity.MISSILE
 			};
     
-    public GameRenderer(Context context, Game game) {
+    public GameRenderer(Context context, Game game, boolean landscapeDevice) {
     	super(context);
     	mGame = game;
+    	mLandscapeDevice = landscapeDevice;
     	mStarField = new StarField();
     }
     
@@ -267,14 +268,22 @@ public class GameRenderer extends Renderer {
 			}
 			
 			float rot = (player == 0) ? 0 : 180;
+			if (mLandscapeDevice) {
+				rot -= 90;
+			}
 			
 			float flip = (player == 1) ? -1 : 1;
 
 			// Draw buttons along the bottom of the screen
-			float dx = mGameWidth / 4;
-			float dy = 0;
-			float x = flip * (dx - mGameWidth) / 2;
-			float y = flip * (mButtonSize - mGameHeight) / 2;
+			float dx = mLandscapeDevice ? 0 : (mGameWidth / 4);
+			float dy = mLandscapeDevice ? (-mGameHeight / 4) : 0;
+			float xOffset = mLandscapeDevice ? mButtonSize : dx;
+			float yOffset = mLandscapeDevice ? -dy : mButtonSize;
+			float x = flip * (xOffset - mGameWidth) / 2;
+			float y = flip * (yOffset - mGameHeight) / 2;
+			if (mLandscapeDevice) {
+				y *= -1;
+			}
 			
 			dx *= flip;
 			dy *= flip;
@@ -285,15 +294,20 @@ public class GameRenderer extends Renderer {
 				if (buildProgress > 1) {
 					buildProgress = 1;
 				}
+
+				float bs = flip * mButtonSize;
+
+				float buttonWidth  = mLandscapeDevice ? bs : dx;
+				float buttonHeight = mLandscapeDevice ? dy : bs;
 				
-				float buttonMinY = y - flip * mButtonSize / 2;
-				float buttonMaxY = y + flip * mButtonSize / 2;
-				float buttonMinX = x - dx / 2;
-				float buttonMaxX = x + dx / 2;
+				float buttonMinY = y - buttonHeight / 2;
+				float buttonMaxY = y + buttonHeight / 2;
+				float buttonMinX = x - buttonWidth / 2;
+				float buttonMaxX = x + buttonWidth / 2;
 
 				// The width of the progress bar is 1/3 of its maximum height.
-				float progressMaxX = buttonMinX + flip * mButtonSize / 3;
-				float progressMaxY = buttonMinY + flip * mButtonSize * buildProgress;
+				float progressMaxX = buttonMinX + (mLandscapeDevice ? (bs * buildProgress) : (bs / 3));
+				float progressMaxY = buttonMinY + (mLandscapeDevice ? (-bs / 3) : (bs * buildProgress));
 				
 				if (i == mGame.mPlayers[player].mBuildTarget.ordinal()) {
 	
@@ -344,4 +358,5 @@ public class GameRenderer extends Renderer {
 	private Painter mCircle;
 	
 	private float mButtonSize;
+	private final boolean mLandscapeDevice;
 }

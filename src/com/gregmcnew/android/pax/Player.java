@@ -15,7 +15,7 @@ public class Player {
 	private static final int PRODUCTION_STEP_SIZE = 20;
 	private static final int INITIAL_NUM_PRODUCTION_STEPS = 3;
 	
-	public Player(int playerNumber, int players) {
+	public Player(int playerNumber, int players, float factoryThetaOffset) {
 
 		mBuildTarget = BuildTarget.UPGRADE;
 		mEntities = new EntityPool[Entity.TYPES.length];
@@ -37,6 +37,8 @@ public class Player {
 		
 		mAI = new AI(this);
 		mIsAI = false;
+
+		mFactoryThetaOffset = factoryThetaOffset;
 		
 		reset();
 	}
@@ -353,7 +355,7 @@ public class Player {
 			float spacing = (float) (2 * Math.PI / totalPlayers);
 			
 			// The angle in radians at which this particular factory will be spawned.
-			float theta = (float) (spacing * playerNo - Math.PI / 2);
+			float theta = (float) (spacing * playerNo - Math.PI / 2) + mFactoryThetaOffset;
 			
 			spawnX = (float) (orbitRadius * Math.cos(theta));
 			spawnY = (float) (orbitRadius * Math.sin(theta));
@@ -442,4 +444,6 @@ public class Player {
 	
 	// mProductionMultiplier changes in response to the AI difficulty setting.
 	private float mProductionMultiplier;
+
+	private float mFactoryThetaOffset;
 }

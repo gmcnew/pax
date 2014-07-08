@@ -55,7 +55,7 @@ public class Pax extends ActivityWithMenu {
         
         GameSounds.initialize(this);
         
-        mGame = new Game();
+        mGame = new Game(mLandscapeDevice ? (float) -Math.PI / 2 : 0);
 		
 		mLastState = Game.State.IN_PROGRESS;
 

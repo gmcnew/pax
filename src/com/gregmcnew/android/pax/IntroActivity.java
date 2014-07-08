@@ -17,6 +17,7 @@ import android.opengl.GLU;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -223,18 +224,19 @@ public class IntroActivity extends ActivityWithMenu {
 			}
 			
 			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight, fadeAlpha);
-			
-			float buttonXPos = 0;
-			float buttonYPos = (mRotation % 2 == 0 ? mScreenHeight: mScreenWidth) / 3;
-			
+
+			float buttonOffset = maxDimension / 3;
+			float buttonXPos = mActivity.mLandscapeDevice ? buttonOffset : 0;
+			float buttonYPos = mActivity.mLandscapeDevice ? 0 : buttonOffset;
+
 			// Draw the title text
 			mTitlePainter.draw(gl, 0, 0, minDimension / 2, minDimension / 2, rotationDegrees, fadeAlpha);
 
-			float flip = (mRotation < 2) ? 1 : -1;
 			float numberSize = maxDimension / 20;
-			float numberXPos = flip * ((mRotation % 2 == 0) ? 0 : -maxDimension / 6);
-			float numberYPos = flip * ((mRotation % 2 != 0) ? 0 : -maxDimension / 6);
-			
+			float numberOffset = ((mRotation < 2) ? -1 : 1) * maxDimension / 6;
+			float numberXPos = (mRotation % 2 == 0) ? 0 : numberOffset;
+			float numberYPos = (mRotation % 2 != 0) ? 0 : numberOffset;
+
 			// Draw the countdown.
 			mNumberPainters[secondsLeft].draw(gl, numberXPos, numberYPos, numberSize, numberSize, rotationDegrees, countdownAlpha);
 			
@@ -339,7 +341,9 @@ public class IntroActivity extends ActivityWithMenu {
 					// A touch in section 2 means player 1 should be human.
 					int xSection = (int) (event.getX(i) * 3 / getWidth());
 					int ySection = (int) (event.getY(i) * 3 / getHeight());
-					int section = (mRotation % 2 == 0 ? ySection : xSection);
+					int section = mActivity.mLandscapeDevice
+							? ((mRotation % 2 != 0) ? ySection : 2 - xSection)
+							: ((mRotation % 2 == 0) ? ySection : xSection);
 
 					if (mRotation >= 2) {
 						section = 2 - section;

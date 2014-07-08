@@ -12,7 +12,7 @@ public class AITest {
 	Game mGame;
 
 	public AITest() {
-		mGame = new Game();
+		mGame = new Game(0);
 	}
 
 	private float runGame(AIWeights weights) {

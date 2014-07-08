@@ -13,12 +13,12 @@ public class GameView extends GLSurfaceView {
 	
 	public static final long WAIT_BETWEEN_GAMES_MS = 1000;
 
-	public GameView(Activity activity, Game game) {
+	public GameView(ActivityWithMenu activity, Game game) {
 		
 		super(activity);
 		mGame = game;
 		mContext = activity;
-		mRenderer = new GameRenderer(activity, mGame);
+		mRenderer = new GameRenderer(activity, mGame, mContext.mLandscapeDevice);
 		
 		setEGLConfigChooser(false);
 		setRenderer(mRenderer);
@@ -77,13 +77,17 @@ public class GameView extends GLSurfaceView {
     	
     	// Ignore the "NONE" build target.
     	int numBuildTargets = Player.sBuildTargetValues.length - 1;
+
+    	if (mContext.mLandscapeDevice) {
+    		y = getHeight() - y;
+    	}
     	
     	int selection = 0;
     	int player = -1;
     	int xGridPos = (int) (x * 4 / getWidth());
     	int yGridPos = (int) (y * 4 / getHeight());
-    	
-    	if (mRotation % 2 == 0) {
+
+    	if ((mRotation % 2 == 0) ^ mContext.mLandscapeDevice) {
     		// Ignore clicks in the center of the screen.
     		if (yGridPos == 0 || yGridPos == 3) {
 	    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
@@ -109,7 +113,7 @@ public class GameView extends GLSurfaceView {
 	}
 	
 	private Game mGame;
-	private Activity mContext;
+	private ActivityWithMenu mContext;
 	private GameRenderer mRenderer;
 	private int mRotation;
 }

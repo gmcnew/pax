@@ -13,11 +13,11 @@ public class Game {
 	
 	public static final Random sRandom = new Random();
 	
-	public Game()
+	public Game(float factoryThetaOffset)
 	{
 		mPlayers = new Player[NUM_PLAYERS];
 		for (int i = 0; i < NUM_PLAYERS; i++) {
-			mPlayers[i] = new Player(i, NUM_PLAYERS);
+			mPlayers[i] = new Player(i, NUM_PLAYERS, factoryThetaOffset);
 		}
 		
 		reset();
