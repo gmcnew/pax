@@ -28,11 +28,6 @@
                 			android:summary="@string/benchmark_mode_summary"
                 			android:defaultValue="false" android:persistent="true"/>
 
-        <CheckBoxPreference android:key="@string/sound"
-                			android:title="@string/sound"
-                			android:summary="@string/sound_summary"
-                			android:defaultValue="false" android:persistent="true"/>
-
     	<ListPreference android:key="@string/ai_difficulty"
     					android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"
@@ -62,11 +57,6 @@
                 			android:title="@string/show_fps"
                 			android:summary="@string/show_fps_summary"
                 			android:defaultValue="true" android:persistent="true"/>
-
-        <CheckBoxPreference android:key="@string/show_all_health"
-                			android:title="@string/show_all_health"
-                			android:summary="@string/show_all_health_summary"
-                			android:defaultValue="false" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_collision_boxes"
                 			android:title="@string/show_collision_boxes"
