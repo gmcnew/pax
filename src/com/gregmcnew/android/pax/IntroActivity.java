@@ -191,7 +191,7 @@ public class IntroActivity extends ActivityWithMenu {
 	        // screen is rotated while the game is paused (and rendering is thus
 	        // paused as well). TODO: Figure this out.
 	        gl.glViewport(0, 0, (int) mScreenWidth, (int) mScreenHeight);
-	        
+
 			float minDimension = mScreenWidth < mScreenHeight ? mScreenWidth : mScreenHeight;
 			float maxDimension = mScreenWidth > mScreenHeight ? mScreenWidth : mScreenHeight;
 			
@@ -239,7 +239,7 @@ public class IntroActivity extends ActivityWithMenu {
 
 			// Draw the countdown.
 			mNumberPainters[secondsLeft].draw(gl, numberXPos, numberYPos, numberSize, numberSize, rotationDegrees, countdownAlpha);
-			
+
 			// Draw buttons
 			float[][] c = Painter.TEAM_COLORS;
 			for (int i = 0; i < 2; i++) {
@@ -252,7 +252,7 @@ public class IntroActivity extends ActivityWithMenu {
 				mCirclePainter.draw(gl, buttonXPos * rot, buttonYPos * rot, bs, bs, 180 * i, 1 - fadeAlpha, 0, 0, 0);
 			}
 		}
-		
+
 		private StarField mStarField;
 		private IntroActivity mActivity;
 		private Painter mStarPainter;
@@ -260,26 +260,27 @@ public class IntroActivity extends ActivityWithMenu {
 		private Painter mTitlePainter;
 		private Painter mCirclePainter;
     }
-    
+
     private class IntroView extends GLSurfaceView {
 
 		private IntroView(IntroActivity activity) {
 			super(activity);
 			mActivity = activity;
-			
+
 			mRenderer = new IntroRenderer(activity);
-			
+
 			setEGLConfigChooser(false);
 			setRenderer(mRenderer);
 		}
-		
+
 		private void updateRotation() {
 			Display display = mActivity.getWindowManager().getDefaultDisplay();
 			mRotation = display.getOrientation();
+			Log.v(Pax.TAG, String.format("display width %d, height %d, orientation %d", display.getWidth(), display.getHeight(), mRotation));
 			mRenderer.updateRotation(mRotation);
 			requestRender();
 		}
-		
+
 		@Override
 		public void onResume() {
 			super.onResume();

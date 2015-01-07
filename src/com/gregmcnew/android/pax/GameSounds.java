@@ -30,12 +30,6 @@ public class GameSounds {
 		
 		sGameSounds = new HashMap<Sound, Integer>();
 		sSoundPool = new SoundPool(8, AudioManager.STREAM_MUSIC, 0);
-		
-		sGameSounds.put(Sound.SHOOT_BOMB,    sSoundPool.load(sContext, R.raw.shoot_bomb, 0));
-		sGameSounds.put(Sound.SHOOT_LASER,   sSoundPool.load(sContext, R.raw.shoot_laser, 0));
-		sGameSounds.put(Sound.SHOOT_MISSILE, sSoundPool.load(sContext, R.raw.shoot_missile, 0));
-		sGameSounds.put(Sound.EXPLOSION,     sSoundPool.load(sContext, R.raw.explode_factory, 0));
-		sGameSounds.put(Sound.UPGRADE,       sSoundPool.load(sContext, R.raw.upgrade, 0));
 	}
 	
 	public static void play(Sound sound) {
