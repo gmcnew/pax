@@ -2,9 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.util.Random;
 
-import android.os.SystemClock;
-import android.util.Log;
-
 public class Game {
 	
 	public enum State { IN_PROGRESS, RED_WINS, BLUE_WINS, TIE }
@@ -74,7 +71,7 @@ public class Game {
 		}
 		
 		if (updateLogInterval >= 0 && mNumUpdates % updateLogInterval == 0) {
-			Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
+			//Log.v(Pax.TAG, String.format("Game.update: %4d updates, %3d ms on average", mNumUpdates, mTimeElapsed / mNumUpdates));
 		}
 		
 		for (Player player : mPlayers) {
