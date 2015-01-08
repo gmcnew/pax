@@ -1,9 +1,6 @@
 package com.gregmcnew.android.pax;
 
-import java.nio.FloatBuffer;
 import java.util.Stack;
-
-import javax.microedition.khronos.opengles.GL10;
 
 import android.util.Log;
 
@@ -36,87 +33,6 @@ public class Quadtree {
 	
 	public void print() {
 		print(0);
-	}
-	
-	public void draw(GL10 gl, FloatBuffer lineVertices, boolean bluePlayer, int rotation) {
-		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, lineVertices);
-		draw(gl, bluePlayer, rotation, GameRenderer.GAME_VIEW_SIZE / 2, GameRenderer.GAME_VIEW_SIZE / 2);
-	}
-	
-	public void draw(GL10 gl, boolean bluePlayer, int rotation, float minVal, float maxVal) {
-		
-		if (mMinIndex >= mMaxIndex) {
-			return;
-		}
-
-		float avg = (minVal + maxVal) / 2;
-		float delta = maxVal - minVal;
-		
-		float rot, minX, maxX, minY, maxY;
-		
-		if (mDimension == X) {
-			rot = 90;
-			minX = mMinVal;
-			maxX = mMaxVal;
-			minY = maxY = avg;
-		}
-		else {
-			rot = 0;
-			minX = maxX = avg;
-			minY = mMinVal;
-			maxY = mMaxVal;
-		}
-		
-		if (rotation % 2 != 0) {
-			float temp = minX;
-			minX = minY;
-			minY = temp;
-			temp = maxX;
-			maxX = maxY;
-			maxY = temp;
-			
-			rot = 90 - rot;
-			
-			if (rotation == 1) {
-				minX *= -1;
-				maxX *= -1;
-			}
-			else {
-				minY *= -1;
-				maxY *= -1;
-			}
-		}
-		
-		float alpha = 0.25f;
-		
-		gl.glLoadIdentity();
-		if (bluePlayer) {
-			gl.glColor4f(0f, 1f, 1f, alpha);
-		}
-		else {
-			gl.glColor4f(1f, 1f, 0f, alpha);
-		}
-		gl.glTranslatef(minX, minY, 0);
-		gl.glRotatef(rot, 0, 0, 1);
-		gl.glScalef(delta, delta, delta);
-		gl.glDrawArrays(GL10.GL_LINES, 0, 2);
-		
-		gl.glLoadIdentity();
-		if (bluePlayer) {
-			gl.glColor4f(0f, 0.5f, 1f, alpha);
-		}
-		else {
-			gl.glColor4f(1f, 0.5f, 0f, alpha);
-		}
-		gl.glTranslatef(maxX, maxY, 0);
-		gl.glRotatef(rot, 0, 0, 1);
-		gl.glScalef(delta, delta, delta);
-		gl.glDrawArrays(GL10.GL_LINES, 0, 2);
-		
-		if (!isLeaf) {
-			low.draw(gl, bluePlayer, rotation, mMinVal, mMaxVal);
-			high.draw(gl, bluePlayer, rotation, mMinVal, mMaxVal);
-		}
 	}
 	
 	public void rebuild(EntityPool entityPool, int numCollisionPoints) {
@@ -513,7 +429,35 @@ public class Quadtree {
 			high.print(depth);
 		}
 	}
-	
+
+
+	// Accessors used by QuadtreePainter.
+
+	public boolean getIsLeaf() {
+		return isLeaf;
+	}
+
+	public boolean getDimension() {
+		return mDimension;
+	}
+
+	public Quadtree getLow() {
+		return low;
+	}
+
+	public Quadtree getHigh() {
+		return high;
+	}
+
+	public float getMinVal() {
+		return mMinVal;
+	}
+
+	public float getMaxVal() {
+		return mMaxVal;
+	}
+
+
 	private Point2[] mPoints;
 	
 	private boolean mDimension;

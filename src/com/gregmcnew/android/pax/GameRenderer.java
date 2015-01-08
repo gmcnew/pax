@@ -159,8 +159,9 @@ public class GameRenderer extends Renderer {
 		}
 		
 		if (Constants.sShowCollisionBoxes) {
-			mGame.mPlayers[0].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, true, mRotation);
-			mGame.mPlayers[1].mEntities[Ship.FIGHTER].mBodies.draw(gl, mLineVertices, false, mRotation);
+			for (int i = 0; i < 2; i++) {
+				QuadtreePainter.draw(gl, mGame.mPlayers[i].mEntities[Ship.FIGHTER].mBodies, mLineVertices, i == 0, mRotation);
+			}
 		}
 		
 		if (Constants.sShowShips) {
