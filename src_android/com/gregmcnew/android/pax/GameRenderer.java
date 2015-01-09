@@ -217,26 +217,26 @@ public class GameRenderer extends Renderer {
         }
 		
 		if (Constants.sShowFPS) {
-			float x = (mGameWidth / 2) - 100;
+			float ex = DIGIT_SPACING * 2 - mGameWidth / 2;
+			float x = -(ex + DIGIT_WIDTH);
 			float y = (mGameHeight / 2) - 100;
 			float dy = -(DIGIT_HEIGHT + LINE_SPACING);
-			drawNumber(gl, x, y,          FramerateCounter.getFPS(),          1f, 1);
-			drawNumber(gl, x, y + dy,     FramerateCounter.getRecentJitter(), 0.5f);
-			drawNumber(gl, x, y + dy * 2, FramerateCounter.getMaxJitter(),    0.5f);
+			drawNumber(gl, x, y,          FramerateCounter.getFPS(),          0.6f, 1);
+			drawNumber(gl, x, y + dy,     FramerateCounter.getRecentJitter(), 0.4f);
+			drawNumber(gl, x, y + dy * 2, FramerateCounter.getMaxJitter(),    0.4f);
 
 			for (int i = 0; i < 2; i++) {
 				if (mGame.mPlayers[i].isAI()) {
 
 					float a = 1;
-					float r = (i == 0) ? 0 : 1;
-					float g = .5f;
-					float b = (i == 0) ? 1 : 0;
+					float r = (Painter.TEAM_COLORS[i][0] + 1) / 2;
+					float g = (Painter.TEAM_COLORS[i][1] + 1) / 2;
+					float b = (Painter.TEAM_COLORS[i][2] + 1) / 2;
 
 					AIWeights weights = mGame.mPlayers[i].getAIWeights();
 					int n = weights.w.length;
-					x = (DIGIT_WIDTH + LETTER_SPACING) * 7.5f - mGameWidth / 2;
+					x = ex + DIGIT_WIDTH * 7 + DIGIT_SPACING * 6;
 					y = LINE_SPACING / 2 - dy * n * i;
-
 					for (int j = 0; j < n; j++) {
 						drawNumber(gl, x, y, weights.w[j], a, r, g, b);
 						y += dy;
@@ -244,7 +244,7 @@ public class GameRenderer extends Renderer {
 
 					float[] buildScores = mGame.mPlayers[i].getAIBuildScores();
 					n = buildScores.length;
-					x *= -1;
+					x = -(ex + DIGIT_WIDTH);
 					y = LINE_SPACING / 2 - dy * n * i;
 					for (int j = 0; j < n; j++) {
 						drawNumber(gl, x, y, buildScores[j], a, r, g, b);
@@ -289,7 +289,7 @@ public class GameRenderer extends Renderer {
 			}
 
 			p.draw(gl, x, y, DIGIT_WIDTH, DIGIT_HEIGHT, 0, alpha, r, g, b);
-			x -= DIGIT_WIDTH + LETTER_SPACING;
+			x -= DIGIT_WIDTH + DIGIT_SPACING;
 			number /= 10;
 		}
 	}
@@ -394,7 +394,7 @@ public class GameRenderer extends Renderer {
 		}
     }
 
-	private static final float DIGIT_WIDTH = 20, DIGIT_HEIGHT = 25, LINE_SPACING = 5, LETTER_SPACING = -DIGIT_WIDTH / 4;
+	private static final float DIGIT_WIDTH = 20, DIGIT_HEIGHT = 20, LINE_SPACING = 4, DIGIT_SPACING = -3.2f;
 	
 	private Game mGame;
 	
