@@ -216,7 +216,7 @@ public class AI {
 				}
 				else {
 					for (Entity e : player.mEntities[type]) {
-						float percentHealthLost = 1f - (float) (e.health) / (float) e.originalHealth;
+						float percentHealthLost = 1f - (float) e.health / e.originalHealth;
 						count += 1f - percentHealthLost * healthWeight;
 					}
 				}
@@ -281,34 +281,34 @@ public class AI {
 		// Special-case when there are no enemy attack ships: just build something
 		// at random (by leaving all weights equal).
 		if (numEnemyAttackShips > 0) {
-	
-			int ownFighterMoney   = Player.BuildCosts[Ship.FIGHTER] * mNumOwnEntities[Ship.FIGHTER];
-			int ownBomberMoney    = Player.BuildCosts[Ship.BOMBER]  * mNumOwnEntities[Ship.BOMBER];
-			int ownFrigateMoney   = Player.BuildCosts[Ship.FRIGATE] * mNumOwnEntities[Ship.FRIGATE];
-	
-			int enemyFighterMoney = Player.BuildCosts[Ship.FIGHTER] * mNumEnemyEntities[Ship.FIGHTER];
-			int enemyBomberMoney  = Player.BuildCosts[Ship.BOMBER]  * mNumEnemyEntities[Ship.BOMBER];
-			int enemyFrigateMoney = Player.BuildCosts[Ship.FRIGATE] * mNumEnemyEntities[Ship.FRIGATE];
-			
-			int ownShipMoney   = ownFighterMoney   + ownBomberMoney   + ownFrigateMoney;
-			int enemyShipMoney = enemyFighterMoney + enemyBomberMoney + enemyFrigateMoney;
+
+			float ourMoney[]   = new float[Ship.TYPES.length];
+			float enemyMoney[] = new float[Ship.TYPES.length];
+			for (int i = 0; i < Ship.TYPES.length; i++) {
+				ourMoney[i]   = Player.BuildCosts[i] * mNumOwnEntities[i];
+				enemyMoney[i] = Player.BuildCosts[i] * mNumEnemyEntities[i];
+			}
 	
 			// Set scores based on (1) what would beat enemy ships and (2) what
 			// would lose to enemy ships. For example, fighters beat bombers, so the
 			// more bombers enemies have, the more fighters we should build.
 			// However, fighters lose to frigates, so the more frigates enemies
 			// have, the fewer fighters we should build.
-			mBuildScores[Ship.FIGHTER] 	= ( (enemyBomberMoney - enemyFrigateMoney)
+			mBuildScores[Ship.FIGHTER] 	= ( (enemyMoney[Ship.BOMBER] - enemyMoney[Ship.FRIGATE])
 										    * mWeights.w[AIWeights.FIGHTER_X]
 										  )	+ mWeights.w[AIWeights.FIGHTER_C];
-			mBuildScores[Ship.BOMBER]  	= ( (enemyFrigateMoney - enemyFighterMoney)
+			mBuildScores[Ship.BOMBER]  	= ( (enemyMoney[Ship.FRIGATE] - enemyMoney[Ship.FIGHTER])
 										    * mWeights.w[AIWeights.BOMBER_X]
 										  ) + mWeights.w[AIWeights.BOMBER_C];
-			mBuildScores[Ship.FRIGATE] 	= ( (enemyFighterMoney - enemyBomberMoney)
+			mBuildScores[Ship.FRIGATE] 	= ( (enemyMoney[Ship.FIGHTER] - enemyMoney[Ship.BOMBER])
 										    * mWeights.w[AIWeights.FRIGATE_X]
 										  ) + mWeights.w[AIWeights.FRIGATE_C];
 			
 			if (mCanUpgrade) {
+
+				float ownShipMoney   = ourMoney[Ship.FIGHTER]   + ourMoney[Ship.BOMBER]   + ourMoney[Ship.FRIGATE];
+				float enemyShipMoney = enemyMoney[Ship.FIGHTER] + enemyMoney[Ship.BOMBER] + enemyMoney[Ship.FRIGATE];
+
 				// The build score for an upgrade should take into account the total
 				// amount of money represented by (1) enemy ships and (2) our own ships. 
 				mBuildScores[3] 			= ( ( enemyShipMoney - ownShipMoney)
@@ -345,7 +345,7 @@ public class AI {
 	private float mIntelligence;
 
 	private Player mPlayer;
-	private int mNumOwnEntities[]   = new int[Entity.TYPES.length];
-	private int mNumEnemyEntities[] = new int[Entity.TYPES.length];
+	private float mNumOwnEntities[]   = new float[Entity.TYPES.length];
+	private float mNumEnemyEntities[] = new float[Entity.TYPES.length];
 	private float mBuildScores[] = new float[BuildTarget.values().length - 1];
 }
