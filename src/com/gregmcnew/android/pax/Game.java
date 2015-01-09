@@ -9,6 +9,13 @@ public class Game {
 	public static final int NUM_PLAYERS = 2;
 	
 	public static final Random sRandom = new Random();
+
+	static {
+		if (Constants.SELF_BENCHMARK) {
+			// Make randomness deterministic in benchmark mode.
+			Game.sRandom.setSeed(0);
+		}
+	}
 	
 	public Game(float factoryThetaOffset)
 	{
@@ -63,10 +70,10 @@ public class Game {
 		mTimeElapsed += dt;
 		mNumUpdates++;
 		
-		int updateLogInterval = Pax.LOG_FRAMERATE_INTERVAL_UPDATES;
+		int updateLogInterval = Constants.LOG_FRAMERATE_INTERVAL_UPDATES;
 		
 		if (Constants.SIMPLE_BALANCE_TEST) {
-			dt = Pax.UPDATE_INTERVAL_MS;
+			dt = Constants.UPDATE_INTERVAL_MS;
 			updateLogInterval = 500;
 		}
 		
@@ -183,7 +190,7 @@ public class Game {
 			float searchCenterY = entity.body.center.y;
 			
 			// By default, don't target anything that's more than 1 screen away.
-			float searchLimit = GameRenderer.GAME_VIEW_SIZE;
+			float searchLimit = Constants.SEARCH_LIMIT;
 			if (entity.targetSearchLimits != null) {
 				searchLimit = entity.targetSearchLimits[i];
 			}

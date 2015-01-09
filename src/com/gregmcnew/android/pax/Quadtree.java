@@ -2,8 +2,6 @@ package com.gregmcnew.android.pax;
 
 import java.util.Stack;
 
-import android.util.Log;
-
 public class Quadtree {
 	
 	// Static members and methods.
@@ -414,12 +412,12 @@ public class Quadtree {
 	private static String spaces = "                                          ";
 	
 	private void print(int depth) {
-		Log.v("Quadtree.print", String.format("%s%s goes from %s=[%f..%f] (indices %d..%d)",
+		PLog.v("Quadtree.print", String.format("%s%s goes from %s=[%f..%f] (indices %d..%d)",
 				spaces.substring(0, depth * 2), (isLeaf ? "leaf" : "node"), (mDimension == X ? "x" : "y"),
 				mMinVal, mMaxVal, mMinIndex, mMaxIndex - 1));
 		if (isLeaf) {
 			for (int i = mMinIndex; i < mMaxIndex; i++) {
-				Log.v("Quadtree.print", String.format("%s- point %d: (%f,%f) with ID %d",
+				PLog.v("Quadtree.print", String.format("%s- point %d: (%f,%f) with ID %d",
 						spaces.substring(0, depth * 2), i, mPoints[i].x, mPoints[i].y, mPoints[i].id));
 			}
 		}

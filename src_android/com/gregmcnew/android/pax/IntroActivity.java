@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 public class IntroActivity extends ActivityWithMenu {
 	
-	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 3;
+	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 1;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -359,10 +359,10 @@ public class IntroActivity extends ActivityWithMenu {
 					}
 					else {
 						if (section == 0) {
-			    			mActivity.mPlayerTwoAI = false;
+			    			mActivity.mPlayerTwoAI = !mActivity.mPlayerTwoAI;
 						}
 						else {
-			    			mActivity.mPlayerOneAI = false;
+			    			mActivity.mPlayerOneAI = !mActivity.mPlayerOneAI;
 						}
 
 			    		mActivity.startTimer();

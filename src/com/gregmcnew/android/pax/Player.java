@@ -237,6 +237,9 @@ public class Player {
 	public AIWeights getAIWeights() {
 		return mAI.getWeights();
 	}
+	public float[] getAIBuildScores() {
+		return mAI.mPublicBuildScores;
+	}
 	
 	public void randomizeAIWeights() {
 		mAI.randomizeWeights();
@@ -349,7 +352,7 @@ public class Player {
 			float offset = (float) Math.PI / 40;
 			
 			// The factory's initial distance from the map's center.
-			float orbitRadius = GameRenderer.GAME_VIEW_SIZE / 4;
+			float orbitRadius = Constants.INITIAL_FACTORY_DISTANCE;
 			
 			// Distance in radians between factories.
 			float spacing = (float) (2 * Math.PI / totalPlayers);

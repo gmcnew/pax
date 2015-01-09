@@ -85,6 +85,9 @@
     <content url="file://$MODULE_DIR$/../src">
       <sourceFolder url="file://$MODULE_DIR$/../src" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../src_android">
+      <sourceFolder url="file://$MODULE_DIR$/../src_android" isTestSource="false" />
+    </content>
     <orderEntry type="jdk" jdkName="Android API 8 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="acra-4.2.3" level="project" />

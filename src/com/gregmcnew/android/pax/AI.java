@@ -174,6 +174,10 @@ public class AI {
 		*/
 
 		setShipBuildScores();
+
+		for (int i = 0; i < mBuildScores.length; i++) {
+			mPublicBuildScores[i] = mBuildScores[i];
+		}
 		
 		//Log.v(Pax.TAG, String.format("AI build weights: %f, %f, %f", shipBuildWeights[0], shipBuildWeights[1], shipBuildWeights[2]));
 
@@ -277,7 +281,7 @@ public class AI {
 		float numEnemyAttackShips = mNumEnemyEntities[Ship.FIGHTER]
 		                          + mNumEnemyEntities[Ship.BOMBER]
 		                          + mNumEnemyEntities[Ship.FRIGATE];
-		
+
 		// Special-case when there are no enemy attack ships: just build something
 		// at random (by leaving all weights equal).
 		if (numEnemyAttackShips > 0) {
@@ -324,8 +328,15 @@ public class AI {
 			}
 		}
 	}
-	
-	
+
+
+	//
+	// Public members
+	//
+
+	public float mPublicBuildScores[] = new float[BuildTarget.values().length - 1];
+
+
 	//
 	// Private members
 	//
@@ -348,4 +359,5 @@ public class AI {
 	private float mNumOwnEntities[]   = new float[Entity.TYPES.length];
 	private float mNumEnemyEntities[] = new float[Entity.TYPES.length];
 	private float mBuildScores[] = new float[BuildTarget.values().length - 1];
+
 }

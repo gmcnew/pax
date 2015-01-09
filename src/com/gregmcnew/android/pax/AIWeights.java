@@ -15,12 +15,11 @@ public class AIWeights {
 	// a nearly-dead enemy is treated as equal to a full-health enemy. 1 means a
 	// nearly-dead enemy is almost ignored.
 	private static final float OPTIMAL_WEIGHTS[] = {
-			0.6277f, -0.2779f,
-			1.1031f, -0.1376f,
-			1.0f,	  0f,
-			0f,       0f,
-			0f,       0f,
-			0f
+			0.6277f, -0.2779f, // fighter
+			1.1031f, -0.1376f, // bomber
+			1.0f,	  0f,	   // frigate
+			0f,       0f,	   // upgrade
+			0f                 // enemy health
 			};
 
 	public static final int NUM_WEIGHTS = OPTIMAL_WEIGHTS.length;
@@ -37,10 +36,8 @@ public class AIWeights {
 	public static final int FRIGATE_X    = 4;
 	public static final int FRIGATE_C    = 5;
 	public static final int UPGRADE_X    = 6;
-	public static final int UPGRADE_Y    = 7;
-	public static final int UPGRADE_Z    = 8;
-	public static final int UPGRADE_C    = 9;
-	public static final int ENEMY_HEALTH = 10;
+	public static final int UPGRADE_C    = 7;
+	public static final int ENEMY_HEALTH = 8;
 	
 	public void reset() {
 		for (int i = 0; i < NUM_WEIGHTS; i++) {

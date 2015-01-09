@@ -223,6 +223,9 @@ public class UpgradeActivity extends Activity implements DialogInterface.OnClick
 			    publishProgress(CHECK_ERROR);
 			    return null;
 	        }
+
+			upgrade = true;
+			latestFile = "app-debug.apk";
 	        
 		    if (!upgrade) {
 		    	publishProgress(UP_TO_DATE);

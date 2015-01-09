@@ -94,6 +94,8 @@ public class GameRenderer extends Renderer {
 		mDigitPainters[7] = getPainter(gl, R.drawable.char_7);
 		mDigitPainters[8] = getPainter(gl, R.drawable.char_8);
 		mDigitPainters[9] = getPainter(gl, R.drawable.char_9);
+		mMinusPainter = getPainter(gl, R.drawable.char_minus);
+		mPeriodPainter = getPainter(gl, R.drawable.char_period);
 
 		mHighlight = getPainter(gl, R.drawable.white);
 
@@ -217,19 +219,77 @@ public class GameRenderer extends Renderer {
 		if (Constants.sShowFPS) {
 			float x = (mGameWidth / 2) - 100;
 			float y = (mGameHeight / 2) - 100;
-			drawNumber(gl, x, y, (long) FramerateCounter.getFPS(), 0.2f);
-			drawNumber(gl, x, y - 35, FramerateCounter.getRecentJitter(), 0.1f);
-			drawNumber(gl, x, y - 70, FramerateCounter.getMaxJitter(), 0.1f);
+			float dy = -(DIGIT_HEIGHT + LINE_SPACING);
+			drawNumber(gl, x, y,          FramerateCounter.getFPS(),          1f, 1);
+			drawNumber(gl, x, y + dy,     FramerateCounter.getRecentJitter(), 0.5f);
+			drawNumber(gl, x, y + dy * 2, FramerateCounter.getMaxJitter(),    0.5f);
+
+			for (int i = 0; i < 2; i++) {
+				if (mGame.mPlayers[i].isAI()) {
+
+					float a = 1;
+					float r = (i == 0) ? 0 : 1;
+					float g = .5f;
+					float b = (i == 0) ? 1 : 0;
+
+					AIWeights weights = mGame.mPlayers[i].getAIWeights();
+					int n = weights.w.length;
+					x = (DIGIT_WIDTH + LETTER_SPACING) * 7.5f - mGameWidth / 2;
+					y = LINE_SPACING / 2 - dy * n * i;
+
+					for (int j = 0; j < n; j++) {
+						drawNumber(gl, x, y, weights.w[j], a, r, g, b);
+						y += dy;
+					}
+
+					float[] buildScores = mGame.mPlayers[i].getAIBuildScores();
+					n = buildScores.length;
+					x *= -1;
+					y = LINE_SPACING / 2 - dy * n * i;
+					for (int j = 0; j < n; j++) {
+						drawNumber(gl, x, y, buildScores[j], a, r, g, b);
+						y += dy;
+					}
+				}
+			}
 		}
 	}
-	
-	private void drawNumber(GL10 gl, float x, float y, long number, float alpha) {
-		int digitWidth = 25;
-		int digitHeight = 30;
-		while (number > 0) {
-			int digit = (int) number % 10;
-			mDigitPainters[digit].draw(gl, x, y, digitWidth, digitHeight, 0, alpha);
-			x -= digitWidth;
+
+	private void drawNumber(GL10 gl, float x, float y, float number, float alpha) {
+		drawNumber(gl, x, y, number, alpha, 1, 1, 1, -1);
+	}
+
+	private void drawNumber(GL10 gl, float x, float y, float number, float alpha, int precision) {
+		drawNumber(gl, x, y, number, alpha, 1, 1, 1, precision);
+	}
+
+	private void drawNumber(GL10 gl, float x, float y, float number, float alpha, float r, float g, float b) {
+		drawNumber(gl, x, y, number, alpha, r, g, b, -1);
+	}
+
+	private void drawNumber(GL10 gl, float x, float y, float number, float alpha, float r, float g, float b, int precision) {
+		String str = (number == (long) number)
+				? String.format("%d", (long)number)
+				: String.format((precision >= 0
+					? "%." + precision + "f"
+					: "%s"), number);
+
+		if (number == 0) {
+			alpha *= 0.5;
+		}
+
+		for (int i = str.length() - 1; i >= 0; i--) {
+			char c = str.charAt(i);
+			Painter p = mPeriodPainter;
+			if (c >= '0' && c <= '9') {
+				p = mDigitPainters[c - '0'];
+			}
+			else if (c == '-') {
+				p = mMinusPainter;
+			}
+
+			p.draw(gl, x, y, DIGIT_WIDTH, DIGIT_HEIGHT, 0, alpha, r, g, b);
+			x -= DIGIT_WIDTH + LETTER_SPACING;
 			number /= 10;
 		}
 	}
@@ -333,6 +393,8 @@ public class GameRenderer extends Renderer {
 			}
 		}
     }
+
+	private static final float DIGIT_WIDTH = 20, DIGIT_HEIGHT = 25, LINE_SPACING = 5, LETTER_SPACING = -DIGIT_WIDTH / 4;
 	
 	private Game mGame;
 	
@@ -354,6 +416,8 @@ public class GameRenderer extends Renderer {
 	private Painter[] mBuildTargetPainters;
 	private Painter[] mParticlePainters;
 	private Painter[] mDigitPainters;
+	private Painter mMinusPainter;
+	private Painter mPeriodPainter;
 
 	private Painter mShipOutlinePainter;
 	private Painter mCircle;
