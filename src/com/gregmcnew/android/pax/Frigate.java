@@ -9,6 +9,8 @@ public class Frigate extends Ship {
 	public static final float MAXSPEED = 30f;
 	public static final int[] TARGET_PRIORITIES = { Entity.FIGHTER, Entity.FRIGATE, Entity.BOMBER, Entity.FACTORY };
 	public static final int SHOT_INTERVAL = 1;
+
+	public boolean leftPort;
 	
 	// TODO: Consider adding ShipType.BOMBER as the lowest-priority target and
 	// reducing the accuracy of frigate missiles when homing in on bombers.
@@ -21,9 +23,9 @@ public class Frigate extends Ship {
 	@Override
 	public void reset(Ship parent) {
 		super.reset(parent);
-		reloadTimeMs = 5300;
-		shotTimeMs = 20;
-		clipSize = 8;
+		leftPort = false;
+		reloadTimeMs = 663;
+		clipSize = 1;
 		shotsLeft = clipSize;
 	}
 }

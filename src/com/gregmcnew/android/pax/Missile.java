@@ -51,8 +51,11 @@ public class Missile extends Projectile {
 		// Parent may be null if this projectile is being preallocated (i.e.,
 		// created and instantly recycled).
 		if (parent != null) {
-			// Pick a side of the ship at random.
-			float side = (float) (parent.heading + (Game.sRandom.nextBoolean() ? Math.PI / 2 : -Math.PI / 2));
+
+			// Alternate shots from each side of the ship.
+			Frigate frig = (Frigate)parent;
+			float side = (float) (parent.heading + (frig.leftPort ? Math.PI / 2 : -Math.PI / 2));
+			frig.leftPort = !frig.leftPort;
 			
 			heading = (float) (side + (Game.sRandom.nextFloat() - .5) * Math.PI / 6);
 			float headingX = (float) Math.cos(heading);
