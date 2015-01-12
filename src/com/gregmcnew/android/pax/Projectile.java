@@ -16,22 +16,11 @@ public abstract class Projectile extends Entity {
 	// This should be called before damage is applied.
 	public void addHitParticle(Player victim, Ship victimShip, int damage) {
 
-		int emitterType = Emitter.BOMB_HIT;
-		switch (type) {
-			case LASER:
-				emitterType = Emitter.LASER_HIT;
-				break;
-			case MISSILE:
-				emitterType = Emitter.MISSILE_HIT;
-				break;
-			case BOMB:
-				emitterType = Emitter.BOMB_HIT;
-				break;
+		if (type == BOMB) {
+			victim.mEmitters[Emitter.BOMB_HIT].add(Bomb.DIAMETER,
+					body.center.x, body.center.y,
+					victimShip.velocity.x, victimShip.velocity.y);
 		}
-
-		victim.mEmitters[emitterType].add(1f,
-				body.center.x, body.center.y,
-				victimShip.velocity.x, victimShip.velocity.y);
 		
 		if (damage >= victimShip.health) {
 			int particles = 3 << victimShip.type;
