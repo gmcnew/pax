@@ -149,7 +149,7 @@ public class Player {
 							mEmitters[particle].add(radius,
 									entity.body.center.x, entity.body.center.y,
 									entity.velocity.x, entity.velocity.y,
-									-1f);
+									-1f, 1f);
 						}
 					}
 				}

@@ -146,10 +146,9 @@ public class GameRenderer extends Renderer {
         }
         
         drawStars(gl, mStarField, mStarPainter, mGameWidth, mGameHeight);
-        
-        if (Constants.sShowParticles) {
-	        drawParticles(gl, Emitter.SMOKE);
-        }
+
+		// Draw smoke only.
+		drawParticles(gl, Emitter.SMOKE, Emitter.SMOKE + 1);
 		
 		// Draw fighter trails!
 		for (Player player : mGame.mPlayers) {
@@ -202,15 +201,10 @@ public class GameRenderer extends Renderer {
 				}
 			}
 		}
-		
-        if (Constants.sShowParticles) {
-	    	drawParticles(gl, Emitter.SPARK);
-	    	drawParticles(gl, Emitter.LASER_HIT);
-	    	drawParticles(gl, Emitter.MISSILE_HIT);
-	    	drawParticles(gl, Emitter.BOMB_HIT);
-	    	drawParticles(gl, Emitter.SHIP_EXPLOSION);
-	    	drawParticles(gl, Emitter.UPGRADE_EFFECT);
-		}
+
+		// Draw everything -but- smoke.
+		drawParticles(gl, 0, Emitter.SMOKE);
+		drawParticles(gl, Emitter.SMOKE + 1, Emitter.TYPES.length);
         
         if (mGame.getState() == Game.State.IN_PROGRESS) { 
         	drawButtons(gl);
@@ -294,18 +288,24 @@ public class GameRenderer extends Renderer {
 		}
 	}
 	
-	private void drawParticles(GL10 gl, int emitterType) {
-		if (Constants.PARTICLES) {
-			Painter painter = mParticlePainters[emitterType];
-	    	for (int player = 0; player < Game.NUM_PLAYERS; player++) {
-	    		Emitter emitter = mGame.mPlayers[player].mEmitters[emitterType];
-	    		for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
-	    			Particle p = emitter.mParticles[i];
-	    			float youth = (float) p.life / emitter.mInitialLifeMs;
-	    			float scale = (2f - youth) * p.scale;
-	    			painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
-	    		}
-	    	}
+	private void drawParticles(GL10 gl, int startType, int endType) {
+		if (Constants.sShowParticles && startType < endType) {
+			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_DST_ALPHA);
+
+			for (int type = startType; type < endType; type++) {
+				Painter painter = mParticlePainters[type];
+				for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+					Emitter emitter = mGame.mPlayers[player].mEmitters[type];
+					for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
+						Particle p = emitter.mParticles[i];
+						float youth = (float) p.life / emitter.mInitialLifeMs;
+						float scale = (2f - youth) * p.scale;
+						painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
+					}
+				}
+			}
+
+			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
 

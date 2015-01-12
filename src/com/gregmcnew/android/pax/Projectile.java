@@ -34,16 +34,26 @@ public abstract class Projectile extends Entity {
 				victimShip.velocity.x, victimShip.velocity.y);
 		
 		if (damage >= victimShip.health) {
-			
-			int particles = 1 << victimShip.type;
-			
-			Emitter explosionEmitter = victim.mEmitters[Emitter.SHIP_EXPLOSION];
-			for (int i = 0; i < particles; i++) {
-				float x = victimShip.body.center.x + (Game.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
-				float y = victimShip.body.center.y + (Game.sRandom.nextFloat() * victimShip.diameter) - victimShip.radius;
-				
-				explosionEmitter.add(victimShip.radius, x, y, victimShip.velocity.x, victimShip.velocity.y);
-			}
+			int particles = 3 << victimShip.type;
+			float radius = victimShip.radius;
+			explode(victimShip, victim.mEmitters[Emitter.SMOKE], particles, radius * 3, 3);
+			explode(victimShip, victim.mEmitters[Emitter.SHIP_EXPLOSION], particles, radius, 2);
+		}
+	}
+
+	private void explode(Ship victimShip, Emitter emitter, int particles, float radius, float lifeMultiplier) {
+		for (int i = 0; i < particles; i++) {
+
+			float r1 = Game.sRandom.nextFloat();
+			float d = r1 * victimShip.radius;
+			float angle = Game.sRandom.nextFloat() * (float)Math.PI * 2;
+			float dx = d * (float)Math.cos(angle);
+			float dy = d * (float)Math.sin(angle);
+			float x = victimShip.body.center.x + dx;
+			float y = victimShip.body.center.y + dy;
+			float life = (1f - r1) * lifeMultiplier;
+
+			emitter.addVariable(radius, x, y, victimShip.velocity.x + dx, victimShip.velocity.y + dy, life);
 		}
 	}
 }

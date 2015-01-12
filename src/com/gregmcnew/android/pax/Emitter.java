@@ -78,36 +78,47 @@ public class Emitter {
 		}
 		
 		float dtS = (float) dt / 1000;
-		for (int i = mStart; i != mEnd; i = (i + 1) % mCapacity) {
-			Particle p = mParticles[i];
+		for (int i = 0; i < (mEnd - mStart); i++) {
+			int offs = (mStart + i) % mCapacity;
+			Particle p = mParticles[offs];
 
 			p.velX *= 1f + p.accel * dtS;
 			p.velY *= 1f + p.accel * dtS;
 			p.x += p.velX * dtS;
 			p.y += p.velY * dtS;
 			p.life -= elapsedLife;
-			
+
 			if (p.life <= 0) {
 				p.recycle();
-				mParticles[i] = null;
-				mStart = (mStart + 1) % mCapacity;
+
+				mEnd = (mEnd + mCapacity - 1) % mCapacity;
+				i--;
+
+				mParticles[offs] = mParticles[mEnd];
+				mParticles[mEnd] = null;
 			}
 		}
 	}
+
+	public void addVariable(float scale, float x, float y, float velX, float velY, float life) {
+		add(scale,x, y, velX, velY, 0f, life);
+	}
+
 	public void add(float scale, float x, float y, float velX, float velY) {
-		add(scale, x, y, velX, velY, 0f);
+		add(scale, x, y, velX, velY, 0f, 1f);
 	}
 	
-	public void add(float scale, float x, float y, float velX, float velY, float accel) {
+	public void add(float scale, float x, float y, float velX, float velY, float accel, float life) {
 		// Only add new particles if we're above the midpoint of the
 		// throttling window.
 		if (mIgnoreAddFps == NO_THROTTLE || FramerateCounter.getFPS() > mIgnoreAddFps) {
-			if ((mEnd + 1) % mCapacity != mStart) {
+			int newEnd = (mEnd + 1) % mCapacity;
+			if (newEnd != mStart) {
 				if (mParticles[mEnd] == null) {
 					mParticles[mEnd] = Particle.create();
 				}
-				mParticles[mEnd].reset(mInitialLifeMs, scale, x, y, velX, velY, accel);
-				mEnd = (mEnd + 1) % mCapacity;
+				mParticles[mEnd].reset((long)(mInitialLifeMs * life), scale, x, y, velX, velY, accel);
+				mEnd = newEnd;
 			}
 		}
 	}
