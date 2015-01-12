@@ -53,9 +53,8 @@
                 			android:title="@string/show_particles"
                 			android:defaultValue="true" android:persistent="true"/>
 
-        <CheckBoxPreference android:key="@string/show_fps"
-                			android:title="@string/show_fps"
-                			android:summary="@string/show_fps_summary"
+        <CheckBoxPreference android:key="@string/show_debug_info"
+                			android:title="@string/show_debug_info"
                 			android:defaultValue="true" android:persistent="true"/>
 
         <CheckBoxPreference android:key="@string/show_collision_boxes"

@@ -219,31 +219,45 @@ public class GameRenderer extends Renderer {
 			drawNumber(gl, x, y + dy,     FramerateCounter.getRecentJitter(), 0.4f);
 			drawNumber(gl, x, y + dy * 2, FramerateCounter.getMaxJitter(),    0.4f);
 
+			int n1 = AIWeights.NUM_WEIGHTS;
+			int n2 = Entity.TYPES.length;
+
 			for (int i = 0; i < 2; i++) {
+
+				float a = 1;
+				float r = (Painter.TEAM_COLORS[i][0] + 1) / 2;
+				float g = (Painter.TEAM_COLORS[i][1] + 1) / 2;
+				float b = (Painter.TEAM_COLORS[i][2] + 1) / 2;
+
+				x = ex + DIGIT_WIDTH * 7 + DIGIT_SPACING * 6;
+				y = LINE_SPACING / 2 - dy * (n1 + n2) * i;
+
 				if (mGame.mPlayers[i].isAI()) {
-
-					float a = 1;
-					float r = (Painter.TEAM_COLORS[i][0] + 1) / 2;
-					float g = (Painter.TEAM_COLORS[i][1] + 1) / 2;
-					float b = (Painter.TEAM_COLORS[i][2] + 1) / 2;
-
-					AIWeights weights = mGame.mPlayers[i].getAIWeights();
-					int n = weights.w.length;
-					x = ex + DIGIT_WIDTH * 7 + DIGIT_SPACING * 6;
-					y = LINE_SPACING / 2 - dy * n * i;
+					// build scores
+					float[] buildScores = mGame.mPlayers[i].getAIBuildScores();
+					int n = buildScores.length;
+					float xRight = -(ex + DIGIT_WIDTH);
+					float yRight = LINE_SPACING / 2 - dy * n * i;
 					for (int j = 0; j < n; j++) {
+						drawNumber(gl, xRight, yRight, buildScores[j], a, r, g, b);
+						yRight += dy;
+					}
+
+					// AI weights
+					AIWeights weights = mGame.mPlayers[i].getAIWeights();
+					for (int j = 0; j < n1; j++) {
 						drawNumber(gl, x, y, weights.w[j], a, r, g, b);
 						y += dy;
 					}
+				}
+				else {
+					y += dy * n1;
+				}
 
-					float[] buildScores = mGame.mPlayers[i].getAIBuildScores();
-					n = buildScores.length;
-					x = -(ex + DIGIT_WIDTH);
-					y = LINE_SPACING / 2 - dy * n * i;
-					for (int j = 0; j < n; j++) {
-						drawNumber(gl, x, y, buildScores[j], a, r, g, b);
-						y += dy;
-					}
+				// entity counts
+				for (int j = 0; j < n2; j++) {
+					drawNumber(gl, x, y, mGame.mPlayers[i].mEntities[j].size(), a, r, g, b);
+					y += dy;
 				}
 			}
 		}
