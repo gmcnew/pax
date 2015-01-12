@@ -47,24 +47,10 @@ public class CollisionHandler {
 		if (victimShip != null) {
 		*/
 		
-		int result = REMOVE_NONE;
+		int result = REMOVE_B;
 		
-		result |= REMOVE_B;
-		
-		int damage = 0;
-		
-		// Don't deal damage in benchmark mode. This preserves determinism when
-		// collision code is changed. Different collision code can result in
-		// ships and projectiles being enumerated differently, which causes
-		// different collisions, which causes different games to unfold.
-		// (For example, if lasers A and B have both intersected a ship since
-		// the last game step, and if either will kill the ship, we're not
-		// guaranteed which laser will hit the ship and which will keep going.
-		// The collision code gets to decide.)
-		if (!Constants.sBenchmarkMode) {
-			damage = projectile.health;
-			projectile.health = 0;
-		}
+		int damage = projectile.health;
+		projectile.health = 0;
 		
 		if (projectile.type == Projectile.MISSILE && victimShip.type == Ship.BOMBER) {
 			// Frigates shouldn't be that good against bombers.

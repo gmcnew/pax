@@ -311,7 +311,7 @@ public class Pax extends ActivityWithMenu {
 	    		updateState(mGame.getState());
 	    		
 	    		if (Constants.sBenchmarkMode) {
-	    			if (mNumUpdates > 1000) {
+	    			if (mNumUpdates > 500) {
 	    				updateState(Game.State.TIE);
 	    				mGame.restart();
 	    				mNumUpdates = 0;
