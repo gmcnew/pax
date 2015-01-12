@@ -124,15 +124,44 @@ public class AI {
 				mIntelligence =  1f;
 				
 				// Pay attention to the health of enemy units.
-				mWeights.w[AIWeights.ENEMY_HEALTH] = 0.5f;
+				//mWeights.w[AIWeights.ENEMY_HEALTH] = 0.5f;
 				break;
 		}
+
+		double[] betterWeights = { 0.0000, -0.0170,  0.6174,  0.9872,  0.3344, -0.0911,  0.5423,  0.6609,  0.5000 };
+		double[] evenBetter    = { 0.1466,  0,       1.0104,  0,       1,       0,       0,       0,       0.7845 };
+
+		for (int i = 0; i < AIWeights.NUM_WEIGHTS; i++) {
+			if (mPlayer.playerNo == 1) {
+				//mWeights.w[i] = (float)evenBetter[i];
+			}
+			//mWeights.w[i] = (float)(mPlayer.playerNo == 0 ? evenBetter : betterWeights)[i];
+		}
+
+		/*
+		if (mPlayer.playerNo == 1) {
+			mWeights.w[0] =  0.3572f;
+			mWeights.w[1] = -0.0924f;
+			mWeights.w[2] =  0.5419f;
+			mWeights.w[3] =  0.6610f;
+			mWeights.w[4] =  0.6736f;
+			mWeights.w[5] =  0.3347f;
+			mWeights.w[6] = -0.3005f;
+			mWeights.w[7] = -0.0161f;
+			mWeights.w[8] =  0.6163f;
+
+			for (int i = 0; i < AIWeights.NUM_WEIGHTS - 1; i++) {
+				mWeights.w[i] = 0;
+			}
+			mWeights.w[1] = 9;
+		}
+		*/
 	}
 	
 	public AIWeights getWeights() {
 		return mWeights.clone();
 	}
-	
+
 	public void randomizeWeights() {
 		mWeights.randomize();
 	}
@@ -298,27 +327,12 @@ public class AI {
 			// more bombers enemies have, the more fighters we should build.
 			// However, fighters lose to frigates, so the more frigates enemies
 			// have, the fewer fighters we should build.
-			mBuildScores[Ship.FIGHTER] 	= ( (enemyMoney[Ship.BOMBER] - enemyMoney[Ship.FRIGATE])
-										    * mWeights.w[AIWeights.FIGHTER_X]
-										  )	+ mWeights.w[AIWeights.FIGHTER_C];
-			mBuildScores[Ship.BOMBER]  	= ( (enemyMoney[Ship.FRIGATE] - enemyMoney[Ship.FIGHTER])
-										    * mWeights.w[AIWeights.BOMBER_X]
-										  ) + mWeights.w[AIWeights.BOMBER_C];
-			mBuildScores[Ship.FRIGATE] 	= ( (enemyMoney[Ship.FIGHTER] - enemyMoney[Ship.BOMBER])
-										    * mWeights.w[AIWeights.FRIGATE_X]
-										  ) + mWeights.w[AIWeights.FRIGATE_C];
-			
-			if (mCanUpgrade) {
-
-				float ownShipMoney   = ourMoney[Ship.FIGHTER]   + ourMoney[Ship.BOMBER]   + ourMoney[Ship.FRIGATE];
-				float enemyShipMoney = enemyMoney[Ship.FIGHTER] + enemyMoney[Ship.BOMBER] + enemyMoney[Ship.FRIGATE];
-
-				// The build score for an upgrade should take into account the total
-				// amount of money represented by (1) enemy ships and (2) our own ships. 
-				mBuildScores[3] 			= ( ( enemyShipMoney - ownShipMoney)
-											    * mWeights.w[AIWeights.UPGRADE_X]
-											  ) + mWeights.w[AIWeights.UPGRADE_C];
-			}
+			mBuildScores[Ship.FIGHTER] 	= (enemyMoney[Ship.BOMBER] - enemyMoney[Ship.FRIGATE])
+										* mWeights.w[AIWeights.FIGHTER_X];
+			mBuildScores[Ship.BOMBER]  	= (enemyMoney[Ship.FRIGATE] - enemyMoney[Ship.FIGHTER])
+										* mWeights.w[AIWeights.BOMBER_X];
+			mBuildScores[Ship.FRIGATE] 	= (enemyMoney[Ship.FIGHTER] - enemyMoney[Ship.BOMBER])
+										* mWeights.w[AIWeights.FRIGATE_X];
 			
 			// If intelligence is negative, negate all scores.
 			if (mIntelligence < 0) {

@@ -3,7 +3,7 @@ package com.gregmcnew.android.pax;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Scanner;
+import java.util.*;
 
 // IMPORTANT: For this project to build, you must first
 // copy all files in: pax/src/com/gregmcnew/android/pax
@@ -17,31 +17,27 @@ public class AITest {
     private static final String FILENAME = "population.txt";
 
     // The size of the population of hypotheses.
-    private static final int P = 30;
-
-    // The percentage of the population to be replaced by crossover at each new generation.
-    private static final float CROSSOVER = 0.6f;
-
-    // The percentage of the population to be mutated at each new generation.
-    private static final float MUTATION = 0.01f;
+    private static final int P = 10;
+    private static final int FIGHTS = 10;
 
     Game mGame;
 
     public AITest() {
         mGame = new Game(0);
-    }
-
-    // Returns a score from 0 to 2, where 1+ is a win and 2 is perfect.
-    private float runGame(AIWeights weights) {
-
-        mGame.mPlayers[0].setAIDifficulty(AI.Difficulty.CHEATER);
-        mGame.mPlayers[1].setAIDifficulty(AI.Difficulty.CHEATER);
-
-        mGame.mPlayers[0].setAIWeights(weights);
 
         for (Player player : mGame.mPlayers) {
             player.setAI(true);
         }
+    }
+
+    // Returns a score from 0 to 2, where 1+ is a win and 2 is perfect.
+    private float runGame(Hypothesis blue, Hypothesis red) {
+
+        mGame.mPlayers[0].setAIDifficulty(AI.Difficulty.CHEATER);
+        mGame.mPlayers[1].setAIDifficulty(AI.Difficulty.CHEATER);
+
+        mGame.mPlayers[0].setAIWeights(blue.getWeights());
+        mGame.mPlayers[1].setAIWeights(red.getWeights());
 
         mGame.restart();
 
@@ -51,53 +47,88 @@ public class AITest {
             mGame.update(25);
             state = mGame.getState();
         } while (Game.State.IN_PROGRESS == state);
+        mUpgrades += mGame.mPlayers[0].numUpgrades();
 
-        float score = 0;
+        float score = 0.5f;
 
         switch (state) {
             case RED_WINS:
                 // Our score is the percentage of health the enemy factory has left, negated.
-                Entity redFactory = mGame.mPlayers[1].mEntities[Entity.FACTORY].get(0);
-                score = -(float) redFactory.health / Factory.HEALTH;
+                Entity factory = mGame.mPlayers[1].mEntities[Entity.FACTORY].get(0);
+                score -= 0.5f * factory.health / Factory.HEALTH;
+                red.wins++;
+                blue.losses++;
                 break;
             case BLUE_WINS:
                 // Our score is the percentage of health our factory has left.
-                Entity blueFactory = mGame.mPlayers[0].mEntities[Entity.FACTORY].get(0);
-                score = (float) blueFactory.health / (float) Factory.HEALTH;
+                factory = mGame.mPlayers[0].mEntities[Entity.FACTORY].get(0);
+                score += 0.5f * factory.health / Factory.HEALTH;
+                red.losses++;
+                blue.wins++;
                 break;
         }
 
-        mUpgrades += mGame.mPlayers[0].numUpgrades();
-
-        return score + 1;
+        return score;
     }
 
-    private static int biasedSelect(float scoresSum, float[] scores) {
-
-        double toSelect = Math.random() * scoresSum;
-
-        int selectedIndex = -1;
-        double selectCounter = 0;
-
-        for (int j = 0; j < P; j++) {
-            selectCounter += scores[j];
-            if (selectCounter >= toSelect) {
-                selectedIndex = j;
-                break;
-            }
-        }
-
-        return selectedIndex;
-    }
 
     private int mUpgrades;
 
+    private class Hypothesis implements Comparable<Hypothesis> {
+
+        public Hypothesis() {
+            AIWeights aiw = new AIWeights();
+            aiw.randomize();
+            init(0, aiw);
+        }
+        public Hypothesis(float score, AIWeights weights) {
+            init(score, weights);
+        }
+
+        private void init(float score, AIWeights weights) {
+            this.score = score;
+            this.weights = weights;
+            this.age = 0;
+        }
+
+
+        public int compareTo(Hypothesis other) {
+            return Float.compare(score, other.score);
+        }
+
+        @Override
+        public int hashCode() {
+            String str = "";
+            for (int i = 0; i < weights.w.length; i++) {
+                str += String.format("%.4f ", weights.w[i]);
+            }
+            return str.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            String str = String.format("%.3f %2d-%2d (%d %s)", score, wins, losses, age, Integer.toHexString(hashCode()).substring(0, 4));
+            for (int i = 0; i < weights.w.length; i++) {
+                str += String.format(" %.4f", weights.w[i]);
+            }
+            return str;
+        }
+
+        public AIWeights getWeights() {
+            return weights.clone();
+        }
+
+        private int age;
+        private float score;
+        private AIWeights weights;
+
+        public int wins;
+        public int losses;
+    }
+
     public void run() throws IOException {
 
-        AIWeights[] population = new AIWeights[P];
-        float[] scores = new float[P];
-
-        AIWeights[] newPopulation = new AIWeights[P];
+        Hypothesis[] population = new Hypothesis[P];
 
         // Read the population from a text file, and create new members if needed.
         {
@@ -114,13 +145,15 @@ public class AITest {
                     aiw.w[j] = scanner.nextFloat();
                     j++;
                     if (j == AIWeights.NUM_WEIGHTS) {
+
+                        // chew up the score
+                        float score = scanner.nextFloat();
+                        j = 0;
+
                         if (i < P) {
-                            population[i++] = aiw;
+                            population[i++] = new Hypothesis(score, aiw);
                             aiw = new AIWeights();
                         }
-                        // chew up the score
-                        scanner.nextFloat();
-                        j = 0;
                     }
                 }
             }
@@ -129,131 +162,54 @@ public class AITest {
                 System.out.println(String.format("read %d members from text file", i));
             }
             for (; i < P; i++) {
-                AIWeights aiw = new AIWeights();
-                aiw.randomize();
-                population[i] = aiw;
+                population[i] = new Hypothesis();
             }
         }
 
         int generation = 0;
 
-        int numToCrossover = (int) (CROSSOVER * P);
+        System.out.println(String.format("population: %d", P));
+        System.out.println();
 
-        // numToCrossover must be an even number.
-        numToCrossover /= 2;
-        numToCrossover *= 2;
-
-        int numToSelect = P - numToCrossover;
-        int numToMutate = (int) (MUTATION * P);
-
-        System.out.println(String.format("Population: %d (select %d, crossover %d, mutate %d)", P, numToSelect, numToCrossover, numToMutate));
-
+        // After each generation, the worst AIs are replaced by random ones.
         while (true) {
 
-            //
-            // Evaluate the fitness of each set of weights.
-            //
-            float scoresSum = 0;
-            mUpgrades = 0;
-            for (int i = 0; i < P; i++) {
-                for (int j = 0; j < 1; j++) {
-                    float score = runGame(population[i]);
-                    scores[i] = score;
-                    //System.out.println(String.format("score: %f", score));
-                    scoresSum += score;
-                }
-            }
-
-            float maxScore = scores[0];
-            float minScore = scores[0];
-            for (int i = 1; i < P; i++) {
-                if (scores[i] > maxScore) {
-                    maxScore = scores[i];
-                }
-                else if (scores[i] < minScore) {
-                    minScore = scores[i];
-                }
-            }
-
-            System.out.println(String.format("generation %3d: average %f, max %f (%3d upgrades)",
-                    generation, scoresSum / P, maxScore, mUpgrades));
+            float[] rrScores = new float[P];
+            generation += 1;
 
             for (int i = 0; i < P; i++) {
-                for (int j = 0; j < AIWeights.NUM_WEIGHTS; j++) {
-                    System.out.print(String.format("% .4f", population[i].w[j]));
-                    System.out.print(" ");
+                population[i].wins = 0;
+                population[i].losses = 0;
+            }
 
-                    if (j == AIWeights.NUM_WEIGHTS - 1) {
-                        System.out.print(String.format("    % .4f", scores[i]));
+            System.out.println(String.format("generation %d:", generation));
+            for (int i = 0; i < P; i++) {
+                for (int j = 0; j < P; j++) {
+                    if (i < j) {
+                        float score = 0;
+                        for (int k = 0; k < FIGHTS; k++) {
+                            Hypothesis a = population[i];
+                            Hypothesis b = population[j];
+                            if (k % 2 == 0) {
+                                score += runGame(a, b);
+                            }
+                            else {
+                                score += 1 - runGame(b, a);
+                            }
+                        }
+                        score /= FIGHTS;
+                        rrScores[i] += score;
+                        rrScores[j] += 1 - score;
+                        System.out.print(String.format("%.3f ", score));
+                    }
+                    else {
+                        System.out.print("      ");
                     }
                 }
-                System.out.println();
+
+                population[i].score = rrScores[i] / (P - 1);
+                System.out.println("     " + population[i]);
             }
-
-            // Prior to selection, scale all scores to the range [0..1].
-            float range = maxScore - minScore;
-            if (range > 0) {
-                scoresSum -= minScore * P;
-                scoresSum /= range;
-                for (int i = 0; i < P; i++) {
-                    scores[i] -= minScore;
-                    scores[i] /= range;
-                }
-            }
-
-            //
-            // Select, breed, and mutate weights for the next generation.
-            //
-
-            // new index
-            int ni = 0;
-
-            float[] newPopScores = new float[P];
-            boolean[] selected = new boolean[P];
-            for (int i = 0; i < P; i++) {
-                selected[i] = false;
-            }
-
-            for (int i = 0; i < numToSelect; i++) {
-                int selectedIndex = biasedSelect(scoresSum, scores);
-
-                //System.out.println(String.format("selected a weights-set with score %f", scores[selectedIndex]));
-
-                newPopScores[ni] = scores[selectedIndex];
-                newPopulation[ni++] = population[selectedIndex];
-            }
-
-            for (int i = 0; i < numToCrossover / 2; i++) {
-                int motherIndex = biasedSelect(scoresSum, scores);
-                int fatherIndex = biasedSelect(scoresSum, scores);
-
-                for (int j = 0; j < 2; j++) {
-                    AIWeights child = population[motherIndex].breed(population[fatherIndex]);
-                    newPopScores[ni] = 0;
-                    newPopulation[ni++] = child;
-                }
-
-				/*
-				 * System.out.println(String.format(
-				 * "applied crossover to parents with scores %f and %f",
-				 * scores[motherIndex], scores[fatherIndex]));
-				 */
-            }
-
-            for (int i = 0; i < numToMutate; i++) {
-                int mutateIndex = Game.sRandom.nextInt(P);
-                newPopulation[mutateIndex].mutate();
-                newPopScores[mutateIndex] = 0;
-            }
-
-            //
-            // Move on to the next generation.
-            //
-
-            generation++;
-            AIWeights[] temp = population;
-            population = newPopulation;
-            newPopulation = temp;
 
             //
             // Print the new population to a text file.
@@ -261,19 +217,46 @@ public class AITest {
             PrintStream ps = new PrintStream(new File(FILENAME));
             for (int i = 0; i < P; i++) {
                 for (int j = 0; j < AIWeights.NUM_WEIGHTS; j++) {
-                    ps.print(String.format("% .8f", population[i].w[j]));
-                    //if (j < AIWeights.NUM_WEIGHTS - 1) {
-                    ps.print(" ");
-                    //}
-
-                    if (j == AIWeights.NUM_WEIGHTS - 1) {
-                        ps.print(String.format("    % .8f", newPopScores[i]));
-                    }
+                    ps.print(String.format("% .8f ", population[i].weights.w[j]));
                 }
-                ps.println();
+                ps.println(String.format("    % .8f", population[i].score));
             }
             ps.close();
+
+            Arrays.sort(population);
+
+            int children = 2;
+
+            for (int i = 0; i < P; i++) {
+                if (i < children) {
+                    int i1 = children + Game.sRandom.nextInt(P - children);
+                    int i2 = children + Game.sRandom.nextInt(P - children - 1);
+                    if (i2 >= i1) i2++;
+                    Hypothesis h = new Hypothesis();
+                    h.weights = breed(population[i1].weights, population[i2].weights);
+                    h.age = (population[i1].age + population[i2].age) / 2 + 1;
+                    population[i] = h;
+                }
+                else if (i < 5) {
+                    population[i] = new Hypothesis();
+                }
+                else {
+                    population[i].age++;
+                }
+            }
+            System.out.println();
         }
+    }
+
+    private AIWeights breed(AIWeights parent1, AIWeights parent2) {
+        AIWeights child = new AIWeights();
+
+        float f = Game.sRandom.nextFloat() * 0.33f + 0.33f;
+        for (int i = 0; i < AIWeights.NUM_WEIGHTS; i++) {
+            child.w[i] = (f * parent1.w[i]) + ((1 - f) * parent2.w[i]);
+        }
+
+        return child;
     }
 
     public static void main(String[] args) {
