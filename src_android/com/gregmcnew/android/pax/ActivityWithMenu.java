@@ -95,9 +95,8 @@ public class ActivityWithMenu extends Activity {
     	Constants.sGameSpeed = (gameSpeed == null) ? Constants.GAME_SPEED_NORMAL : gameSpeed;
     	Constants.sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
     	Constants.sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
-    	Constants.sShowFPS = settings.getBoolean(getString(R.string.show_debug_info), false);
+    	Constants.sDebugMode = settings.getBoolean(getString(R.string.debug_mode), false);
     	Constants.sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);
-    	Constants.sFadeOutIntro = settings.getBoolean(getString(R.string.fade_out_intro), true);
     	Constants.sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
     	Constants.sVertexBufferObjects = settings.getBoolean(getString(R.string.vertex_buffer_objects), true);
     }

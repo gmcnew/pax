@@ -12,7 +12,6 @@
     <string name="upgrade_summary">Download and install the latest version</string>
     
     <string name="tutorial_prompt">It looks like this is your first time playing Pax! Would you like to see the tutorial?</string>
-    <string name="tutorial_prompt_setting">Show tutorial prompt</string>
     
     <!-- "About" screen strings -->
     
@@ -36,9 +35,6 @@
     <!-- General settings strings -->
     
     <string name="general_settings">Settings</string>
-
-    <string name="benchmark_mode">Benchmark mode</string>
-    <string name="benchmark_mode_summary">Experimental</string>
     
     <string name="ai_difficulty">AI difficulty</string>
     <string-array name="ai_difficulty_array">
@@ -69,8 +65,17 @@
     <string name="game_speed_normal">Normal</string>
     <string name="game_speed_fast">Fast</string>
     <string name="game_speed_insane">Insane</string>
-    
-    
+
+
+    <!-- Developer settings strings -->
+
+    <string name="developer_settings">Development</string>
+
+    <string name="benchmark_mode">Benchmark mode</string>
+    <string name="debug_mode">Debug mode</string>
+    <string name="tutorial_prompt_setting">Show tutorial prompt</string>
+
+
     <!-- Graphics settings strings -->
     
     <string name="graphics_settings">Graphics</string>
@@ -78,10 +83,8 @@
     <string name="show_ships">Show ships</string>
     <string name="show_ships_summary">&#8230; and projectiles</string>
     <string name="show_particles">Show particles</string>
-    <string name="show_debug_info">Show debug info</string>
     <string name="show_collision_boxes">Show collision boxes</string>
     <string name="show_collision_boxes_summary">&#8230; for fighters only</string>
     <string name="vertex_buffer_objects">Vertex buffer objects</string>
-    <string name="fade_out_intro">Fade out intro</string>
     
 </resources>

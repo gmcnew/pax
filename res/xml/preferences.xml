@@ -23,11 +23,6 @@
 
     <PreferenceCategory android:title="@string/general_settings">
 
-        <CheckBoxPreference android:key="@string/benchmark_mode"
-                			android:title="@string/benchmark_mode"
-                			android:summary="@string/benchmark_mode_summary"
-                			android:defaultValue="false" android:persistent="true"/>
-
     	<ListPreference android:key="@string/ai_difficulty"
     					android:entries="@array/ai_difficulty_array"
                         android:entryValues="@array/ai_difficulty_array"
@@ -39,6 +34,22 @@
                         android:entries="@array/game_speed_array"
                         android:entryValues="@array/game_speed_array"
                         android:defaultValue="@string/game_speed_normal" android:persistent="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/developer_settings">
+
+        <CheckBoxPreference android:key="@string/benchmark_mode"
+                            android:title="@string/benchmark_mode"
+                            android:defaultValue="false" android:persistent="true"/>
+
+        <CheckBoxPreference android:key="@string/debug_mode"
+                            android:title="@string/debug_mode"
+                            android:defaultValue="true" android:persistent="true"/>
+
+        <CheckBoxPreference android:key="@string/tutorial_prompt_setting"
+                            android:title="@string/tutorial_prompt_setting"
+                            android:defaultValue="true" android:persistent="true"/>
 
 	</PreferenceCategory>
 
@@ -53,10 +64,6 @@
                 			android:title="@string/show_particles"
                 			android:defaultValue="true" android:persistent="true"/>
 
-        <CheckBoxPreference android:key="@string/show_debug_info"
-                			android:title="@string/show_debug_info"
-                			android:defaultValue="true" android:persistent="true"/>
-
         <CheckBoxPreference android:key="@string/show_collision_boxes"
                 			android:title="@string/show_collision_boxes"
                 			android:summary="@string/show_collision_boxes_summary"
@@ -64,14 +71,6 @@
 
         <CheckBoxPreference android:key="@string/vertex_buffer_objects"
                 			android:title="@string/vertex_buffer_objects"
-                			android:defaultValue="true" android:persistent="true"/>
-
-        <CheckBoxPreference android:key="@string/fade_out_intro"
-                			android:title="@string/fade_out_intro"
-                			android:defaultValue="true" android:persistent="true"/>
-
-        <CheckBoxPreference android:key="@string/tutorial_prompt_setting"
-                			android:title="@string/tutorial_prompt_setting"
                 			android:defaultValue="true" android:persistent="true"/>
 
 	</PreferenceCategory>

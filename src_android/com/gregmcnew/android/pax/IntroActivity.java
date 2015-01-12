@@ -25,8 +25,6 @@ import android.widget.Toast;
 
 public class IntroActivity extends ActivityWithMenu {
 	
-	private static final int COUNTDOWN_SECONDS = Constants.SELF_BENCHMARK ? 0 : 1;
-	
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -88,10 +86,10 @@ public class IntroActivity extends ActivityWithMenu {
     
     private void startTimer() {
     	if (!mTimerIsRunning) {
+    		int countdownMs = (Constants.SELF_BENCHMARK ? 0 : (Constants.sDebugMode ? 1 : 3)) * 1000;
     		mTimerIsRunning = true;
-    		int countdownMs = COUNTDOWN_SECONDS * 1000;
     		mGameStartTime = SystemClock.uptimeMillis() + countdownMs;
-    		mTimer.schedule(new StartGameTask(), COUNTDOWN_SECONDS * 1000);
+    		mTimer.schedule(new StartGameTask(), countdownMs);
     	}
     }
     
@@ -217,10 +215,6 @@ public class IntroActivity extends ActivityWithMenu {
 				else {
 					fadeAlpha = 0f;
 				}
-			}
-			
-			if (!Constants.sFadeOutIntro) {
-				fadeAlpha = 1f;
 			}
 			
 			drawStars(gl, mStarField, mStarPainter, mScreenWidth, mScreenHeight, fadeAlpha);
@@ -359,10 +353,14 @@ public class IntroActivity extends ActivityWithMenu {
 					}
 					else {
 						if (section == 0) {
-			    			mActivity.mPlayerTwoAI = !mActivity.mPlayerTwoAI;
+			    			mActivity.mPlayerTwoAI = Constants.sDebugMode
+									? !mActivity.mPlayerTwoAI
+									: false;
 						}
 						else {
-			    			mActivity.mPlayerOneAI = !mActivity.mPlayerOneAI;
+			    			mActivity.mPlayerOneAI = Constants.sDebugMode
+									? !mActivity.mPlayerOneAI
+									: false;
 						}
 
 			    		mActivity.startTimer();

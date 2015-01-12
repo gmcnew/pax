@@ -210,7 +210,7 @@ public class GameRenderer extends Renderer {
         	drawButtons(gl);
         }
 		
-		if (Constants.sShowFPS) {
+		if (Constants.sDebugMode) {
 			float ex = DIGIT_SPACING * 2 - mGameWidth / 2;
 			float x = -(ex + DIGIT_WIDTH);
 			float y = (mGameHeight / 2) - 100;

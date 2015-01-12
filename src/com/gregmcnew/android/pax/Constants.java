@@ -24,7 +24,6 @@ public class Constants {
 	public static final boolean SELF_BENCHMARK = false;
 	public static final boolean SIMPLE_BALANCE_TEST = false;
 	public static final boolean BACKGROUND_IMAGE = false;
-	public static final boolean FIGHTER_SPAM_TEST = false;
 	public static final boolean MUSIC = false;
 	public static final boolean PARTICLES = true;
   	public static final boolean AI_TRAINING_MODE = false;
@@ -35,8 +34,6 @@ public class Constants {
 	public static boolean sShowShips;
 	public static boolean sShowParticles;
 	public static boolean sShowCollisionBoxes;
-	public static boolean sShowFPS;
-	public static boolean sShowHealthForAllShipTypes;
+	public static boolean sDebugMode;
 	public static boolean sVertexBufferObjects;
-	public static boolean sFadeOutIntro;
 }
