@@ -315,11 +315,9 @@ public class AI {
 		// at random (by leaving all weights equal).
 		if (numEnemyAttackShips > 0) {
 
-			float ourMoney[]   = new float[Ship.TYPES.length];
-			float enemyMoney[] = new float[Ship.TYPES.length];
 			for (int i = 0; i < Ship.TYPES.length; i++) {
-				ourMoney[i]   = Player.BuildCosts[i] * mNumOwnEntities[i];
-				enemyMoney[i] = Player.BuildCosts[i] * mNumEnemyEntities[i];
+				mOurMoney[i]   = Player.BuildCosts[i] * mNumOwnEntities[i];
+				mEnemyMoney[i] = Player.BuildCosts[i] * mNumEnemyEntities[i];
 			}
 	
 			// Set scores based on (1) what would beat enemy ships and (2) what
@@ -327,11 +325,11 @@ public class AI {
 			// more bombers enemies have, the more fighters we should build.
 			// However, fighters lose to frigates, so the more frigates enemies
 			// have, the fewer fighters we should build.
-			mBuildScores[Ship.FIGHTER] 	= (enemyMoney[Ship.BOMBER] - enemyMoney[Ship.FRIGATE])
+			mBuildScores[Ship.FIGHTER] 	= (mEnemyMoney[Ship.BOMBER] - mEnemyMoney[Ship.FRIGATE])
 										* mWeights.w[AIWeights.FIGHTER_X];
-			mBuildScores[Ship.BOMBER]  	= (enemyMoney[Ship.FRIGATE] - enemyMoney[Ship.FIGHTER])
+			mBuildScores[Ship.BOMBER]  	= (mEnemyMoney[Ship.FRIGATE] - mEnemyMoney[Ship.FIGHTER])
 										* mWeights.w[AIWeights.BOMBER_X];
-			mBuildScores[Ship.FRIGATE] 	= (enemyMoney[Ship.FIGHTER] - enemyMoney[Ship.BOMBER])
+			mBuildScores[Ship.FRIGATE] 	= (mEnemyMoney[Ship.FIGHTER] - mEnemyMoney[Ship.BOMBER])
 										* mWeights.w[AIWeights.FRIGATE_X];
 			
 			// If intelligence is negative, negate all scores.
@@ -372,6 +370,8 @@ public class AI {
 	private Player mPlayer;
 	private float mNumOwnEntities[]   = new float[Entity.TYPES.length];
 	private float mNumEnemyEntities[] = new float[Entity.TYPES.length];
+	private float mOurMoney[]   = new float[Ship.TYPES.length];
+	private float mEnemyMoney[] = new float[Ship.TYPES.length];
 	private float mBuildScores[] = new float[BuildTarget.values().length - 1];
 
 }
