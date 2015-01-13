@@ -60,17 +60,10 @@ public class CollisionHandler {
 		// This needs to be called before damage is applied.
 		projectile.addHitParticle(mVictim, victimShip, damage);
 		
-		// Factory damage resistance can vary.
-		if (victimShip.type == Entity.FACTORY)
-		{
-			damage *= mVictim.getFactoryDamageMultiplier();
-		}
-		
 		victimShip.health -= damage;
 		
 		if (victimShip.health <= 0) {
 			result |= REMOVE_A;
-			//mVictim.mEntities[victimShip.type].remove(victimShip);
 			GameSounds.play(GameSounds.Sound.EXPLOSION);
 		}
 		

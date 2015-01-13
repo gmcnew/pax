@@ -50,9 +50,6 @@ public class Player {
 		
 		mBuildTarget = BuildTarget.NONE;
 		
-		mVulnerability = 0;
-		mVulnerabilityExpires = 0;
-		
 		setAI(mIsAI);
 		
 		mRetargetQueue.clear();
@@ -88,22 +85,11 @@ public class Player {
 		}
 	}
 	
-	public float getFactoryDamageMultiplier() {
-		return mVulnerability + 1;
-	}
-	
 	// This function requires a valid collision space (for retargeting),
 	// so it can't add or move units. See moveEntities for that sort of thing.
 	// Dead entities should already have been removed by a call to
 	// removeDeadEntities().
 	public void updateEntities(long dt) {
-		
-		if (mVulnerabilityExpires > 0) {
-			mVulnerabilityExpires -= dt;
-			if (mVulnerabilityExpires <= 0) {
-				mVulnerability = 0;
-			}
-		}
 		
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
@@ -315,11 +301,6 @@ public class Player {
 							);
 				}
 				
-				// If there's any vulnerability already, average it out over the remaining time.
-				mVulnerability *= (float) mVulnerabilityExpires / UPGRADE_VULNERABILITY_TIME_MS;
-				mVulnerabilityExpires = UPGRADE_VULNERABILITY_TIME_MS;
-				mVulnerability++;
-				
 				mNumProductionSteps++;
 				break;
 		}
@@ -450,9 +431,6 @@ public class Player {
 	private boolean mIsAI;
 	
 	private AI mAI;
-	
-	private int mVulnerabilityExpires;
-	private float mVulnerability;
 	
 	// mNumProductionSteps is incremented every time the player upgrades.
 	private int mNumProductionSteps;
