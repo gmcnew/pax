@@ -203,73 +203,77 @@ public class UpgradeActivity extends Activity implements DialogInterface.OnClick
     	
 		@Override
 		protected String doInBackground(String... args) {
-		    int count;
-			
-			int bytesTransferred = 0;
 
 	        String sourceDir = args[0];
 	        String destination = args[1];
-	        
-	        boolean upgrade = false;
-	        String latestFile;
-	        try {
-	        	String[] tokens = checkLatestVersion();
-	        	String latestVersion = tokens[0];
-	        	latestFile = tokens[1];
-	        	upgrade = versionStringIsNewer(latestVersion);
-	        }
-	        catch (Exception e) {
-	        	Log.e(Pax.TAG, e.toString());
-			    publishProgress(CHECK_ERROR);
-			    return null;
-	        }
 
-			upgrade = true;
-			latestFile = "app-debug.apk";
+	        String latestFile = "app-debug.apk";
+
+			if (!Constants.sDebugMode) {
+				try {
+					String[] tokens = checkLatestVersion();
+					String latestVersion = tokens[0];
+					latestFile = versionStringIsNewer(latestVersion)
+							? tokens[1]
+							: null;
+				}
+				catch (Exception e) {
+					Log.e(Pax.TAG, e.toString());
+					publishProgress(CHECK_ERROR);
+					return null;
+				}
+			}
 	        
-		    if (!upgrade) {
+		    if (latestFile == null) {
 		    	publishProgress(UP_TO_DATE);
 		    }
 		    else {
 			    publishProgress(DOWNLOAD_STARTING);
-			    try {
-			        URL url = new URL(sourceDir + "/" + latestFile);
-			        
-			        URLConnection connection = url.openConnection();
-			        connection.connect();
-			        
-					int fileSize = connection.getContentLength();
-					
-					InputStream input = new BufferedInputStream(url.openStream());
-					OutputStream output = new FileOutputStream(destination);
-					
-					byte data[] = new byte[1024];
-					
-					while ((count = input.read(data)) != -1) {
-						bytesTransferred += count;
-						
-					    output.write(data, 0, count);
-					    
-					    publishProgress(bytesTransferred * 100 / fileSize);
-					}
-					
-			        output.flush();
-			        output.close();
-			        input.close();
-				    
-				    publishProgress(100);
-			    }
-			    catch (MalformedURLException e) {
-			    	Log.v(Pax.TAG, e.toString());
-				    publishProgress(DOWNLOAD_ERROR);
-			    }
-			    catch (IOException e) {
-			    	Log.v(Pax.TAG, e.toString());
-				    publishProgress(DOWNLOAD_ERROR);
-				}
+				download(sourceDir + "/" + latestFile, destination);
 	        }
 	        
     		return null;
+		}
+
+		private void download(String path, String destination) {
+			int count;
+			int bytesTransferred = 0;
+
+			try {
+				URL url = new URL(path);
+
+				URLConnection connection = url.openConnection();
+				connection.connect();
+
+				int fileSize = connection.getContentLength();
+
+				InputStream input = new BufferedInputStream(url.openStream());
+				OutputStream output = new FileOutputStream(destination);
+
+				byte data[] = new byte[1024];
+
+				while ((count = input.read(data)) != -1) {
+					bytesTransferred += count;
+
+					output.write(data, 0, count);
+
+					publishProgress(bytesTransferred * 100 / fileSize);
+				}
+
+				output.flush();
+				output.close();
+				input.close();
+
+				publishProgress(100);
+			}
+			catch (MalformedURLException e) {
+				Log.v(Pax.TAG, e.toString());
+				publishProgress(DOWNLOAD_ERROR);
+			}
+			catch (IOException e) {
+				Log.v(Pax.TAG, e.toString());
+				publishProgress(DOWNLOAD_ERROR);
+			}
 		}
     }
 }
