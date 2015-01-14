@@ -28,13 +28,16 @@ public abstract class Entity {
 	public float targetHeading;
 	public float headingToTargetHeading; // difference between heading and targetHeading.
 	public float heading; // in radians
+
+	private static final Point2[] NO_EXTRA_POINTS = { };
+	private static final float[] NO_EXTRA_POINT_OFFSETS = { };
 	
 	// An entity can have extra collision circles, each specified as a
 	// (Point2, float) pair. The Point2 is the center of a collision circle with
 	// the same radius as 'body'. The float is the number of ship radii by which
 	// the point is ahead (i.e., toward 'heading') of the ship's center.
-	protected Point2[] mExtraPoints = { };
-	protected float[] mExtraPointOffsets = { };
+	protected Point2[] mExtraPoints = NO_EXTRA_POINTS;
+	protected float[] mExtraPointOffsets = NO_EXTRA_POINT_OFFSETS;
 	
 	private int mRetargetCounter;
 	

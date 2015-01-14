@@ -170,7 +170,7 @@ public class GameRenderer extends Renderer {
 			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
 			mPrimitivePainter.setFillColor(1, 1, 1, 0);
 
-			final float minShieldWidth = mPixelSize * 2;
+			final float minShieldWidth = mPixelSize * 3;
 
 			float[][] c = Painter.TEAM_COLORS;
 
@@ -185,16 +185,16 @@ public class GameRenderer extends Renderer {
 							painters[entityType].draw(gl, entity);
 						}
 						else {
-							float[] shieldColors = { 1, 1, 1 };
 							float shieldWidth = entity.diameter * 0.15f * ((float) entity.health) / entity.originalHealth;
+							float shieldStrength = 1;
 							if (shieldWidth < minShieldWidth) {
-								float shieldStrength = shieldWidth / minShieldWidth;
+								shieldStrength = shieldWidth / minShieldWidth;
 								shieldWidth = minShieldWidth;
-								for (int j = 0; j < 3; j++) {
-									shieldColors[j] = c[i][j] * (1 - shieldStrength) + shieldStrength;
-								}
 							}
-							mCircle.draw(gl, entity, shieldColors[0], shieldColors[1], shieldColors[2]);
+							for (int j = 0; j < 3; j++) {
+								sShieldColors[j] = c[i][j] * (1 - shieldStrength) + shieldStrength;
+							}
+							mCircle.draw(gl, entity, sShieldColors[0], sShieldColors[1], sShieldColors[2]);
 							mCircle.draw(gl, entity, entity.diameter - shieldWidth, c[i][0], c[i][1], c[i][2]);
 						}
 					}
@@ -334,13 +334,8 @@ public class GameRenderer extends Renderer {
 
 		// Draw the build target icon.
 		float[][] c = Painter.TEAM_COLORS;
-		float[][] h = { { 0, 0, 0}, { 0, 0, 0 } };
 
 		for (int player = 0; player < Game.NUM_PLAYERS; player++) {
-
-			for (int j = 0; j < 3; j++) {
-				h[player][j] = (c[player][j] + 1) / 2;
-			}
 			
 			float rot = (player == 0) ? 0 : 180;
 			if (mLandscapeDevice) {
@@ -409,6 +404,8 @@ public class GameRenderer extends Renderer {
     }
 
 	private static final float DIGIT_WIDTH = 20, DIGIT_HEIGHT = 20, LINE_SPACING = 4, DIGIT_SPACING = -3.2f;
+
+	private static float[] sShieldColors = { 1, 1, 1 };
 	
 	private Game mGame;
 	
