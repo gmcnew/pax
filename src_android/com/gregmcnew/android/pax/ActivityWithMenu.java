@@ -94,6 +94,7 @@ public class ActivityWithMenu extends Activity {
     	Float gameSpeed = sGameSpeeds.get(gameSpeedString);
     	Constants.sGameSpeed = (gameSpeed == null) ? Constants.GAME_SPEED_NORMAL : gameSpeed;
     	Constants.sShowShips = settings.getBoolean(getString(R.string.show_ships), true);
+    	Constants.sShowStars = settings.getBoolean(getString(R.string.show_stars), true);
     	Constants.sShowParticles = settings.getBoolean(getString(R.string.show_particles), true);
     	Constants.sDebugMode = settings.getBoolean(getString(R.string.debug_mode), false);
     	Constants.sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);

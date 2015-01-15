@@ -64,6 +64,10 @@
                 			android:title="@string/show_particles"
                 			android:defaultValue="true" android:persistent="true"/>
 
+        <CheckBoxPreference android:key="@string/show_stars"
+                            android:title="@string/show_stars"
+                            android:defaultValue="true" android:persistent="true"/>
+
         <CheckBoxPreference android:key="@string/show_collision_boxes"
                 			android:title="@string/show_collision_boxes"
                 			android:summary="@string/show_collision_boxes_summary"

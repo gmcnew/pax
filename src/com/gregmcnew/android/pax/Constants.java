@@ -30,8 +30,9 @@ public class Constants {
 
 	
 	// Graphics settings
-	
+
 	public static boolean sShowShips;
+	public static boolean sShowStars;
 	public static boolean sShowParticles;
 	public static boolean sShowCollisionBoxes;
 	public static boolean sDebugMode;

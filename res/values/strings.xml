@@ -79,8 +79,9 @@
     <!-- Graphics settings strings -->
     
     <string name="graphics_settings">Graphics</string>
-    
+
     <string name="show_ships">Show ships</string>
+    <string name="show_stars">Show stars</string>
     <string name="show_ships_summary">&#8230; and projectiles</string>
     <string name="show_particles">Show particles</string>
     <string name="show_collision_boxes">Show collision boxes</string>
