@@ -22,24 +22,6 @@ public class Fighter extends Ship {
 	
 	protected Fighter() {
 		super(Entity.FIGHTER, TARGET_PRIORITIES, null, HEALTH, DIAMETER, DIAMETER, TURN_SPEED, ACCELERATIONLIMS, MAXSPEED);
-		
-		int numTrailPoints = (int) (TRAIL_LENGTH_MS / TRAIL_POINT_INTERVAL);
-		ByteBuffer byteBuffer;
-		byteBuffer = ByteBuffer.allocateDirect(numTrailPoints * Short.SIZE);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mTrailVertices = byteBuffer.asShortBuffer();
-		
-		byteBuffer = ByteBuffer.allocateDirect(numTrailPoints * Short.SIZE);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mTempTrailVertices = byteBuffer.asShortBuffer();
-		
-		byteBuffer = ByteBuffer.allocateDirect(numTrailPoints * 4 * Float.SIZE);
-		byteBuffer.order(ByteOrder.nativeOrder());
-		mVertexColors = byteBuffer.asFloatBuffer();
-		
-		mTempTrailVertices.position(0);
-		mTrailVertices.position(0);
-		
 		reset(null);
 	}
 	
@@ -50,19 +32,12 @@ public class Fighter extends Ship {
 		shotTimeMs = 33;
 		clipSize = 5;
 		shotsLeft = clipSize;
-
-		mTempTrailVertices.limit(0);
-		mTrailVertices.limit(0);
 		
 		// Run away by default. This avoids scenarios in which enemy ships are
 		// hovering over our factory and newly-spawned fighters turn in circles
 		// uselessly instead of moving far enough away to get a decent shot.
 		mIsRunningAway = true;
 	}
-	
-	protected ShortBuffer mTrailVertices;
-	protected ShortBuffer mTempTrailVertices;
-	protected FloatBuffer mVertexColors;
 	
 	protected boolean mIsRunningAway;
 	

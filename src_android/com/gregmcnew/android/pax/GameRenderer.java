@@ -148,15 +148,6 @@ public class GameRenderer extends Renderer {
 		// Draw smoke only.
 		drawParticles(gl, Emitter.SMOKE, Emitter.SMOKE + 1);
 		
-		// Draw fighter trails!
-		for (Player player : mGame.mPlayers) {
-		
-			for (Entity entity : player.mEntities[Entity.FIGHTER]) {
-				Fighter fighter = (Fighter) entity;
-				mHighlight.drawTrail(gl, fighter.mTrailVertices, fighter.mVertexColors);
-			}
-		}
-		
 		if (Constants.sShowCollisionBoxes) {
 			for (int i = 0; i < 2; i++) {
 				QuadtreePainter.draw(gl, mGame.mPlayers[i].mEntities[Ship.FIGHTER].mBodies, mLineVertices, i == 0, mRotation);
