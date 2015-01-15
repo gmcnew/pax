@@ -77,6 +77,10 @@
                 			android:title="@string/vertex_buffer_objects"
                 			android:defaultValue="true" android:persistent="true"/>
 
+        <CheckBoxPreference android:key="@string/fast_ship_style"
+                            android:title="@string/fast_ship_style"
+                            android:defaultValue="true" android:persistent="true"/>
+
 	</PreferenceCategory>
 
 </PreferenceScreen>

@@ -37,4 +37,5 @@ public class Constants {
 	public static boolean sShowCollisionBoxes;
 	public static boolean sDebugMode;
 	public static boolean sVertexBufferObjects;
+	public static boolean sFastShipStyle;
 }

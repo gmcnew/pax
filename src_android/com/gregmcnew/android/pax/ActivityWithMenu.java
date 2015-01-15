@@ -100,6 +100,7 @@ public class ActivityWithMenu extends Activity {
     	Constants.sShowCollisionBoxes = settings.getBoolean(getString(R.string.show_collision_boxes), false);
     	Constants.sBenchmarkMode = settings.getBoolean(getString(R.string.benchmark_mode), false);
     	Constants.sVertexBufferObjects = settings.getBoolean(getString(R.string.vertex_buffer_objects), true);
+    	Constants.sFastShipStyle = settings.getBoolean(getString(R.string.fast_ship_style), false);
     }
     
     @Override

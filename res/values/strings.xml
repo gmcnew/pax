@@ -87,5 +87,6 @@
     <string name="show_collision_boxes">Show collision boxes</string>
     <string name="show_collision_boxes_summary">&#8230; for fighters only</string>
     <string name="vertex_buffer_objects">Vertex buffer objects</string>
+    <string name="fast_ship_style">Fast ship style</string>
     
 </resources>

@@ -166,6 +166,10 @@ public class GameRenderer extends Renderer {
 			for (int entityType : ENTITY_LAYERS) {
 				for (int i = 0; i < Game.NUM_PLAYERS; i++) {
 
+					if (Constants.sFastShipStyle) {
+						mPrimitivePainter.setStrokeColor((c[i][0] + 1) / 2, (c[i][1] + 1) / 2, (c[i][2] + 1) / 2, 1);
+					}
+
 					Player player = mGame.mPlayers[i];
 					Painter[] painters = mPlayerEntityPainters.get(player);
 
@@ -176,15 +180,30 @@ public class GameRenderer extends Renderer {
 						else {
 							float shieldWidth = entity.diameter * 0.15f * ((float) entity.health) / entity.originalHealth;
 							float shieldStrength = 1;
-							if (shieldWidth < minShieldWidth) {
-								shieldStrength = shieldWidth / minShieldWidth;
-								shieldWidth = minShieldWidth;
+
+							if (Constants.sFastShipStyle) {
+								shieldStrength = ((float) entity.health) / entity.originalHealth;
+
+								for (int j = 0; j < 3; j++) {
+									sShieldColors[j] = c[i][j] * shieldStrength;
+								}
+
+								mPrimitivePainter.setFillColor(sShieldColors[0], sShieldColors[1], sShieldColors[2], 1);
+								mPrimitivePainter.drawCircle(gl, entity.body.center.x, entity.body.center.y, entity.body.radius);
 							}
-							for (int j = 0; j < 3; j++) {
-								sShieldColors[j] = c[i][j] * (1 - shieldStrength) + shieldStrength;
+							else {
+								if (shieldWidth < minShieldWidth) {
+									shieldStrength = shieldWidth / minShieldWidth;
+									shieldWidth = minShieldWidth;
+								}
+
+								for (int j = 0; j < 3; j++) {
+									sShieldColors[j] = c[i][j] * (1 - shieldStrength) + shieldStrength;
+								}
+
+								mCircle.draw(gl, entity, sShieldColors[0], sShieldColors[1], sShieldColors[2]);
+								mCircle.draw(gl, entity, entity.diameter - shieldWidth, c[i][0], c[i][1], c[i][2]);
 							}
-							mCircle.draw(gl, entity, sShieldColors[0], sShieldColors[1], sShieldColors[2]);
-							mCircle.draw(gl, entity, entity.diameter - shieldWidth, c[i][0], c[i][1], c[i][2]);
 						}
 					}
 				}
