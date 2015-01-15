@@ -49,8 +49,6 @@ public class GameRenderer extends Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		super.onSurfaceCreated(gl, config);
 
-		mShipOutlinePainter = getPainter(gl, R.drawable.ship_outline);
-
 		mCircle = getPainter(gl, R.drawable.circle);
 		
 		float lineVertices[] = { -0.5f, 0, 0.5f, 0 };
@@ -430,7 +428,6 @@ public class GameRenderer extends Renderer {
 	private Painter mMinusPainter;
 	private Painter mPeriodPainter;
 
-	private Painter mShipOutlinePainter;
 	private Painter mCircle;
 	
 	private float mButtonSize;
