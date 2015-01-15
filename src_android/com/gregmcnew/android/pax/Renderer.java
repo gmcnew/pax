@@ -87,7 +87,7 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 		}
 		Log.v(Pax.TAG, mVBOSupport ? "device supports VBOs" : "device doesn't support VBOs");
 		
-		mPrimitivePainter = new PrimitivePainter(gl, this, mVBOSupport);
+		mPrimitivePainter = new PrimitivePainter(gl, this);
 		
 		FramerateCounter.start();
 	}

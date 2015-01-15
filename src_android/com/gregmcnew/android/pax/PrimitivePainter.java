@@ -9,7 +9,7 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class PrimitivePainter {
 
-	public PrimitivePainter(GL10 gl, Renderer renderer, boolean vboSupport) {
+	public PrimitivePainter(GL10 gl, Renderer renderer) {
 		
 		mRenderer = renderer;
 		mRendererStateID = mRenderer.getStateID();
@@ -19,8 +19,6 @@ public class PrimitivePainter {
 		
 		mFillRed = mFillGreen = mFillBlue = mFillAlpha = 0f;
 		mStrokeRed = mStrokeGreen = mStrokeBlue = mStrokeAlpha = 0f;
-		
-		mVBOSupport = vboSupport;
 
 		float lineVertices[] = { -0.5f, 0, 0.5f, 0 };
 		
@@ -46,7 +44,7 @@ public class PrimitivePainter {
 		mCircleVertices.put(circleVertices);
 		mCircleVertices.position(0);
 		
-		if (mVBOSupport) {
+		if (Constants.sVertexBufferObjects) {
 			GL11 gl11 = (GL11) gl;
 			
 			// Generate buffer IDs.
@@ -117,7 +115,7 @@ public class PrimitivePainter {
     	if (mRenderer.stateLost(mRendererStateID)) {
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
 	    	
-			if (mVBOSupport) {
+			if (Constants.sVertexBufferObjects) {
 				GL11 gl11 = (GL11) gl;
 				
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, mCircleVertexBufferObjectID);
@@ -147,6 +145,4 @@ public class PrimitivePainter {
 	
 	private Renderer mRenderer;
 	private int mRendererStateID;
-	
-	private boolean mVBOSupport;
 }
