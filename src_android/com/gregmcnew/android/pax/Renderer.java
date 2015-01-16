@@ -98,7 +98,7 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 		Painter painter = mPainters.get(resourceID);
 		
 		if (painter == null) {
-			painter = new Painter(gl, this, mContext, mVBOSupport, resourceID);
+			painter = new Painter(gl, this, mContext, resourceID);
 			
 			mPainters.put(resourceID, painter);
 		}

@@ -27,10 +27,9 @@ public class Painter {
 		sCameraRotationDegrees = degrees;
 	}
 	
-	public Painter(GL10 gl, Renderer renderer, Context context, boolean vboSupport, int resourceID) {
+	public Painter(GL10 gl, Renderer renderer, Context context, int resourceID) {
 		mRenderer = renderer;
 		mContext = context;
-		mVBOSupport = vboSupport;
 		mResourceID = resourceID;
 		mInitialized = false;
 		
@@ -93,7 +92,7 @@ public class Painter {
 		sTextureBuffer.put(texture);
 		sTextureBuffer.position(0);
 		
-		if (mVBOSupport) {
+		if (Constants.sVertexBufferObjects) {
 			GL11 gl11 = (GL11) gl;
 			
 			// Generate buffer IDs.
@@ -154,7 +153,8 @@ public class Painter {
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 			
 			// Point to our vertex and texture buffers.
-			if (mVBOSupport) {
+
+			if (Constants.sVertexBufferObjects) {
 				GL11 gl11 = (GL11) gl;
 				
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sVertexBufferObjectID);
@@ -209,7 +209,7 @@ public class Painter {
 		
 		// Point to our vertex and texture buffers.
 		
-		if (mVBOSupport) {
+		if (Constants.sVertexBufferObjects) {
 			GL11 gl11 = (GL11) gl;
 			
 			gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
@@ -275,7 +275,6 @@ public class Painter {
 
 	private boolean mInitialized;
 	private int mTextureID;
-	private boolean mVBOSupport;
 
 	private Renderer mRenderer;
 	private int mRendererStateID;
