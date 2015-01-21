@@ -139,6 +139,10 @@ public class Painter {
 
 	public void draw(GL10 gl, float moveX, float moveY, float sizeX, float sizeY, float rotateDegrees, float alpha, float r, float g, float b) {
 		
+		if (!mRenderer.inBounds(moveX, sizeX, moveY, sizeY)) {
+			return;
+		}
+
         // Make sure we're not using any transformations left over from the
 		// last draw().
 		gl.glLoadIdentity();

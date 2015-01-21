@@ -279,6 +279,12 @@ public class GameRenderer extends Renderer {
 		}
 	}
 
+	@Override
+	public boolean inBounds(float x, float rx, float y, float ry) {
+		return (Math.abs(x) - rx) < mGameWidth / 2
+		    && (Math.abs(y) - ry) < mGameHeight / 2;
+	}
+
 	private void drawNumber(GL10 gl, float x, float y, float number, float alpha) {
 		drawNumber(gl, x, y, number, alpha, 1, 1, 1, -1);
 	}

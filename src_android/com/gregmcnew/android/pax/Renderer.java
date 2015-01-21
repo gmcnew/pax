@@ -120,6 +120,10 @@ public abstract class Renderer implements GLSurfaceView.Renderer {
 			}
 		}
 	}
+
+	public boolean inBounds(float x, float rx, float y, float ry) {
+		return true;
+	}
 	
 	
 	// Functions allowing users to check whether they need to re-bind their
