@@ -340,6 +340,11 @@ public class Pax extends ActivityWithMenu {
 			String resultString = mGameResultStrings.get(state);
 			if (resultString != null) {
     			Log.v(TAG, resultString);
+
+				if (Constants.sBenchmarkMode) {
+					mToast.setText(String.format("Average framerate: %.2f", FramerateCounter.getTotalFPS()));
+					mToast.show();
+				}
     			
     			if (Constants.SELF_BENCHMARK) {
     				finish();
