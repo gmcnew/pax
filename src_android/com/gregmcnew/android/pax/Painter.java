@@ -148,7 +148,7 @@ public class Painter {
 
 		gl.glColor4f(r, g, b, alpha);
 
-		if (mRenderer.stateLost(mRendererStateID)) {
+		if (mRenderer.stateLost(mRendererStateID) || mTextureBuffer != null) {
 			
 			gl.glBindTexture(GL10.GL_TEXTURE_2D, mTextureID);
 			
@@ -156,15 +156,26 @@ public class Painter {
 
 			if (Constants.sVertexBufferObjects) {
 				GL11 gl11 = (GL11) gl;
-				
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sVertexBufferObjectID);
 				gl11.glVertexPointer(2, GL10.GL_SHORT, 0, 0);
-				
+
+				if (mTextureBuffer != null) {
+					gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
+				}
+			}
+			else {
+				gl.glVertexPointer(2, GL10.GL_SHORT, 0, sVertexBuffer);
+			}
+
+			if (mTextureBuffer != null) {
+				gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
+			}
+			else if (Constants.sVertexBufferObjects) {
+				GL11 gl11 = (GL11) gl;
 				gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, sTextureBufferObjectID);
 				gl11.glTexCoordPointer(2, GL10.GL_SHORT, 0, 0);
 			}
 			else {
-				gl.glVertexPointer(2, GL10.GL_SHORT, 0, sVertexBuffer);
 				gl.glTexCoordPointer(2, GL10.GL_SHORT, 0, sTextureBuffer);
 			}
 		}
@@ -253,6 +264,10 @@ public class Painter {
 		InputStream is = resources.openRawResource(resourceID);
 		return BitmapFactory.decodeStream(is);
 	}
+
+	public void setTextureBuffer(FloatBuffer buffer) {
+		mTextureBuffer = buffer;
+	}
 	
 	private short vertices[] = {
 			-1, -1, // bottom-left    2     4
@@ -272,6 +287,8 @@ public class Painter {
 	private static int sTextureBufferObjectID;
 	private static ShortBuffer sVertexBuffer;
 	private static ShortBuffer sTextureBuffer;
+
+	private FloatBuffer mTextureBuffer;
 
 	private boolean mInitialized;
 	private int mTextureID;

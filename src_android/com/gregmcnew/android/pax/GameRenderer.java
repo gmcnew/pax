@@ -81,19 +81,7 @@ public class GameRenderer extends Renderer {
 		mParticlePainters[Emitter.SHIP_EXPLOSION] 	= getPainter(gl, R.drawable.bomb);
 		mParticlePainters[Emitter.UPGRADE_EFFECT] 	= getPainter(gl, R.drawable.icon_upgrade);
 
-		mDigitPainters = new Painter[10];
-		mDigitPainters[0] = getPainter(gl, R.drawable.char_0);
-		mDigitPainters[1] = getPainter(gl, R.drawable.char_1);
-		mDigitPainters[2] = getPainter(gl, R.drawable.char_2);
-		mDigitPainters[3] = getPainter(gl, R.drawable.char_3);
-		mDigitPainters[4] = getPainter(gl, R.drawable.char_4);
-		mDigitPainters[5] = getPainter(gl, R.drawable.char_5);
-		mDigitPainters[6] = getPainter(gl, R.drawable.char_6);
-		mDigitPainters[7] = getPainter(gl, R.drawable.char_7);
-		mDigitPainters[8] = getPainter(gl, R.drawable.char_8);
-		mDigitPainters[9] = getPainter(gl, R.drawable.char_9);
-		mMinusPainter = getPainter(gl, R.drawable.char_minus);
-		mPeriodPainter = getPainter(gl, R.drawable.char_period);
+		mTextPainter = new TextPainter(gl, this);
 
 		mHighlight = getPainter(gl, R.drawable.white);
 
@@ -136,6 +124,27 @@ public class GameRenderer extends Renderer {
         	dt = Pax.UPDATE_INTERVAL_MS;
         }
         mGame.update(dt);
+
+		Game.State state = mGame.getState();
+		if (state != mLastState) {
+			int emitterType = -1;
+			switch (state) {
+				case BLUE_WINS:
+					emitterType = Emitter.BLUE_VICTORY;
+					break;
+				case RED_WINS:
+					emitterType = Emitter.RED_VICTORY;
+					break;
+				case TIE:
+					emitterType = Emitter.TIE_GAME;
+					break;
+			}
+
+			if (emitterType >= 0) {
+				mGame.mPlayers[0].mEmitters[emitterType].add(100, 0, 0, 0, 0);
+			}
+		}
+		mLastState = state;
 		
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
@@ -153,9 +162,9 @@ public class GameRenderer extends Renderer {
 				QuadtreePainter.draw(gl, mGame.mPlayers[i].mEntities[Ship.FIGHTER].mBodies, mLineVertices, i == 0, mRotation);
 			}
 		}
-		
+
 		if (Constants.sShowShips) {
-			
+
 			mPrimitivePainter.setStrokeColor(1, 1, 1, 0.5f);
 			mPrimitivePainter.setFillColor(1, 1, 1, 0);
 
@@ -219,13 +228,14 @@ public class GameRenderer extends Renderer {
         }
 		
 		if (Constants.sDebugMode) {
-			float ex = DIGIT_SPACING * 2 - mGameWidth / 2;
-			float x = -(ex + DIGIT_WIDTH);
+			float leftEdge = (DIGIT_WIDTH - mGameWidth) / 2;
+			float xl = leftEdge + DIGIT_WIDTH * 7;
+			float xr = -leftEdge;
 			float y = (mGameHeight / 2) - 100;
 			float dy = -(DIGIT_HEIGHT + LINE_SPACING);
-			drawNumber(gl, x, y,          FramerateCounter.getFPS(),          0.6f, 1);
-			drawNumber(gl, x, y + dy,     FramerateCounter.getRecentJitter(), 0.4f);
-			drawNumber(gl, x, y + dy * 2, FramerateCounter.getMaxJitter(),    0.4f);
+			drawNumber(gl, xr, y,          FramerateCounter.getFPS(),          0.6f, 1);
+			drawNumber(gl, xr, y + dy,     FramerateCounter.getRecentJitter(), 0.4f);
+			drawNumber(gl, xr, y + dy * 2, FramerateCounter.getMaxJitter(),    0.4f);
 
 			int n1 = AIWeights.NUM_WEIGHTS;
 			int n2 = Entity.TYPES.length;
@@ -237,24 +247,22 @@ public class GameRenderer extends Renderer {
 				float g = (Painter.TEAM_COLORS[i][1] + 1) / 2;
 				float b = (Painter.TEAM_COLORS[i][2] + 1) / 2;
 
-				x = ex + DIGIT_WIDTH * 7 + DIGIT_SPACING * 6;
 				y = LINE_SPACING / 2 - dy * (n1 + n2) * i;
 
 				if (mGame.mPlayers[i].isAI()) {
 					// build scores
 					float[] buildScores = mGame.mPlayers[i].getAIBuildScores();
 					int n = buildScores.length;
-					float xRight = -(ex + DIGIT_WIDTH);
 					float yRight = LINE_SPACING / 2 - dy * n * i;
 					for (int j = 0; j < n; j++) {
-						drawNumber(gl, xRight, yRight, buildScores[j], a, r, g, b);
+						drawNumber(gl, xr, yRight, buildScores[j], a, r, g, b);
 						yRight += dy;
 					}
 
 					// AI weights
 					AIWeights weights = mGame.mPlayers[i].getAIWeights();
 					for (int j = 0; j < n1; j++) {
-						drawNumber(gl, x, y, weights.w[j], a, r, g, b);
+						drawNumber(gl, xl, y, weights.w[j], a, r, g, b);
 						y += dy;
 					}
 				}
@@ -264,7 +272,7 @@ public class GameRenderer extends Renderer {
 
 				// entity counts
 				for (int j = 0; j < n2; j++) {
-					drawNumber(gl, x, y, mGame.mPlayers[i].mEntities[j].size(), a, r, g, b);
+					drawNumber(gl, xl, y, mGame.mPlayers[i].mEntities[j].size(), a, r, g, b);
 					y += dy;
 				}
 			}
@@ -294,20 +302,10 @@ public class GameRenderer extends Renderer {
 			alpha *= 0.5;
 		}
 
-		for (int i = str.length() - 1; i >= 0; i--) {
-			char c = str.charAt(i);
-			Painter p = mPeriodPainter;
-			if (c >= '0' && c <= '9') {
-				p = mDigitPainters[c - '0'];
-			}
-			else if (c == '-') {
-				p = mMinusPainter;
-			}
+		float size = DIGIT_WIDTH;
 
-			p.draw(gl, x, y, DIGIT_WIDTH, DIGIT_HEIGHT, 0, alpha, r, g, b);
-			x -= DIGIT_WIDTH + DIGIT_SPACING;
-			number /= 10;
-		}
+		mTextPainter.setColor(r, g, b, alpha);
+		mTextPainter.drawText(gl, str, size, x, y, TextPainter.ALIGN_RIGHT);
 	}
 	
 	private void drawParticles(GL10 gl, int startType, int endType) {
@@ -315,14 +313,44 @@ public class GameRenderer extends Renderer {
 			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_DST_ALPHA);
 
 			for (int type = startType; type < endType; type++) {
-				Painter painter = mParticlePainters[type];
-				for (int player = 0; player < Game.NUM_PLAYERS; player++) {
-					Emitter emitter = mGame.mPlayers[player].mEmitters[type];
-					for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
-						Particle p = emitter.mParticles[i];
-						float youth = (float) p.life / emitter.mInitialLifeMs;
-						float scale = (2f - youth) * p.scale;
-						painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
+				if (type == Emitter.RED_VICTORY || type == Emitter.BLUE_VICTORY || type == Emitter.TIE_GAME) {
+
+					String str = "Tie game!";
+
+					switch (type) {
+						case Emitter.BLUE_VICTORY:
+							str = "Blue wins!";
+							break;
+						case Emitter.RED_VICTORY:
+							str = "Red wins!";
+							break;
+					}
+
+					for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+						Emitter emitter = mGame.mPlayers[player].mEmitters[type];
+						for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
+							Particle p = emitter.mParticles[i];
+							float youth = (float) p.life / emitter.mInitialLifeMs;
+							float size = 40 / (youth + 1);
+
+							// The exclamation mark is relatively thin, so we'll
+							// move this text right slightly.
+							float x = size / 3;
+							mTextPainter.setColor(1, 1, 1, youth);
+							mTextPainter.drawText(gl, str, size, x, 0, 0);
+						}
+					}
+				}
+				else {
+					Painter painter = mParticlePainters[type];
+					for (int player = 0; player < Game.NUM_PLAYERS; player++) {
+						Emitter emitter = mGame.mPlayers[player].mEmitters[type];
+						for (int i = emitter.mStart; i != emitter.mEnd; i = (i + 1) % emitter.mCapacity) {
+							Particle p = emitter.mParticles[i];
+							float youth = (float) p.life / emitter.mInitialLifeMs;
+							float scale = (2f - youth) * p.scale;
+							painter.draw(gl, p.x, p.y, scale, scale, 0f, youth);
+						}
 					}
 				}
 			}
@@ -411,7 +439,7 @@ public class GameRenderer extends Renderer {
 		}
     }
 
-	private static final float DIGIT_WIDTH = 20, DIGIT_HEIGHT = 20, LINE_SPACING = 4, DIGIT_SPACING = -3.2f;
+	private static final float DIGIT_WIDTH = 16, DIGIT_HEIGHT = DIGIT_WIDTH * 16 / 6, LINE_SPACING = DIGIT_WIDTH + 8 - DIGIT_HEIGHT;
 
 	private static float[] sShieldColors = { 1, 1, 1 };
 	
@@ -434,9 +462,9 @@ public class GameRenderer extends Renderer {
 	private Painter mHighlight;
 	private Painter[] mBuildTargetPainters;
 	private Painter[] mParticlePainters;
-	private Painter[] mDigitPainters;
-	private Painter mMinusPainter;
-	private Painter mPeriodPainter;
+	private TextPainter mTextPainter;
+
+	private Game.State mLastState = Game.State.IN_PROGRESS;
 
 	private Painter mCircle;
 	

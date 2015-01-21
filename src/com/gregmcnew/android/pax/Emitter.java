@@ -9,9 +9,16 @@ public class Emitter {
 	public static final int BOMB_HIT = 4;
 	public static final int SHIP_EXPLOSION = 5;
 	public static final int UPGRADE_EFFECT = 6;
+	public static final int RED_VICTORY = 7;
+	public static final int BLUE_VICTORY = 8;
+	public static final int TIE_GAME = 9;
 	
-	public static final int[] TYPES = { SMOKE, SPARK, LASER_HIT, MISSILE_HIT, BOMB_HIT, SHIP_EXPLOSION, UPGRADE_EFFECT };
-	public static final long[] AGES = { 500, 100, 100, 100, 500, 1250, 1000 };
+	public static final int[] TYPES = { SMOKE, SPARK, LASER_HIT, MISSILE_HIT,
+			BOMB_HIT, SHIP_EXPLOSION, UPGRADE_EFFECT,
+			RED_VICTORY, BLUE_VICTORY, TIE_GAME };
+	public static final long[] AGES = { 500, 100, 100, 100,
+			500, 1250, 1000,
+			2000, 2000, 2000 };
 	
 	
 	private static final int NO_THROTTLE = -1;
