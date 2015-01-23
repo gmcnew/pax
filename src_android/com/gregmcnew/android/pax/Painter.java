@@ -114,6 +114,16 @@ public class Painter {
 	}
 
 	public void drawFillBounds(GL10 gl, float minX, float maxX, float minY, float maxY, float rotateDegrees, float alpha) {
+		if (minX > maxX) {
+			float temp = maxX;
+			maxX = minX;
+			minX = temp;
+		}
+		if (minY > maxY) {
+			float temp = maxY;
+			maxY = minY;
+			minY = temp;
+		}
 		float centerX = (maxX + minX) / 2;
 		float centerY = (maxY + minY) / 2;
 		float sizeX = maxX - minX;
