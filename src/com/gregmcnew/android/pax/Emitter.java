@@ -71,8 +71,11 @@ public class Emitter {
 		int fps = (int) FramerateCounter.getFPS();
 		
 		float elapsedLife = dt;
-		
-		if (mThrottleMinFps != NO_THROTTLE && fps < mThrottleMinFps) {
+
+		if (mType == RED_VICTORY || mType == BLUE_VICTORY || mType == TIE_GAME) {
+			// These messages need to remain onscreen regardless of framerate.
+		}
+		else if (mThrottleMinFps != NO_THROTTLE && fps < mThrottleMinFps) {
 			// Remove particles as soon as they're spawned.
 			elapsedLife = mInitialLifeMs;
 		}
