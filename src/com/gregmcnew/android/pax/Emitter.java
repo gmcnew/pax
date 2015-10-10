@@ -18,7 +18,7 @@ public class Emitter {
 			RED_VICTORY, BLUE_VICTORY, TIE_GAME };
 	public static final long[] AGES = { 500, 100, 100, 100,
 			500, 1250, 1000,
-			2000, 2000, 2000 };
+			3000, 3000, 3000 };
 	
 	
 	private static final int NO_THROTTLE = -1;
@@ -61,8 +61,8 @@ public class Emitter {
 			mIgnoreAddFps = NO_THROTTLE;
 		}
 		else {
-			mThrottleStartFps = 40;
-			mThrottleMinFps = 25;
+			mThrottleStartFps = 45;
+			mThrottleMinFps = 30;
 			mIgnoreAddFps = (int) (mThrottleStartFps + mThrottleMinFps) / 2;
 		}
 	}
