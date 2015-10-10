@@ -115,7 +115,6 @@ public class Pax extends ActivityWithMenu {
 			Constants.sGameSpeed = Constants.GAME_SPEED_INSANE;
 			Constants.sAIDifficulty = AI.Difficulty.MEDIUM;
 			Constants.sSound = false;
-			Constants.sDebugMode = true;
 		}
 		else {
 			for (int i = 0; i < Game.NUM_PLAYERS; i++) {

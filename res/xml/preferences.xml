@@ -79,7 +79,7 @@
 
         <CheckBoxPreference android:key="@string/fast_ship_style"
                             android:title="@string/fast_ship_style"
-                            android:defaultValue="true" android:persistent="true"/>
+                            android:defaultValue="false" android:persistent="true"/>
 
 	</PreferenceCategory>
 

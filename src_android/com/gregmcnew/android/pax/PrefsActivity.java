@@ -33,8 +33,5 @@ public class PrefsActivity extends PreferenceActivity {
 	}
 	
 	public void updateBenchmarkModePreference(boolean benchmarkMode) {
-		findPreference(getString(R.string.debug_mode)).setEnabled(!benchmarkMode);
-		findPreference(getString(R.string.ai_difficulty)).setEnabled(!benchmarkMode);
-		findPreference(getString(R.string.game_speed)).setEnabled(!benchmarkMode);
 	}
 }
