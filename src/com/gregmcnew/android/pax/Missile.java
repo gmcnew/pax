@@ -19,7 +19,7 @@ public class Missile extends Projectile {
 	
 	public static final int MAX_LIFE_MS = 5000;
 	
-	public static final int SMOKE_INTERVAL_MS = 50;
+	public static final int SMOKE_INTERVAL_MS = 20;
 	
 	// The elapsed time (in milliseconds) since the last smoke particle.
 	public int mSmokeBudgetMs;
