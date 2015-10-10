@@ -14,24 +14,11 @@ public class PrefsActivity extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 
-		String benchmarkModeString = getString(R.string.benchmark_mode);
-		Preference pref = findPreference(benchmarkModeString);
-		
-		// Enable/disable options based on the value of the "benchmark mode" option.
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		updateBenchmarkModePreference(settings.getBoolean(benchmarkModeString, false));
-		
-		// Enable/disable other options whenever the "benchmark mode" option changes.
-		pref.setOnPreferenceChangeListener(
-			new OnPreferenceChangeListener() {
-		        public boolean onPreferenceChange(Preference preference, Object newValue) {
-		        	updateBenchmarkModePreference((Boolean) newValue);
-		            return true;
-		        }
-			}
-		);
-	}
-	
-	public void updateBenchmarkModePreference(boolean benchmarkMode) {
+
+		// Add debug options if debug mode is enabled.
+		if (settings.getBoolean(getString(R.string.debug_mode), false)) {
+			addPreferencesFromResource(R.xml.preferences_debug);
+		}
 	}
 }
