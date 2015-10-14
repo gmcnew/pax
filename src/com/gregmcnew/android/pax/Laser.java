@@ -4,11 +4,10 @@ public class Laser extends Projectile {
 
 	public static final int DAMAGE = 10;
 	public static final float DIAMETER = 3;
-	public static final float INITIAL_VELOCITY = 1000;
 	public static final float TURN_SPEED = 0;
 	public static final float[] ACCELERATIONLIMS = {0, 0};
 	public static final float MAX_VELOCITY = 1000;
-	public static final int MAX_LIFE_MS = 1000;
+	public static final int MAX_LIFE_MS = 1000 * 1000 / (int)MAX_VELOCITY;
 	
 	public static final int LENGTH = 20;
 	
@@ -45,8 +44,8 @@ public class Laser extends Projectile {
 		
 		setExtraPoints(NUM_EXTRA_POINTS, EXTRA_POINT_OFFSETS);
 		
-		velocity.x = headingX * INITIAL_VELOCITY;
-		velocity.y = headingY * INITIAL_VELOCITY;
+		velocity.x = headingX * MAX_VELOCITY;
+		velocity.y = headingY * MAX_VELOCITY;
 	}
 	
 	@Override
