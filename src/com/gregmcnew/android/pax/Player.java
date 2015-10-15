@@ -19,6 +19,7 @@ public class Player {
 
 		mBuildTarget = BuildTarget.UPGRADE;
 		mEntities = new EntityPool[Entity.TYPES.length];
+		mMoveFactories = true;
 		
 		mRetargetQueue = new EntityVector();
 		mShooterQueue = new EntityVector();
@@ -84,6 +85,10 @@ public class Player {
 			}
 		}
 	}
+
+	public void DisableFactoryMovement() {
+		mMoveFactories = false;
+	}
 	
 	// This function requires a valid collision space (for retargeting),
 	// so it can't add or move units. See moveEntities for that sort of thing.
@@ -93,9 +98,11 @@ public class Player {
 		
 		for (int type : Entity.TYPES) {
 			for (Entity entity : mEntities[type]) {
-				
-				entity.updateHeading(dt);
-				entity.updateVelocity(dt);
+
+				if (type != Entity.FACTORY || mMoveFactories) {
+					entity.updateHeading(dt);
+					entity.updateVelocity(dt);
+				}
 				
 				if (entity.target != null && entity.target.health <= 0) {
 					entity.target = null;
@@ -439,4 +446,6 @@ public class Player {
 	private float mProductionMultiplier;
 
 	private float mFactoryThetaOffset;
+
+	private boolean mMoveFactories;
 }

@@ -22,8 +22,9 @@ public class Game {
 		mPlayers = new Player[NUM_PLAYERS];
 		for (int i = 0; i < NUM_PLAYERS; i++) {
 			mPlayers[i] = new Player(i, NUM_PLAYERS, factoryThetaOffset);
+			mPlayers[i].DisableFactoryMovement();
 		}
-		
+
 		reset();
 	}
 	
@@ -214,7 +215,7 @@ public class Game {
 	}
 	
 	private boolean mIsPaused;
-	
+
 	public Player[] mPlayers;
 	
 	private long mEndedTime;
