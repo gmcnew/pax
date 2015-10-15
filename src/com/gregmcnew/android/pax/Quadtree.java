@@ -356,14 +356,18 @@ public class Quadtree {
 		return high;
 	}
 
-	public float getMinVal() {
-		return mDimension == X ? mMinX : mMinY;
+	public float getMinX() {
+		return mMinX;
 	}
-
-	public float getMaxVal() {
-		return mDimension == X ? mMaxX : mMaxY;
+	public float getMaxX() {
+		return mMaxX;
 	}
-
+	public float getMinY() {
+		return mMinY;
+	}
+	public float getMaxY() {
+		return mMaxY;
+	}
 
 	private Point2[] mPoints;
 	
