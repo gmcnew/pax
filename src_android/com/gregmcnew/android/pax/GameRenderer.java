@@ -386,9 +386,15 @@ public class GameRenderer extends Renderer {
 			
 			float flip = (player == 1) ? -1 : 1;
 
+			int numBuildTargets = Player.sBuildTargetValues.length - 1;
+
+			if (!Constants.sAllowUpgrades) {
+				numBuildTargets--;
+			}
+
 			// Draw buttons along the bottom of the screen
-			float dx = mLandscapeDevice ? 0 : (mGameWidth / 4);
-			float dy = mLandscapeDevice ? (-mGameHeight / 4) : 0;
+			float dx = mLandscapeDevice ? 0 : (mGameWidth / numBuildTargets);
+			float dy = mLandscapeDevice ? (-mGameHeight / numBuildTargets) : 0;
 			float xOffset = mLandscapeDevice ? mButtonSize : dx;
 			float yOffset = mLandscapeDevice ? -dy : mButtonSize;
 			float x = flip * (xOffset - mGameWidth) / 2;
@@ -400,7 +406,7 @@ public class GameRenderer extends Renderer {
 			dx *= flip;
 			dy *= flip;
 			
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < numBuildTargets; i++) {
 			
 				float buildProgress = mGame.mPlayers[player].money / Player.BuildCosts[i];
 				if (buildProgress > 1) {

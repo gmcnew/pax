@@ -16,6 +16,10 @@
                             android:title="@string/tutorial_prompt_setting"
                             android:defaultValue="true" android:persistent="true"/>
 
+        <CheckBoxPreference android:key="@string/allow_upgrades"
+                            android:title="@string/allow_upgrades"
+                            android:defaultValue="false" android:persistent="true"/>
+
 	</PreferenceCategory>
 
     <PreferenceCategory android:title="@string/graphics_settings">

@@ -74,6 +74,7 @@
     <string name="benchmark_mode">Benchmark mode</string>
     <string name="debug_mode">Debug mode</string>
     <string name="tutorial_prompt_setting">Show tutorial prompt</string>
+    <string name="allow_upgrades">Allow upgrades</string>
 
 
     <!-- Graphics settings strings -->

@@ -78,36 +78,71 @@ public class GameView extends GLSurfaceView {
     	// Ignore the "NONE" build target.
     	int numBuildTargets = Player.sBuildTargetValues.length - 1;
 
+		if (!Constants.sAllowUpgrades)
+		{
+			numBuildTargets--;
+		}
+
     	if (mContext.mLandscapeDevice) {
     		y = getHeight() - y;
     	}
-    	
-    	int selection = 0;
-    	int player = -1;
-    	int xGridPos = (int) (x * 4 / getWidth());
-    	int yGridPos = (int) (y * 4 / getHeight());
 
-    	if ((mRotation % 2 == 0) ^ mContext.mLandscapeDevice) {
-    		// Ignore clicks in the center of the screen.
-    		if (yGridPos == 0 || yGridPos == 3) {
-	    		player = ((mRotation == 0) ^ (yGridPos < 2)) ? 0 : 1;
-	    		selection = (int) (x * numBuildTargets / getWidth());
-    		}
-    	}
-    	else {
-    		// Ignore clicks in the center of the screen.
-    		if (xGridPos == 0 || xGridPos == 3) {
-    			player = ((mRotation == 1) ^ (xGridPos < 2)) ? 0 : 1;
-    			selection = (numBuildTargets - 1) - (int) (y * numBuildTargets / getHeight());
-    		}
-    	}
-    	
-    	if (player != -1) {
+    	int selection = 0;
+    	boolean inRange = true;
+    	int player = -1;
+
+		float rx = x / getWidth();
+		float ry = y / getHeight();
+
+		if (!mContext.mLandscapeDevice) {
+			if ((mRotation % 2 == 0)) {
+				int gridPos = (int) (ry * 4);
+				switch (gridPos) {
+					case 0:
+						player = 1;
+						rx = 1 - rx;
+						break;
+					case 3:
+						player = 0;
+						break;
+					default:
+						inRange = false;
+				}
+
+				selection = (int) (rx * numBuildTargets);
+
+				if (mRotation == 2) {
+					player = 1 - player;
+				}
+			}
+			else {
+				int gridPos = (int) (rx * 4);
+				switch (gridPos) {
+					case 0:
+						player = 1;
+						break;
+					case 3:
+						player = 0;
+						ry = 1 - ry;
+						break;
+					default:
+						inRange = false;
+				}
+
+				selection = (int) (ry * numBuildTargets);
+
+				if (mRotation == 3) {
+					player = 1 - player;
+				}
+			}
+		}
+
+		Log.i("Pax:onTouch", String.format("click target: %d, %f, %f", mRotation, x, y));
+		Log.i("Pax:onTouch", String.format("click target: %d, %d, %d (%d)", inRange ? 1 : 0, player, selection, numBuildTargets));
+
+    	if (player != -1 && inRange) {
 	    	Log.i("Pax:onTouch", String.format("build target: %d", selection));
-	    	
-	    	if ((player == 1) ^ (mRotation >= 2)) {
-	    		selection = (numBuildTargets - 1) - selection;
-	    	}
+
 	    	mGame.setBuildTargetIfHuman(player, Player.sBuildTargetValues[selection]);
     	}
 	}
